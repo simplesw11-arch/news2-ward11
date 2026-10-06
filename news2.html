@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<title>NEWS2 คำนวณคะแนน</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#eef4f8;--card:#ffffff;--ink:#16324f;--mute:#62758a;--line:#dbe6ee;--teal:#0f7c8c;--tealSoft:#e3f3f5;
+--s0:#2f9e6a;--s1:#f4c430;--s2:#f08a3c;--s3:#e0485a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Sarabun,"Noto Sans Thai",system-ui,sans-serif;font-size:17px}
+.head{background:linear-gradient(135deg,#0f7c8c,#1b5e8f);color:#fff;padding:18px 18px 46px}
+.head .in{max-width:1100px;margin:0 auto}
+.head h1{font-family:Prompt,Sarabun,sans-serif;font-size:1.5rem;margin:0}
+.head p{margin:4px 0 0;opacity:.85;font-size:.92rem}
+.wrap{max-width:1100px;margin:-32px auto 0;padding:0 14px 150px}
+.grid{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:700px){.grid{grid-template-columns:1fr 1fr}}
+@media (min-width:1050px){.grid{grid-template-columns:1fr 1fr 1fr}}
+.p{background:var(--card);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 2px 10px rgba(22,50,79,.07);border-top:5px solid var(--line)}
+.p.wide{grid-column:1/-1}
+.p[data-s="0"]{border-top-color:var(--s0)}.p[data-s="1"]{border-top-color:var(--s1)}
+.p[data-s="2"]{border-top-color:var(--s2)}.p[data-s="3"]{border-top-color:var(--s3)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.lab{font-family:Prompt,Sarabun,sans-serif;font-weight:600;font-size:1.05rem}
+.lab small{display:block;font-family:Sarabun,sans-serif;font-weight:400;color:var(--mute);font-size:.82rem}
+.pt{min-width:48px;text-align:center;font-weight:700;border-radius:999px;padding:4px 10px;background:var(--bg);color:var(--mute);font-size:.95rem}
+.p[data-s="0"] .pt{background:var(--s0);color:#fff}.p[data-s="1"] .pt{background:var(--s1);color:#3a2c00}
+.p[data-s="2"] .pt{background:var(--s2);color:#fff}.p[data-s="3"] .pt{background:var(--s3);color:#fff}
+input{width:100%;font:inherit;font-size:1.4rem;font-weight:600;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:#f8fbfd;color:var(--ink)}
+input::placeholder{font-weight:400;color:#a7b6c4;font-size:1rem}
+input:focus{outline:none;border-color:var(--teal);background:#fff}
+button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.seg{display:grid;gap:8px;grid-template-columns:1fr 1fr}
+.avpu .seg{grid-template-columns:1fr 1fr}
+@media (min-width:700px){.avpu .seg{grid-template-columns:repeat(4,1fr)}}
+.seg button{font:inherit;text-align:left;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:#f8fbfd;color:var(--ink);display:flex;flex-direction:column;gap:2px;cursor:pointer}
+.seg button .k{font-family:Prompt,Sarabun,sans-serif;font-weight:700;font-size:1.1rem}
+.seg button .d{font-size:.82rem;color:var(--mute);line-height:1.35}
+.seg button.on{border-color:var(--teal);background:var(--tealSoft)}
+.seg button.on .k{color:var(--teal)}
+.tip{font-size:.92rem;color:var(--ink);background:#f4f8fb;border-left:4px solid var(--teal);border-radius:8px;padding:12px 14px;line-height:1.65}.tip b{display:block;font-family:Prompt,Sarabun,sans-serif;font-weight:600;color:var(--teal);margin-bottom:4px}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));background:#fff;border-top-left-radius:22px;border-top-right-radius:22px;box-shadow:0 -6px 24px rgba(22,50,79,.12)}
+.bar .in{max-width:1100px;margin:0 auto;display:flex;gap:14px;align-items:center}
+.total{font-family:Prompt,Sarabun,sans-serif;font-size:2.3rem;font-weight:700;width:74px;height:74px;border-radius:20px;display:grid;place-items:center;background:var(--bg);color:var(--mute);flex:none}
+.res{flex:1;min-width:0}.res b{font-family:Prompt,Sarabun,sans-serif;font-weight:600;font-size:1.02rem;display:block}.res div{font-size:.88rem;color:var(--mute);margin-top:2px}
+.reset{font:inherit;font-weight:600;padding:10px 16px;border-radius:12px;border:none;background:var(--tealSoft);color:var(--teal);flex:none;cursor:pointer}
+.note{margin-top:16px;font-size:.82rem;color:var(--mute);line-height:1.55;text-align:center}
+.home{display:inline-block;color:#fff;text-decoration:none;font-size:.9rem;opacity:.9;margin-bottom:6px;padding:4px 0}</style>
+</head>
+<body>
+<div class="head"><div class="in"><a class="home" href="./">← หน้าหลัก</a><h1>NEWS2 คำนวณคะแนน</h1><p>National Early Warning Score 2 · กรอกค่า คะแนนคำนวณให้อัตโนมัติ</p></div></div>
+<div class="wrap">
+<div class="grid" id="g"></div>
+<div class="note">เกณฑ์ตามตาราง NEWS2 (RCP 2017) ใช้ประกอบการตัดสินใจทางคลินิก ไม่แทนดุลยพินิจของพยาบาลและแพทย์</div>
+</div>
+<div class="bar"><div class="in">
+<div class="total" id="t">–</div>
+<div class="res" id="r"><b>กรอกให้ครบ 7 ข้อ</b><div>ยังไม่มีผลคะแนน</div></div>
+<button class="reset" id="clr">ล้างค่า</button>
+</div></div>
+<script>
+const P=[
+{k:"rr",n:"Respiratory rate",u:"ครั้ง/นาที",f:v=>v<=8?3:v<=11?1:v<=20?0:v<=24?2:3},
+{k:"spo2",n:"SpO₂",u:"%",f:v=>v<=91?3:v<=93?2:v<=95?1:0},
+{k:"o2",n:"การใช้ออกซิเจน",u:"O₂ supplement",opt:[["ไม่ใช้",0,"Room air"],["ใช้",2,"Cannula, mask, HFNC ฯลฯ"]]},
+{k:"sbp",n:"Systolic BP",u:"mmHg",f:v=>v<=90?3:v<=100?2:v<=110?1:v<=219?0:3},
+{k:"pr",n:"Pulse",u:"ครั้ง/นาที",f:v=>v<=40?3:v<=50?1:v<=90?0:v<=110?1:v<=130?2:3},
+{k:"bt",n:"Temperature",u:"°C",dec:1,f:v=>v<=35?3:v<=36?1:v<=38?0:v<=39?1:2},
+{k:"avpu",n:"ระดับความรู้สึกตัว",u:"AVPU",cls:"avpu wide",opt:[
+["A · Alert",0,"ตื่นเอง ลืมตาเอง พูดคุยรู้เรื่อง"],
+["V · Voice",3,"ต้องเรียกจึงลืมตาหรือตอบสนอง"],
+["P · Pain",3,"เรียกไม่ตอบ ต้องกระตุ้นด้วยความเจ็บปวด"],
+["U · Unresponsive",3,"ไม่ตอบสนองทั้งเสียงและความเจ็บปวด"]],
+tip:"<b>หมายเหตุ: ภาวะสับสนเฉียบพลัน (New Confusion)</b>ตามเกณฑ์ NEWS2 ของ Royal College of Physicians ผู้ป่วยที่มีภาวะสับสนเกิดขึ้นใหม่ เช่น ไม่รับรู้วัน เวลา สถานที่ หรือบุคคล ซึ่งไม่เคยเป็นมาก่อน ให้คิดคะแนนระดับความรู้สึกตัวเท่ากับ 3 คะแนน แม้ผู้ป่วยจะลืมตาและตื่นเองก็ตาม ในกรณีนี้ให้เลือก V"}];
+const S={},g=document.getElementById("g");
+P.forEach(p=>{const d=document.createElement("div");d.className="p "+(p.cls||"");d.id="c_"+p.k;
+let h=`<div class="row"><div class="lab">${p.n}<small>${p.u}</small></div><div class="pt">–</div></div>`;
+if(p.opt)h+=`<div class="seg">${p.opt.map(o=>`<button data-v="${o[1]}"><span class="k">${o[0]}</span><span class="d">${o[2]}</span></button>`).join("")}</div>`;
+else h+=`<input type="text" inputmode="${p.dec?"decimal":"numeric"}" placeholder="ใส่ค่า ${p.u}" autocomplete="off">`;
+if(p.tip)h+=`<div class="tip">${p.tip}</div>`;
+d.innerHTML=h;g.appendChild(d);
+if(p.opt)d.querySelectorAll("button").forEach(b=>b.onclick=()=>{d.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");set(p.k,+b.dataset.v)});
+else{const i=d.querySelector("input");i.oninput=()=>{const v=parseFloat(i.value.replace(",","."));set(p.k,isNaN(v)?null:p.f(v))};
+i.onkeydown=e=>{if(e.key==="Enter"){const all=[...document.querySelectorAll("input")];const n=all[all.indexOf(i)+1];n?n.focus():i.blur()}}}});
+function set(k,s){S[k]=s;const c=document.getElementById("c_"+k);if(s==null){delete c.dataset.s;c.querySelector(".pt").textContent="–"}else{c.dataset.s=s;c.querySelector(".pt").textContent=s+" คะแนน"}calc()}
+function calc(){const t=document.getElementById("t"),r=document.getElementById("r");
+const v=P.map(p=>S[p.k]).filter(x=>x!=null);
+if(v.length<P.length){t.textContent=v.length?v.reduce((a,b)=>a+b,0):"–";t.style.background="";t.style.color="";
+r.innerHTML=`<b>กรอกแล้ว ${v.length}/7 ข้อ</b><div>กรอกให้ครบเพื่อดูระดับความเสี่ยง</div>`;return}
+const sum=v.reduce((a,b)=>a+b,0),red=v.includes(3);let c,txt,act,dark=false;
+if(sum>=7){c="var(--s3)";txt="สูง (High) · Monitor ต่อเนื่อง";act="ตามแพทย์ทันที · พิจารณาย้าย ICU/HDU"}
+else if(sum>=5){c="var(--s2)";txt="ปานกลาง (Medium) · ประเมินซ้ำทุก 1 ชม.";act="รายงานแพทย์ทันที ตรวจภายใน 1 ชม. · เตรียมอุปกรณ์ช่วยชีวิต"}
+else if(red){c="#f5a05a";txt="ต่ำ–ปานกลาง (มี 3 คะแนนในตัวแปรเดียว) · ทุก 1 ชม.";act="แจ้งแพทย์ทันทีเพื่อมาประเมิน · หาสาเหตุ"}
+else if(sum>=1){c="var(--s1)";dark=true;txt="ต่ำ (Low) · ประเมินซ้ำทุก 4–6 ชม.";act="RN ประเมินซ้ำ · แจ้งแพทย์เจ้าของไข้รับทราบ"}
+else{c="var(--s0)";txt="ต่ำมาก · ไม่ต้องประเมินต่อ";act="ให้การพยาบาลและบันทึก V/S ตามรอบปกติ"}
+t.textContent=sum;t.style.background=c;t.style.color=dark?"#3a2c00":"#fff";
+r.innerHTML=`<b>${txt}</b><div>${act}</div>`}
+document.getElementById("clr").onclick=()=>{document.querySelectorAll("input").forEach(i=>i.value="");document.querySelectorAll(".seg button").forEach(b=>b.classList.remove("on"));P.forEach(p=>set(p.k,null));window.scrollTo(0,0)};
+</script>
+</body>
+</html>

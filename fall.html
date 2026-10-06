@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<title>Fall Risk ประเมินความเสี่ยงพลัดตกหกล้ม</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#eef4f8;--card:#ffffff;--ink:#16324f;--mute:#62758a;--line:#dbe6ee;--teal:#0f7c8c;--tealSoft:#e3f3f5;
+--s0:#2f9e6a;--s1:#f4c430;--s2:#f08a3c;--s3:#e0485a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Sarabun,"Noto Sans Thai",system-ui,sans-serif;font-size:17px}
+.head{background:linear-gradient(135deg,#0f7c8c,#1b5e8f);color:#fff;padding:18px 18px 46px}
+.head .in{max-width:1100px;margin:0 auto}
+.head h1{font-family:Prompt,Sarabun,sans-serif;font-size:1.5rem;margin:0}
+.head p{margin:4px 0 0;opacity:.85;font-size:.92rem}
+.wrap{max-width:1100px;margin:-32px auto 0;padding:0 14px 150px}
+.grid{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:700px){.grid{grid-template-columns:1fr 1fr}}
+@media (min-width:1050px){.grid{grid-template-columns:1fr 1fr 1fr}}
+.p{background:var(--card);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 2px 10px rgba(22,50,79,.07);border-top:5px solid var(--line)}
+.p.wide{grid-column:1/-1}
+.p[data-s="0"]{border-top-color:var(--s0)}.p[data-s="1"]{border-top-color:var(--s1)}
+.p[data-s="2"]{border-top-color:var(--s2)}.p[data-s="3"]{border-top-color:var(--s3)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.lab{font-family:Prompt,Sarabun,sans-serif;font-weight:600;font-size:1.05rem}
+.lab small{display:block;font-family:Sarabun,sans-serif;font-weight:400;color:var(--mute);font-size:.82rem}
+.pt{min-width:48px;text-align:center;font-weight:700;border-radius:999px;padding:4px 10px;background:var(--bg);color:var(--mute);font-size:.95rem}
+.p[data-s="0"] .pt{background:var(--s0);color:#fff}.p[data-s="1"] .pt{background:var(--s1);color:#3a2c00}
+.p[data-s="2"] .pt{background:var(--s2);color:#fff}.p[data-s="3"] .pt{background:var(--s3);color:#fff}
+input{width:100%;font:inherit;font-size:1.4rem;font-weight:600;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:#f8fbfd;color:var(--ink)}
+input::placeholder{font-weight:400;color:#a7b6c4;font-size:1rem}
+input:focus{outline:none;border-color:var(--teal);background:#fff}
+button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.seg{display:grid;gap:8px;grid-template-columns:1fr 1fr}
+.avpu .seg{grid-template-columns:1fr 1fr}
+@media (min-width:700px){.avpu .seg{grid-template-columns:repeat(4,1fr)}}
+.seg button{font:inherit;text-align:left;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:#f8fbfd;color:var(--ink);display:flex;flex-direction:column;gap:2px;cursor:pointer}
+.seg button .k{font-family:Prompt,Sarabun,sans-serif;font-weight:700;font-size:1.1rem}
+.seg button .d{font-size:.82rem;color:var(--mute);line-height:1.35}
+.seg button.on{border-color:var(--teal);background:var(--tealSoft)}
+.seg button.on .k{color:var(--teal)}
+.tip{font-size:.92rem;color:var(--ink);background:#f4f8fb;border-left:4px solid var(--teal);border-radius:8px;padding:12px 14px;line-height:1.65}.tip b{display:block;font-family:Prompt,Sarabun,sans-serif;font-weight:600;color:var(--teal);margin-bottom:4px}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));background:#fff;border-top-left-radius:22px;border-top-right-radius:22px;box-shadow:0 -6px 24px rgba(22,50,79,.12)}
+.bar .in{max-width:1100px;margin:0 auto;display:flex;gap:14px;align-items:center}
+.total{font-family:Prompt,Sarabun,sans-serif;font-size:2.3rem;font-weight:700;width:74px;height:74px;border-radius:20px;display:grid;place-items:center;background:var(--bg);color:var(--mute);flex:none}
+.res{flex:1;min-width:0}.res b{font-family:Prompt,Sarabun,sans-serif;font-weight:600;font-size:1.02rem;display:block}.res div{font-size:.88rem;color:var(--mute);margin-top:2px}
+.reset{font:inherit;font-weight:600;padding:10px 16px;border-radius:12px;border:none;background:var(--tealSoft);color:var(--teal);flex:none;cursor:pointer}
+.note{margin-top:16px;font-size:.82rem;color:var(--mute);line-height:1.55;text-align:center}
+.home{display:inline-block;color:#fff;text-decoration:none;font-size:.9rem;opacity:.9;margin-bottom:6px;padding:4px 0}</style>
+<style>
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#fff;border-radius:16px;padding:6px;box-shadow:0 2px 10px rgba(22,50,79,.07);margin-bottom:12px}
+.tabs button{font:inherit;border:none;background:none;border-radius:12px;padding:10px 6px;color:var(--mute);cursor:pointer;line-height:1.3}
+.tabs button b{display:block;font-family:Prompt,Sarabun,sans-serif;font-weight:600;color:var(--ink);font-size:.98rem}
+.tabs button small{font-size:.78rem}
+.tabs button.on{background:var(--teal)}.tabs button.on b,.tabs button.on small{color:#fff}
+.seg.col{grid-template-columns:1fr}
+.seg button{flex-direction:row;justify-content:space-between;align-items:center;gap:10px}
+.seg button .k{font-size:.98rem;font-weight:600;font-family:Sarabun,sans-serif}
+.seg button .d{flex:none;font-weight:700;color:var(--teal);font-size:.9rem}
+.seg button .x{display:block;font-size:.8rem;color:var(--mute);font-weight:400;margin-top:2px}
+.p.done{border-top-color:var(--teal)}
+.p.done .pt{background:var(--teal);color:#fff}
+.agebox{margin-bottom:12px;border-top-color:var(--teal)}.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.chips i{font-style:normal;font-size:.8rem;font-weight:400;background:#fff;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--ink)}.src{font-size:.8rem;color:var(--mute);margin:4px 2px 12px}
+</style>
+</head>
+<body>
+<div class="head"><div class="in"><a class="home" href="./">← หน้าหลัก</a><h1>ประเมินความเสี่ยงพลัดตกหกล้ม</h1><p>Fall Risk Assessment · เลือกแบบประเมินให้เหมาะกับผู้ป่วย</p></div></div>
+<div class="wrap">
+<div class="p wide agebox"><div class="row"><div class="lab">อายุผู้ป่วย<small>กรอกอายุเป็นปี ระบบจะเลือกแบบประเมินให้อัตโนมัติ</small></div></div>
+<input id="age" type="text" inputmode="decimal" placeholder="เช่น 0.5, 8, 45, 72" autocomplete="off"><div class="src" id="pick" style="margin:0"></div></div>
+<div class="tabs" id="tabs"></div>
+<div class="src" id="src"></div>
+<div class="grid" id="g"></div>
+<div class="note">ใช้ประกอบการตัดสินใจทางคลินิก ไม่แทนดุลยพินิจของพยาบาล · ประเมินเมื่อแรกรับ ทุกเวร และเมื่อมีอาการเปลี่ยนแปลง</div>
+</div>
+<div class="bar"><div class="in">
+<div class="total" id="t">–</div>
+<div class="res" id="r"></div>
+<button class="reset" id="clr">ล้างค่า</button>
+</div></div>
+<script>
+// type: one = เลือก 1 ข้อ, any = เลือกได้หลายข้อ (ไม่เลือก = 0)
+const T={
+ped:{tab:"เด็ก",sub:"Humpty Dumpty",src:"Modified Humpty Dumpty & CHAMPS Fall Assessment Scale (ทารกและเด็ก) · ทุกข้อต้องเลือก 1 ตัวเลือก",
+items:[
+{n:"1. อายุ",u:"A: Age · พิมพ์อายุ หรือแตะเลือก",age:a=>a<3?0:a<7?1:a<13?2:3,o:[["ต่ำกว่า 3 ปี",4],["3 ถึงต่ำกว่า 7 ปี",3],["7 ถึงต่ำกว่า 13 ปี",2],["13 ปีขึ้นไป",1]]},
+{n:"2. ความสามารถด้านการรับรู้",u:"C: Changes in altered mental status",o:[["รับรู้ได้ แต่ประเมินตนเองไม่เหมาะสม ไม่ปฏิบัติตามคำแนะนำ การรับรู้บกพร่อง เช่น CP, delay, ทารก",3],["รับรู้ได้ แต่ลืมคำแนะนำ",2],["รับรู้ได้และปฏิบัติตามคำแนะนำได้",1]]},
+{n:"3. ประวัติการตกหกล้ม",u:"H: History of fall",o:[["มีประวัติพลัดตกหกล้ม หัดเดิน คลาน ปีนป่าย",4],["ต้องใช้อุปกรณ์หรือคาสายระบายต่าง ๆ",3],["นอนบนเตียง",2],["เดินไปมาด้วยตนเอง",1]]},
+{n:"4. การเคลื่อนไหว",u:"M: Altered mobility",o:[["ระบบประสาท มีปัญหาการมองเห็น รับฟัง การเคลื่อนไหว/พิการ",4],["พร่องออกซิเจน ขาดน้ำ เกลือแร่ ซีด นอนไม่หลับ เป็นลม มึนงง",3],["จิตเวช มีพฤติกรรมเปลี่ยน",2],["โรคอื่น ๆ",1]]},
+{n:"5. การได้รับยา",u:"M: Medication",o:[["ยาที่มีผลต่อความดันโลหิต ระดับความรู้สึกตัว หรือทำให้ง่วงซึม เช่น ยานอนหลับ ยาระบาย ยาขับปัสสาวะ sedative, anticonvulsant",3],["ได้รับยาในข้อ 3 คะแนน 1 ชนิด",2],["ได้รับยาอื่น หรือไม่ได้รับยาเลย",1]]},
+{n:"6. ผู้ดูแล",u:"P: Parental involvement",o:[["เด็ก/ชรา เจ็บป่วย/อ่อนเพลีย/หลังคลอด/พิการ",3],["แข็งแรง ไม่ตระหนัก เฝ้าได้บางเวลา",2],["แข็งแรง ตระหนัก เฝ้าได้ตลอดเวลา",1]]},
+{n:"7. หลังการผ่าตัด",u:"S: Surgery safety",o:[["ภายใน 24 ชั่วโมง",3],["ภายใน 48 ชั่วโมง",2],["มากกว่า 48 ชั่วโมง หรือไม่ได้ผ่าตัด",1]]},
+{n:"8. การป้องกัน",u:"S: Safety interventions",o:[["ไม้กั้นเตียงชำรุด 2 ข้าง ยึดตรึงไม่ได้ ไม่มีคนเฝ้า พื้นลื่น เปียก แฉะ (ตลอดเวลา)",3],["ไม้กั้นเตียงชำรุด 1 ข้าง ยึดตรึง/มีคนเฝ้า พื้นลื่น เปียกแฉะ (บางครั้ง)",2],["ไม้กั้นเตียง/ยึดตรึง/มีคนเฝ้า พื้นแห้ง (ตลอดเวลา)",1]]}],
+level:s=>s>=17?["var(--s3)","เสี่ยงระดับสูง (≥ 17 คะแนน)"]:s>=9?["var(--s2)","เสี่ยงระดับปานกลาง (9–16 คะแนน)"]:["var(--s1)","เสี่ยงระดับน้อย (8 คะแนน)",1]},
+hen:{tab:"ผู้ใหญ่",sub:"Hendrich",src:"Fall risk assessment tool: Hendrich · ติ๊กเฉพาะข้อที่มี ข้อที่ไม่มีคิด 0 คะแนน · คะแนนเต็ม 20",
+items:[
+{n:"ปัจจัยเสี่ยง",u:"ติ๊กทุกข้อที่มี",any:1,o:[["อาการสับสน ไม่รู้วัน เวลา สถานที่ บุคคล","Confusion / disorientation",4],["อาการซึมเศร้า","Symptomatic depression",2],["การขับถ่ายผิดปกติ","Altered elimination",1],["อาการวิงเวียน บ้านหมุน","Dizziness / vertigo",1],["ผู้ชาย","Male gender",1],["ได้รับยากลุ่มยากันชัก (Antiepileptics)",["carbamazepine","divalproex sodium","ethotoin","ethosuximide","felbamate","fosphenytoin","gabapentin","lamotrigine","mephenytoin","methsuximide","phenobarbital","phenytoin","primidone","topiramate","trimethadione","valproic acid"],2],["ได้รับยากลุ่ม Benzodiazepines",["alprazolam","buspirone","chlordiazepoxide","clonazepam","clorazepate dipotassium","diazepam","flurazepam","halazepam","lorazepam","midazolam","oxazepam","temazepam","triazolam"],1]]},
+{n:"Get up & go test",u:"ทดสอบการลุกยืนจากเก้าอี้ · เลือก 1 ข้อ",o:[["ยืนได้เองทันที ไม่ต้องใช้มือยัน",0],["ใช้มือช่วยยัน 1 ครั้ง ลุกยืนสำเร็จ",1],["ใช้มือช่วยยันหลายครั้ง จึงลุกยืนสำเร็จ",3],["ลุกยืนเองไม่ได้ หากไม่มีคนช่วย",4]]}],
+level:s=>s>=5?["var(--s3)","เสี่ยงสูงต่อการลื่น/ตก/หกล้ม (≥ 5)"]:s>=1?["var(--s1)","มีความเสี่ยงต่อการลื่น/ตก/หกล้ม (1–4)",1]:["var(--s0)","ไม่มีความเสี่ยง (0)"]},
+eld:{tab:"ผู้สูงอายุ",sub:"Elderly",src:"Fall risk assessment tool in elderly (ผ่องพรรณ อรุณแสง, 2549) · ติ๊กข้อที่มี ข้อที่ไม่มีคิด 0",
+items:[
+{n:"อายุ",u:"พิมพ์อายุ หรือแตะเลือก",age:a=>a<65?2:a<80?0:1,o:[["อายุ 65–79 ปี",0.5],["อายุ 80 ปีขึ้นไป",1],["อายุน้อยกว่า 65 ปี",0]]},
+{n:"ปัจจัยเสี่ยง",u:"ติ๊กทุกข้อที่มี",any:1,o:[["มีภาวะสับสน (ไม่อยู่บนเตียงตามคำแนะนำ)","",2],["พยายามจะลงจากเตียง / ไม่สงบ","",5],["มีประวัติการหกล้ม","",1],["การเคลื่อนไหว การทรงตัว และการเดินผิดปกติ","",1],["มีอาการอ่อนเพลียโดยทั่วไป","",1],["การขับถ่ายปัสสาวะเปลี่ยนแปลง","ปัสสาวะบ่อย กลั้นไม่ได้ ได้ Lasix ทางหลอดเลือดดำ",1],["ได้รับยาใน 24 ชม.ที่ผ่านมา","ยากล่อมประสาท ยานอนหลับ ยาสลบ",1],["ไม่สามารถเคลื่อนย้าย/เคลื่อนที่ได้","",-5]]}],
+level:s=>s>=4.5?["var(--s3)","ความเสี่ยงระดับ 3 (≥ 4.5)"]:s>=2.5?["var(--s2)","ความเสี่ยงระดับ 2 (2.5–4)"]:s>=0.5?["var(--s1)","ความเสี่ยงระดับ 1 (0.5–2)",1]:["var(--s0)","ไม่อยู่ในเกณฑ์ความเสี่ยง (< 0.5)"]}};
+let cur="ped",S={},AGE=null;
+const ageIn=document.getElementById("age"),pick=document.getElementById("pick");
+const tabFor=a=>a<15?"ped":a<60?"hen":"eld";
+ageIn.oninput=()=>{const a=parseFloat(ageIn.value.replace(",","."));AGE=isNaN(a)?null:a;
+if(AGE==null){pick.textContent="";return}
+const k=tabFor(AGE);if(k!==cur)show(k);else{const i=T[k].items.findIndex(x=>x.age);if(i>=0)document.getElementById("g").children[i].querySelectorAll("button")[T[k].items[i].age(AGE)].click()}pick.textContent="ใช้แบบประเมิน: "+T[k].tab+" ("+T[k].sub+") · เปลี่ยนแบบเองได้ที่แท็บด้านล่าง"};
+const tabs=document.getElementById("tabs");
+Object.entries(T).forEach(([k,v])=>{const b=document.createElement("button");b.innerHTML=`<b>${v.tab}</b><small>${v.sub}</small>`;b.onclick=()=>show(k);b.dataset.k=k;tabs.appendChild(b)});
+function show(k){cur=k;S={};const t=T[k];
+tabs.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.k===k));
+document.getElementById("src").textContent=t.src;
+const g=document.getElementById("g");g.innerHTML="";
+t.items.forEach((it,i)=>{const d=document.createElement("div");d.className="p"+(it.any?" wide":"");
+d.innerHTML=`<div class="row"><div class="lab">${it.n}<small>${it.u}</small></div><div class="pt">${it.any?"0":"–"}</div></div><div class="seg col">${it.o.map(o=>{const sc=o[o.length-1],x=o.length===3&&o[1]?(Array.isArray(o[1])?`<span class="chips">${o[1].map(m=>`<i>${m}</i>`).join("")}</span>`:`<span class="x">${o[1]}</span>`):"";return `<button data-v="${sc}"><span class="k">${o[0]}${x}</span><span class="d">${sc>0?"+":""}${sc}</span></button>`}).join("")}</div>`;
+g.appendChild(d);if(it.any)S[i]=0;
+d.querySelectorAll("button").forEach(b=>b.onclick=()=>{if(it.any)b.classList.toggle("on");else{d.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on")}
+const v=[...d.querySelectorAll("button.on")].reduce((a,x)=>a+ +x.dataset.v,0);S[i]=v;
+if(!it.any)d.classList.add("done");d.querySelector(".pt").textContent=v+" คะแนน";calc()});
+if(it.age&&AGE!=null)d.querySelectorAll("button")[it.age(AGE)].click()});
+calc()}
+function calc(){const t=T[cur],tt=document.getElementById("t"),r=document.getElementById("r");
+const need=t.items.filter(i=>!i.any).length,got=t.items.filter((it,i)=>!it.any&&S[i]!=null).length;
+const sum=Object.values(S).reduce((a,b)=>a+b,0);
+if(got<need){tt.textContent="–";tt.style.background="";tt.style.color="";r.innerHTML=`<b>เลือกแล้ว ${got}/${need} ข้อ</b><div>เลือกให้ครบทุกข้อที่ต้องเลือก 1 ตัวเลือก</div>`;return}
+const[c,txt,dark]=t.level(sum);tt.textContent=sum;tt.style.background=c;tt.style.color=dark?"#3a2c00":"#fff";
+r.innerHTML=`<b>${txt}</b><div>${t.tab} · ${t.sub}</div>`}
+document.getElementById("clr").onclick=()=>{ageIn.value="";AGE=null;pick.textContent="";show(cur);window.scrollTo(0,0)};
+show("ped");
+</script>
+</body>
+</html>
