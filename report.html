@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="robots" content="noindex">
+<title>รายงาน NEWS2</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#eef4f8;--card:#ffffff;--ink:#16324f;--mute:#62758a;--line:#dbe6ee;--teal:#0f7c8c;--tealSoft:#e3f3f5;
+--s0:#2f9e6a;--s1:#f4c430;--s2:#f08a3c;--s3:#e0485a}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Sarabun,"Noto Sans Thai",system-ui,sans-serif;font-size:17px;padding-bottom:env(safe-area-inset-bottom,0px)}
+.head{background:linear-gradient(135deg,#0f7c8c,#1b5e8f);color:#fff;padding:calc(18px + env(safe-area-inset-top,0px)) 18px 46px}
+.head .in{max-width:1100px;margin:0 auto}
+.head h1{font-family:Prompt,Sarabun,sans-serif;font-size:1.5rem;margin:0}
+.head p{margin:4px 0 0;opacity:.85;font-size:.92rem}
+.head a{color:#fff}
+.wrap{max-width:1100px;margin:-32px auto 0;padding:0 14px 40px;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--card);border-radius:18px;padding:16px;box-shadow:0 2px 10px rgba(22,50,79,.07)}
+h2{font-family:Prompt,Sarabun,sans-serif;font-size:1.05rem;margin:0 0 12px;font-weight:600}
+.f{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.f label{display:flex;flex-direction:column;gap:4px;font-size:.88rem;color:var(--mute)}
+.f .full{grid-column:1/-1}
+@media (min-width:760px){.f{grid-template-columns:1.2fr 1fr 1fr auto}.f .full{grid-column:auto}}
+input{font:inherit;font-size:16px;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;color:var(--ink);background:#fff;width:100%;min-width:0}
+input:focus{outline:none;border-color:var(--teal)}
+button{font:inherit;font-family:Prompt,Sarabun,sans-serif;font-weight:600;padding:11px 18px;border-radius:12px;border:none;cursor:pointer}
+.go{background:var(--teal);color:#fff;align-self:end}
+.dl{background:var(--tealSoft);color:var(--teal)}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.quick button{padding:6px 12px;font-size:.85rem;background:var(--tealSoft);color:var(--teal);font-weight:500}
+.msg{margin-top:10px;font-size:.92rem;color:var(--mute);min-height:1.2em}
+.msg.err{color:#b3261e}
+.tiles{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (min-width:760px){.tiles{grid-template-columns:repeat(4,1fr)}}
+.tile{background:var(--card);border-radius:18px;padding:14px 16px;box-shadow:0 2px 10px rgba(22,50,79,.07)}
+.tile .k{font-size:.85rem;color:var(--mute)}
+.tile .v{font-family:Prompt,Sarabun,sans-serif;font-size:1.9rem;font-weight:700;line-height:1.2}
+.tile .v small{font-size:.9rem;font-weight:500;color:var(--mute);margin-left:4px}
+.two{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:760px){.two{grid-template-columns:1fr 1fr}}
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar .t{display:flex;justify-content:space-between;gap:8px;font-size:.92rem;margin-bottom:4px}
+.bar .t b{font-weight:600}
+.bar .t span{color:var(--mute);white-space:nowrap}
+.track{height:12px;background:#f1f5f8;border-radius:4px;overflow:hidden}
+.fill{height:100%;border-radius:0 4px 4px 0;background:var(--teal);min-width:2px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:baseline}
+.cols{display:flex;align-items:flex-end;gap:2px;height:150px;border-bottom:1px solid var(--line);padding-top:8px}
+.col{flex:1;min-width:3px;background:var(--teal);border-radius:4px 4px 0 0;position:relative}
+.col:hover{background:#0b5f6b}
+.axis{display:flex;justify-content:space-between;font-size:.8rem;color:var(--mute);margin-top:4px}
+.empty{color:var(--mute);font-size:.92rem}
+.note{font-size:.82rem;color:var(--mute);margin:6px 0 0}
+#out{display:none;flex-direction:column;gap:12px}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;font-size:.85rem;padding:6px 10px;border-radius:8px;display:none;z-index:9;white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="head"><div class="in">
+<h1>รายงานการใช้งาน NEWS2</h1>
+<p>หอผู้ป่วยพิเศษ ชั้น 11 · ข้อมูลไม่ระบุตัวผู้ป่วย · <a href="news2.html">กลับหน้า NEWS2</a></p>
+</div></div>
+
+<div class="wrap">
+<div class="card">
+<div class="f">
+<label class="full">รหัสผ่านรายงาน<input id="pin" type="password" autocomplete="current-password"></label>
+<label>ตั้งแต่วันที่<input id="d1" type="date"></label>
+<label>ถึงวันที่<input id="d2" type="date"></label>
+<button class="go" id="go">ดูรายงาน</button>
+</div>
+<div class="quick">
+<button data-q="today">วันนี้</button><button data-q="7">7 วันล่าสุด</button>
+<button data-q="month">เดือนนี้</button><button data-q="last">เดือนที่แล้ว</button>
+</div>
+<div class="msg" id="msg"></div>
+</div>
+
+<div id="out">
+<div class="tiles">
+<div class="tile"><div class="k">จำนวนการประเมิน</div><div class="v" id="kN">–</div></div>
+<div class="tile"><div class="k">คะแนนเฉลี่ย</div><div class="v" id="kAvg">–</div></div>
+<div class="tile"><div class="k">เสี่ยงปานกลางขึ้นไป</div><div class="v" id="kHi">–</div></div>
+<div class="tile"><div class="k">เวลากรอกเฉลี่ย</div><div class="v" id="kT">–</div></div>
+</div>
+
+<div class="card">
+<h2>จำนวนการประเมินรายวัน</h2>
+<div class="cols" id="daily"></div>
+<div class="axis"><span id="ax1"></span><span id="ax2"></span></div>
+</div>
+
+<div class="two">
+<div class="card"><h2>ระดับความเสี่ยง</h2><div class="bars" id="risk"></div></div>
+<div class="card"><h2>แยกตามเวร</h2><div class="bars" id="shift"></div>
+<p class="note">เช้า 08:00–15:59 · บ่าย 16:00–23:59 · ดึก 00:00–07:59</p></div>
+<div class="card"><h2>ข้อที่ได้คะแนน (≥1) บ่อยที่สุด</h2><div class="bars" id="param"></div>
+<p class="note">ร้อยละของการประเมินที่ข้อนั้นได้คะแนนตั้งแต่ 1 ขึ้นไป</p></div>
+<div class="card"><h2>อุปกรณ์ที่ใช้</h2><div class="bars" id="dev"></div></div>
+</div>
+
+<div class="card" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between">
+<div><h2 style="margin:0">ดาวน์โหลดข้อมูล</h2><div class="note">ไฟล์ CSV เปิดด้วย Excel หรือ Google Sheets ได้ (ภาษาไทยไม่เพี้ยน)</div></div>
+<button class="dl" id="csv">ดาวน์โหลด CSV</button>
+</div>
+</div>
+</div>
+<div id="tip"></div>
+
+<script>
+const API="https://bouxgjkhlywhxmtuyvpp.supabase.co/rest/v1/rpc/news2_report",
+KEY="sb_publishable_UCUPBieE6U2zWezBdNU40w_51N8Llqy";
+const $=id=>document.getElementById(id);
+const RISK=[["high","สูง (≥7)","var(--s3)"],["medium","ปานกลาง (5–6)","var(--s2)"],["low_medium_red","ต่ำ–ปานกลาง (มี 3 คะแนนในข้อเดียว)","#f5a05a"],["low","ต่ำ (1–4)","var(--s1)"],["none","ต่ำมาก (0)","var(--s0)"]];
+const RISK_TH=Object.fromEntries(RISK.map(r=>[r[0],r[1]]));
+const PAR=[["rr_score","Respiratory rate"],["spo2_score","SpO₂"],["o2_score","การใช้ออกซิเจน"],["sbp_score","Systolic BP"],["pulse_score","Pulse"],["temp_score","Temperature"],["avpu_score","ระดับความรู้สึกตัว (AVPU)"]];
+const DEV={mobile:"มือถือ",tablet:"แท็บเล็ต / iPad",desktop:"คอมพิวเตอร์"};
+let rows=[];
+
+const ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const bkk=s=>new Date(new Date(s).toLocaleString("en-US",{timeZone:"Asia/Bangkok"}));
+const thDate=s=>new Date(s+"T00:00:00").toLocaleDateString("th-TH",{day:"numeric",month:"short"});
+function range(q){const t=new Date();let a=new Date(t),b=new Date(t);
+if(q==="7")a.setDate(t.getDate()-6);
+else if(q==="month")a=new Date(t.getFullYear(),t.getMonth(),1);
+else if(q==="last"){a=new Date(t.getFullYear(),t.getMonth()-1,1);b=new Date(t.getFullYear(),t.getMonth(),0)}
+$("d1").value=ymd(a);$("d2").value=ymd(b)}
+range("month");
+try{const p=sessionStorage.getItem("rpin");if(p)$("pin").value=p}catch(e){}
+document.querySelectorAll(".quick button").forEach(b=>b.onclick=()=>{range(b.dataset.q);if($("pin").value)load()});
+$("go").onclick=load;$("pin").onkeydown=e=>{if(e.key==="Enter")load()};
+
+async function load(){const m=$("msg");m.className="msg";
+const pin=$("pin").value.trim();if(!pin){m.className="msg err";m.textContent="กรุณาใส่รหัสผ่าน";return}
+if($("d1").value>$("d2").value){m.className="msg err";m.textContent="วันที่เริ่มต้นต้องไม่เกินวันที่สิ้นสุด";return}
+m.textContent="กำลังโหลดข้อมูล…";$("go").disabled=true;
+try{const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY,Authorization:"Bearer "+KEY},
+body:JSON.stringify({pin,date_from:$("d1").value,date_to:$("d2").value})});
+if(!r.ok){const j=await r.json().catch(()=>({}));
+m.className="msg err";m.textContent=/invalid pin/.test(j.message||"")?"รหัสผ่านไม่ถูกต้อง":"โหลดข้อมูลไม่สำเร็จ ("+r.status+") กรุณาลองใหม่";$("out").style.display="none";return}
+rows=await r.json();try{sessionStorage.setItem("rpin",pin)}catch(e){}
+m.textContent=`ข้อมูลวันที่ ${thDate($("d1").value)} – ${thDate($("d2").value)} · ${rows.length} รายการ`;render()}
+catch(e){m.className="msg err";m.textContent="เชื่อมต่อไม่ได้ กรุณาตรวจสอบอินเทอร์เน็ต"}
+finally{$("go").disabled=false}}
+
+function bars(el,items,total){if(!total){$(el).innerHTML='<div class="empty">ไม่มีข้อมูลในช่วงนี้</div>';return}
+const mx=Math.max(...items.map(i=>i[1]),1);
+$(el).innerHTML=items.map(([lab,n,c,base])=>{const pc=Math.round(n*100/(base||total));
+return `<div class="bar" title="${lab}: ${n} ครั้ง (${pc}%)"><div class="t"><b>${c?`<i class="dot" style="background:${c}"></i>`:""}${lab}</b><span>${n} ครั้ง · ${pc}%</span></div>
+<div class="track"><div class="fill" style="width:${n/mx*100}%;${c?"background:"+c:""}"></div></div></div>`}).join("")}
+
+function render(){$("out").style.display="flex";const n=rows.length;
+$("kN").innerHTML=n+"<small>ครั้ง</small>";
+$("kAvg").textContent=n?(rows.reduce((a,r)=>a+r.total_score,0)/n).toFixed(1):"–";
+const hi=rows.filter(r=>r.risk_level==="medium"||r.risk_level==="high").length;
+$("kHi").innerHTML=n?Math.round(hi*100/n)+"%<small>"+hi+" ครั้ง</small>":"–";
+const ds=rows.map(r=>r.duration_sec).filter(x=>x!=null&&x<3600);
+$("kT").innerHTML=ds.length?Math.round(ds.reduce((a,b)=>a+b,0)/ds.length)+"<small>วินาที</small>":"–";
+bars("risk",RISK.map(([k,l,c])=>[l,rows.filter(r=>r.risk_level===k).length,c]),n);
+const sh={เช้า:0,บ่าย:0,ดึก:0};rows.forEach(r=>{const h=bkk(r.assessed_at).getHours();sh[h>=8&&h<16?"เช้า":h>=16?"บ่าย":"ดึก"]++});
+bars("shift",Object.entries(sh),n);
+bars("param",PAR.map(([k,l])=>[l,rows.filter(r=>r[k]>0).length]).sort((a,b)=>b[1]-a[1]),n);
+bars("dev",Object.entries(DEV).map(([k,l])=>[l,rows.filter(r=>r.device_type===k).length]),n);
+const cnt={};rows.forEach(r=>{const k=ymd(bkk(r.assessed_at));cnt[k]=(cnt[k]||0)+1});
+const days=[];for(let d=new Date($("d1").value+"T00:00:00"),e=new Date($("d2").value+"T00:00:00");d<=e&&days.length<400;d.setDate(d.getDate()+1))days.push(ymd(d));
+const mx=Math.max(...days.map(d=>cnt[d]||0),1);
+$("daily").innerHTML=days.map(d=>`<div class="col" data-tip="${thDate(d)}: ${cnt[d]||0} ครั้ง" style="height:${(cnt[d]||0)/mx*100}%;${cnt[d]?"":"min-height:0;background:transparent"}"></div>`).join("");
+$("ax1").textContent=thDate(days[0]);$("ax2").textContent=days.length>1?thDate(days[days.length-1]):"";}
+
+const tip=$("tip");
+$("daily").addEventListener("pointermove",e=>{const c=e.target.closest(".col")||document.elementFromPoint(e.clientX,$("daily").getBoundingClientRect().bottom-2)?.closest?.(".col");
+if(!c){tip.style.display="none";return}tip.textContent=c.dataset.tip;tip.style.display="block";
+const w=tip.offsetWidth;tip.style.left=Math.min(innerWidth-w-8,Math.max(8,e.clientX-w/2))+"px";tip.style.top=(e.clientY-40)+"px"});
+$("daily").addEventListener("pointerleave",()=>tip.style.display="none");
+
+$("csv").onclick=()=>{const H=["ลำดับ","วันเวลา","RR","SpO2","O2","SBP","Pulse","Temp","AVPU","คะแนนรวม","ระดับความเสี่ยง","Red score","เวลากรอก(วินาที)","อุปกรณ์"];
+const f=s=>{const d=bkk(s);return ymd(d)+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
+const L=rows.map((r,i)=>[i+1,f(r.assessed_at),r.rr_score,r.spo2_score,r.o2_score,r.sbp_score,r.pulse_score,r.temp_score,r.avpu_score,r.total_score,RISK_TH[r.risk_level]||r.risk_level,r.red_score?"มี":"ไม่มี",r.duration_sec??"",DEV[r.device_type]||r.device_type]);
+const csv="﻿"+[H,...L].map(a=>a.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+a.download=`news2_${$("d1").value}_${$("d2").value}.csv`;document.body.appendChild(a);a.click();a.remove()};
+</script>
+</body>
+</html>
