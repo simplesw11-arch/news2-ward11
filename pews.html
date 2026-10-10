@@ -69,8 +69,8 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 <body>
 <div class="head"><div class="in"><a class="home" href="./">← กลับหน้าหลัก</a><h1>PEWS คำนวณคะแนน</h1><p>Pediatric Early Warning Score · สำหรับผู้ป่วยอายุต่ำกว่า 16 ปี</p></div></div>
 <div class="wrap">
-<div class="p wide" id="agebox"><div class="row"><div class="lab">อายุผู้ป่วย<small>ระบุเป็นปี · อายุต่ำกว่า 1 ปีให้ใส่ทศนิยม เช่น 3 เดือน = 0.25, 6 เดือน = 0.5</small></div></div>
-<input id="age" type="text" inputmode="decimal" placeholder="เช่น 0.5, 3, 12" autocomplete="off"><div class="hint" id="norm"></div></div>
+<div class="p wide" id="agebox"><div class="row"><div class="lab">อายุผู้ป่วย<small>ระบุปีและเดือน · อายุต่ำกว่า 1 ปีให้ระบุเฉพาะเดือน</small></div></div>
+<div class="inrow"><input id="ageY" type="text" inputmode="numeric" placeholder="ปี" autocomplete="off"><span class="hint">ปี</span><input id="ageM" type="text" inputmode="numeric" placeholder="เดือน" autocomplete="off"><span class="hint">เดือน</span></div><div class="hint" id="norm"></div></div>
 <div class="grid hide" id="g">
 <div class="p" id="c_beh"><div class="row"><div class="lab">พฤติกรรม<small>Behavior</small></div><div class="pt">–</div></div>
 <div class="seg col" data-k="beh">
@@ -149,11 +149,12 @@ else if(sum===3){col="var(--s1)";dark=true;txt="PEWS 3 คะแนน"}
 else{col="var(--s0)";txt="PEWS "+sum+" คะแนน"}
 t.textContent=sum;t.style.background=col;t.style.color=dark?"#3a2c00":"#fff";
 res.innerHTML=`<b>${txt}</b><div>${red?"มีหมวดที่ได้ 3 คะแนน":`พฤติกรรม ${b} · หัวใจ ${c} · หายใจ ${s}`}</div>`}
-$("age").oninput=()=>{const a=num($("age").value);
+const ageIn=()=>{const y=num($("ageY").value),m=num($("ageM").value);const a=y==null&&m==null?null:(y||0)+(m||0)/12;
 if(a==null||a<0){AGE=null;$("norm").textContent="";g.classList.add("hide")}
-else if(a>=16){AGE=null;g.classList.add("hide");$("norm").innerHTML='ผู้ป่วยอายุ 16 ปีขึ้นไป โปรดใช้ <a href="news2.html?v=20261010b">แบบประเมิน NEWS2</a>'}
+else if(a>=16){AGE=null;g.classList.add("hide");$("norm").innerHTML='ผู้ป่วยอายุ 16 ปีขึ้นไป โปรดใช้ <a href="news2.html?v=20261010c">แบบประเมิน NEWS2</a>'}
 else{AGE=a;g.classList.remove("hide");const h=norm(HRN,a),r=norm(RRN,a);$("norm").textContent=`ค่าปกติตามอายุ: ชีพจร ${h[1]}–${h[2]} ครั้ง/นาที · อัตราการหายใจ ${r[1]}–${r[2]} ครั้ง/นาที`}
 calc()};
+$("ageY").oninput=ageIn;$("ageM").oninput=ageIn;
 $("hr").oninput=calc;$("rr").oninput=calc;
 document.querySelectorAll(".seg").forEach(sg=>sg.querySelectorAll("button").forEach(b=>b.onclick=()=>{
 sg.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");S[sg.dataset.k]=+b.dataset.v;calc()}));
