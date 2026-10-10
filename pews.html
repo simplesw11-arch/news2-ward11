@@ -134,13 +134,15 @@ function card(id,parts){const c=$(id),known=parts.filter(x=>x!=null);const done=
 const v=known.length?Math.max(...known):null;
 if(!done){delete c.dataset.s;c.querySelector(".pt").textContent=v==null?"–":"≥ "+v;return null}
 c.dataset.s=v;c.querySelector(".pt").textContent=v+" คะแนน";return v}
-function calc(){const h=hrScore(),r=rrScore();
+let LAST=null;
+function calc(){calc0();try{LOG.upd()}catch(e){}}
+function calc0(){LAST=null;const h=hrScore(),r=rrScore();
 $("hrc").textContent=h?`${h[1]} → ${h[0]} คะแนน`:"";$("rrc").textContent=r?`${r[1]} → ${r[0]} คะแนน`:"";
 const b=card("c_beh",[S.beh]),c=card("c_cv",[h&&h[0],S.skin]),s=card("c_rs",[r&&r[0],S.o2,S.wob]);
 const t=$("t"),res=$("r"),got=[b,c,s].filter(x=>x!=null).length;
 if(AGE==null){t.textContent="–";t.style.background="";t.style.color="";res.innerHTML="<b>โปรดระบุอายุผู้ป่วย</b><div>ยังไม่มีผลคะแนน</div>";return}
 if(got<3){t.textContent="–";t.style.background="";t.style.color="";res.innerHTML=`<b>ประเมินแล้ว ${got}&nbsp;จาก&nbsp;3&nbsp;หมวด</b><div>โปรดกรอกข้อมูลให้ครบทุกหมวด</div>`;return}
-const sum=b+c+s,red=[b,c,s].includes(3);let col,txt,dark=false;
+const sum=b+c+s,red=[b,c,s].includes(3);let col,txt,dark=false;LAST={beh:b,cv:c,rs:s,h:h[0],r:r[0],sum,red};
 if(sum>=5||red){col="var(--s3)";txt="PEWS "+sum+" คะแนน"}
 else if(sum===4){col="var(--s2)";txt="PEWS 4 คะแนน"}
 else if(sum===3){col="var(--s1)";dark=true;txt="PEWS 3 คะแนน"}
@@ -156,8 +158,28 @@ $("hr").oninput=calc;$("rr").oninput=calc;
 document.querySelectorAll(".seg").forEach(sg=>sg.querySelectorAll("button").forEach(b=>b.onclick=()=>{
 sg.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");S[sg.dataset.k]=+b.dataset.v;calc()}));
 $("clr").onclick=()=>{document.querySelectorAll("input").forEach(i=>i.value="");document.querySelectorAll(".seg button").forEach(b=>b.classList.remove("on"));
-for(const k in S)S[k]=null;AGE=null;$("norm").textContent="";g.classList.add("hide");calc();window.scrollTo(0,0)};
+for(const k in S)S[k]=null;AGE=null;$("norm").textContent="";g.classList.add("hide");calc();try{LOG.reset()}catch(e){}window.scrollTo(0,0)};
 calc();
+/* เก็บสถิติการใช้งานแบบไม่ระบุตัวตน (Supabase) — เก็บเฉพาะคะแนนและช่วงอายุ ไม่เก็บอายุจริง ค่าสัญญาณชีพดิบ หรือข้อมูลผู้ป่วย */
+const LOG=(()=>{
+const URL_="https://bouxgjkhlywhxmtuyvpp.supabase.co/rest/v1/pews_usage",
+KEY="sb_publishable_UCUPBieE6U2zWezBdNU40w_51N8Llqy",WAIT=3000;
+let t0=null,sent=false,tm=null;
+const dev=()=>{const u=navigator.userAgent||"",tp=navigator.maxTouchPoints||0;
+if(/iPad|Tablet/i.test(u)||(/Macintosh/.test(u)&&tp>1)||(/Android/i.test(u)&&!/Mobile/i.test(u)))return"tablet";
+if(/Mobi|iPhone|iPod|Android/i.test(u))return"mobile";return"desktop"};
+const band=a=>a<0.25?"0-3m":a<1?"3-12m":a<2?"1-2y":a<4?"2-4y":a<6?"4-6y":a<10?"6-10y":a<13?"10-13y":"13-16y";
+const send=()=>{tm=null;if(sent||!LAST||AGE==null)return;sent=true;const L=LAST;
+const row={assessed_at:new Date().toISOString(),age_band:band(AGE),behavior_score:L.beh,cardio_score:L.cv,resp_score:L.rs,
+hr_score:L.h,skin_score:S.skin,rr_score:L.r,o2_score:S.o2,wob_score:S.wob,total_score:L.sum,red_score:L.red,
+duration_sec:t0?Math.max(0,Math.round((Date.now()-t0)/1000)):null,device_type:dev()};
+try{fetch(URL_,{method:"POST",keepalive:true,headers:{"Content-Type":"application/json",apikey:KEY,
+Authorization:"Bearer "+KEY,Prefer:"return=minimal"},body:JSON.stringify(row)}).catch(()=>{})}catch(e){}};
+addEventListener("pagehide",()=>{if(tm){clearTimeout(tm);send()}});
+return{
+upd(){if(sent)return;const any=AGE!=null&&(Object.values(S).some(v=>v!=null)||$("hr").value||$("rr").value);if(any&&!t0)t0=Date.now();
+clearTimeout(tm);tm=null;if(LAST)tm=setTimeout(send,WAIT)},
+reset(){clearTimeout(tm);tm=null;t0=null;sent=false}}})();
 </script>
 </body>
 </html>
