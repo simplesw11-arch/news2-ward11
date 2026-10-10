@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light only">
 <meta name="robots" content="noindex">
-<title>รายงาน NEWS2</title>
+<title>รายงานการใช้งาน</title>
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{color-scheme:light;--bg:#eef4f8;--card:#ffffff;--ink:#16324f;--mute:#62758a;--line:#dbe6ee;--teal:#0f7c8c;--tealSoft:#e3f3f5;
@@ -66,17 +66,23 @@ select{font:inherit;font-size:16px;padding:4px 2px;border:1.5px solid var(--teal
 .eb{padding:6px 12px;font-size:.85rem;background:var(--tealSoft);color:var(--teal)}
 .eb.sv{background:var(--teal);color:#fff}.eb.cc{background:#f1f5f8;color:var(--mute)}
 .rk{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.8rem;font-weight:600;color:#fff}
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#f1f5f8;border-radius:14px;padding:5px;margin-bottom:14px}
+.mode button{background:none;color:var(--mute);padding:9px 6px}
+.mode button.on{background:var(--teal);color:#fff}
+.hide{display:none!important}
 #tip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;font-size:.85rem;padding:6px 10px;border-radius:8px;display:none;z-index:9;white-space:nowrap}
 </style>
 </head>
 <body>
 <div class="head"><div class="in">
-<h1>รายงานการใช้งาน NEWS2</h1>
-<p>หอผู้ป่วยพิเศษ ชั้น 11 · ข้อมูลไม่ระบุตัวผู้ป่วย · <a href="news2.html">กลับหน้า NEWS2</a></p>
+<a class="home" href="./" style="color:#fff;text-decoration:none;font-size:.9rem;opacity:.9">← กลับหน้าหลัก</a>
+<h1>รายงานการใช้งาน</h1>
+<p>หอผู้ป่วยพิเศษ ชั้น 11 · ข้อมูลไม่ระบุตัวผู้ป่วย</p>
 </div></div>
 
 <div class="wrap">
 <div class="card">
+<div class="mode" id="mode"><button data-m="news2" class="on">NEWS2 (ผู้ใหญ่)</button><button data-m="pews">PEWS (เด็ก)</button></div>
 <div class="f">
 <label>ตั้งแต่วันที่<input id="d1" type="date"></label>
 <label>ถึงวันที่<input id="d2" type="date"></label>
@@ -93,7 +99,7 @@ select{font:inherit;font-size:16px;padding:4px 2px;border:1.5px solid var(--teal
 <div class="tiles">
 <div class="tile"><div class="k">จำนวนการประเมิน</div><div class="v" id="kN">–</div></div>
 <div class="tile"><div class="k">คะแนนเฉลี่ย</div><div class="v" id="kAvg">–</div></div>
-<div class="tile"><div class="k">เสี่ยงปานกลางขึ้นไป</div><div class="v" id="kHi">–</div></div>
+<div class="tile"><div class="k" id="kHiL">เสี่ยงปานกลางขึ้นไป</div><div class="v" id="kHi">–</div></div>
 <div class="tile"><div class="k">เวลากรอกเฉลี่ย</div><div class="v" id="kT">–</div></div>
 </div>
 
@@ -104,17 +110,18 @@ select{font:inherit;font-size:16px;padding:4px 2px;border:1.5px solid var(--teal
 </div>
 
 <div class="two">
-<div class="card"><h2>ระดับความเสี่ยง</h2><div class="bars" id="risk"></div></div>
+<div class="card"><h2 id="riskH">ระดับความเสี่ยง</h2><div class="bars" id="risk"></div></div>
+<div class="card hide" id="ageCard"><h2>ช่วงอายุ</h2><div class="bars" id="ageb"></div></div>
 <div class="card"><h2>แยกตามเวร</h2><div class="bars" id="shift"></div>
 <p class="note">เช้า 08:00–15:59 · บ่าย 16:00–23:59 · ดึก 00:00–07:59</p></div>
-<div class="card"><h2>ข้อที่ได้คะแนน (≥1) บ่อยที่สุด</h2><div class="bars" id="param"></div>
-<p class="note">ร้อยละของการประเมินที่ข้อนั้นได้คะแนนตั้งแต่ 1 ขึ้นไป</p></div>
+<div class="card"><h2 id="paramH">ข้อที่ได้คะแนน (≥1) บ่อยที่สุด</h2><div class="bars" id="param"></div>
+<p class="note">ร้อยละของการประเมินที่ได้คะแนนตั้งแต่ 1 ขึ้นไป</p></div>
 <div class="card"><h2>อุปกรณ์ที่ใช้</h2><div class="bars" id="dev"></div></div>
 </div>
 
-<div class="card"><h2>รายการทั้งหมด (แก้ไขคะแนนได้)</h2>
-<div class="tw"><table><thead><tr><th>วันเวลา</th><th>BT</th><th>PR</th><th>RR</th><th>SBP</th><th>SpO₂</th><th>O₂</th><th>AVPU</th><th>รวม</th><th>ความเสี่ยง</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
-<p class="note">เลือก “แก้ไข” เพื่อปรับคะแนนรายข้อ ระบบจะคำนวณคะแนนรวมและระดับความเสี่ยงใหม่โดยอัตโนมัติ</p></div>
+<div class="card"><h2 id="tblH">รายการทั้งหมด (แก้ไขคะแนนได้)</h2>
+<div class="tw"><table><thead id="th"><tr><th>วันเวลา</th><th>BT</th><th>PR</th><th>RR</th><th>SBP</th><th>SpO₂</th><th>O₂</th><th>AVPU</th><th>รวม</th><th>ความเสี่ยง</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+<p class="note" id="editNote">เลือก “แก้ไข” เพื่อปรับคะแนนรายข้อ ระบบจะคำนวณคะแนนรวมและระดับความเสี่ยงใหม่โดยอัตโนมัติ</p></div>
 
 <div class="card" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between">
 <div><h2 style="margin:0">ส่งออกข้อมูล</h2><div class="note">ไฟล์ CSV สามารถเปิดด้วย Excel หรือ Google Sheets และแสดงภาษาไทยได้ถูกต้อง</div></div>
@@ -125,14 +132,27 @@ select{font:inherit;font-size:16px;padding:4px 2px;border:1.5px solid var(--teal
 <div id="tip"></div>
 
 <script>
-const API="https://bouxgjkhlywhxmtuyvpp.supabase.co/rest/v1/rpc/news2_report",
+const RPC="https://bouxgjkhlywhxmtuyvpp.supabase.co/rest/v1/rpc/",API=RPC+"news2_report",
 KEY="sb_publishable_UCUPBieE6U2zWezBdNU40w_51N8Llqy";
 const $=id=>document.getElementById(id);
 const RISK=[["high","สูง (≥7)","var(--s3)"],["medium","ปานกลาง (5–6)","var(--s2)"],["low_medium_red","ต่ำ–ปานกลาง (มี 3 คะแนนในข้อเดียว)","#f5a05a"],["low","ต่ำ (1–4)","var(--s1)"],["none","ต่ำมาก (0)","var(--s0)"]];
 const RISK_TH=Object.fromEntries(RISK.map(r=>[r[0],r[1]]));
 const PAR=[["temp_score","Temperature"],["pulse_score","Pulse"],["rr_score","Respiratory rate"],["sbp_score","Systolic BP"],["spo2_score","SpO₂"],["o2_score","การใช้ออกซิเจน"],["avpu_score","ระดับความรู้สึกตัว (AVPU)"]];
 const DEV={mobile:"โทรศัพท์มือถือ",tablet:"แท็บเล็ต / iPad",desktop:"คอมพิวเตอร์"};
-let rows=[];
+let rows=[],M="news2";
+const PL=[["red","สูง (≥5 หรือมีหมวดที่ได้ 3)","var(--s3)"],["orange","4 คะแนน","var(--s2)"],["yellow","3 คะแนน","var(--s1)"],["green","0–2 คะแนน","var(--s0)"]];
+const plev=r=>r.total_score>=5||r.red_score?"red":r.total_score===4?"orange":r.total_score===3?"yellow":"green";
+const PPAR=[["behavior_score","พฤติกรรม"],["cardio_score","ระบบหัวใจและหลอดเลือด"],["resp_score","ระบบทางเดินหายใจ"]];
+const AGES=[["0-3m","แรกเกิด–3 เดือน"],["3-12m","3–12 เดือน"],["1-2y","1–2 ปี"],["2-4y","2–4 ปี"],["4-6y","4–6 ปี"],["6-10y","6–10 ปี"],["10-13y","10–13 ปี"],["13-16y","13–16 ปี"]];
+const AGE_TH=Object.fromEntries(AGES);
+const NEWS2_TH=document.getElementById("th").innerHTML;
+document.querySelectorAll("#mode button").forEach(b=>b.onclick=()=>{if(M===b.dataset.m)return;M=b.dataset.m;
+document.querySelectorAll("#mode button").forEach(x=>x.classList.toggle("on",x===b));const P=M==="pews";
+$("kHiL").textContent=P?"คะแนนระดับสูง":"เสี่ยงปานกลางขึ้นไป";$("riskH").textContent=P?"ระดับคะแนน":"ระดับความเสี่ยง";
+$("paramH").textContent=P?"หมวดที่ได้คะแนน (≥1) บ่อยที่สุด":"ข้อที่ได้คะแนน (≥1) บ่อยที่สุด";$("tblH").textContent=P?"รายการทั้งหมด":"รายการทั้งหมด (แก้ไขคะแนนได้)";
+$("ageCard").classList.toggle("hide",!P);$("editNote").classList.toggle("hide",P);
+$("th").innerHTML=P?"<tr><th>วันเวลา</th><th>ช่วงอายุ</th><th>พฤติกรรม</th><th>หัวใจ</th><th>หายใจ</th><th>รวม</th><th>ระดับ</th></tr>":NEWS2_TH;
+editing=null;$("out").style.display="none";load()});
 
 const ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const bkk=s=>new Date(new Date(s).toLocaleString("en-US",{timeZone:"Asia/Bangkok"}));
@@ -149,7 +169,7 @@ $("go").onclick=load;
 async function load(){const m=$("msg");m.className="msg";
 if($("d1").value>$("d2").value){m.className="msg err";m.textContent="วันที่เริ่มต้นต้องไม่เกินวันที่สิ้นสุด";return}
 m.textContent="กำลังโหลดข้อมูล…";$("go").disabled=true;
-try{const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY,Authorization:"Bearer "+KEY},
+try{const r=await fetch(RPC+(M==="pews"?"pews_report":"news2_report"),{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY,Authorization:"Bearer "+KEY},
 body:JSON.stringify({date_from:$("d1").value,date_to:$("d2").value})});
 if(!r.ok){m.className="msg err";m.textContent="โหลดข้อมูลไม่สำเร็จ ("+r.status+") กรุณาลองใหม่";$("out").style.display="none";return}
 rows=await r.json();
@@ -166,14 +186,15 @@ return `<div class="bar" title="${lab}: ${n} ครั้ง (${pc}%)"><div clas
 function render(){$("out").style.display="flex";const n=rows.length;
 $("kN").innerHTML=n+"<small>ครั้ง</small>";
 $("kAvg").textContent=n?(rows.reduce((a,r)=>a+r.total_score,0)/n).toFixed(1):"–";
-const hi=rows.filter(r=>r.risk_level==="medium"||r.risk_level==="high").length;
+const P=M==="pews",hi=rows.filter(r=>P?plev(r)==="red":r.risk_level==="medium"||r.risk_level==="high").length;
 $("kHi").innerHTML=n?Math.round(hi*100/n)+"%<small>"+hi+" ครั้ง</small>":"–";
 const ds=rows.map(r=>r.duration_sec).filter(x=>x!=null&&x<3600);
 $("kT").innerHTML=ds.length?Math.round(ds.reduce((a,b)=>a+b,0)/ds.length)+"<small>วินาที</small>":"–";
-bars("risk",RISK.map(([k,l,c])=>[l,rows.filter(r=>r.risk_level===k).length,c]),n);
+bars("risk",P?PL.map(([k,l,c])=>[l,rows.filter(r=>plev(r)===k).length,c]):RISK.map(([k,l,c])=>[l,rows.filter(r=>r.risk_level===k).length,c]),n);
+if(P)bars("ageb",AGES.map(([k,l])=>[l,rows.filter(r=>r.age_band===k).length]),n);
 const sh={เช้า:0,บ่าย:0,ดึก:0};rows.forEach(r=>{const h=bkk(r.assessed_at).getHours();sh[h>=8&&h<16?"เช้า":h>=16?"บ่าย":"ดึก"]++});
 bars("shift",Object.entries(sh),n);
-bars("param",PAR.map(([k,l])=>[l,rows.filter(r=>r[k]>0).length]).sort((a,b)=>b[1]-a[1]),n);
+bars("param",(P?PPAR:PAR).map(([k,l])=>[l,rows.filter(r=>r[k]>0).length]).sort((a,b)=>b[1]-a[1]),n);
 bars("dev",Object.entries(DEV).map(([k,l])=>[l,rows.filter(r=>r.device_type===k).length]),n);
 const cnt={};rows.forEach(r=>{const k=ymd(bkk(r.assessed_at));cnt[k]=(cnt[k]||0)+1});
 const days=[];for(let d=new Date($("d1").value+"T00:00:00"),e=new Date($("d2").value+"T00:00:00");d<=e&&days.length<400;d.setDate(d.getDate()+1))days.push(ymd(d));
@@ -188,6 +209,7 @@ const RS={high:"สูง",medium:"ปานกลาง",low_medium_red:"ต่
 let editing=null;
 const fdt=s=>{const d=bkk(s);return d.toLocaleDateString("th-TH",{day:"numeric",month:"short"})+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
 function table(){const tb=$("tb");if(!rows.length){tb.innerHTML='<tr><td colspan="11" class="empty">ไม่มีข้อมูลในช่วงนี้</td></tr>';return}
+if(M==="pews"){const LC=Object.fromEntries(PL.map(x=>[x[0],x[2]]));tb.innerHTML=[...rows].reverse().map(r=>{const l=plev(r);return `<tr><td>${fdt(r.assessed_at)}</td><td>${AGE_TH[r.age_band]||r.age_band}</td><td>${r.behavior_score}</td><td>${r.cardio_score}</td><td>${r.resp_score}</td><td><b>${r.total_score}</b></td><td><span class="rk" style="background:${LC[l]};${l==="yellow"?"color:#3a2c00":""}">${l==="red"?"สูง":r.total_score+" คะแนน"}</span></td></tr>`}).join("");return}
 tb.innerHTML=[...rows].reverse().map(r=>{const e=r.id===editing;
 return `<tr data-id="${r.id}" class="${e?"ed":""}"><td>${fdt(r.assessed_at)}</td>${KS.map(k=>`<td>${e?`<select data-k="${k}">${(OPT[k]||[0,1,2,3]).map(v=>`<option${v===r[k]?" selected":""}>${v}</option>`).join("")}</select>`:r[k]}</td>`).join("")}
 <td><b>${r.total_score}</b></td><td><span class="rk" style="background:${RC[r.risk_level]};${r.risk_level==="low"?"color:#3a2c00":""}">${RS[r.risk_level]||r.risk_level}</span></td>
@@ -208,12 +230,18 @@ if(!c){tip.style.display="none";return}tip.textContent=c.dataset.tip;tip.style.d
 const w=tip.offsetWidth;tip.style.left=Math.min(innerWidth-w-8,Math.max(8,e.clientX-w/2))+"px";tip.style.top=(e.clientY-40)+"px"});
 $("daily").addEventListener("pointerleave",()=>tip.style.display="none");
 
-$("csv").onclick=()=>{const H=["ลำดับ","วันเวลา","BT","PR","RR","SBP","SpO2","O2","AVPU","คะแนนรวม","ระดับความเสี่ยง","Red score","เวลากรอก(วินาที)","อุปกรณ์"];
+$("csv").onclick=()=>{if(M==="pews")return csvPews();const H=["ลำดับ","วันเวลา","BT","PR","RR","SBP","SpO2","O2","AVPU","คะแนนรวม","ระดับความเสี่ยง","Red score","เวลากรอก(วินาที)","อุปกรณ์"];
 const f=s=>{const d=bkk(s);return ymd(d)+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
 const L=rows.map((r,i)=>[i+1,f(r.assessed_at),r.temp_score,r.pulse_score,r.rr_score,r.sbp_score,r.spo2_score,r.o2_score,r.avpu_score,r.total_score,RISK_TH[r.risk_level]||r.risk_level,r.red_score?"มี":"ไม่มี",r.duration_sec??"",DEV[r.device_type]||r.device_type]);
 const csv="﻿"+[H,...L].map(a=>a.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
 const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
 a.download=`news2_${$("d1").value}_${$("d2").value}.csv`;document.body.appendChild(a);a.click();a.remove()};
+function csvPews(){const H=["ลำดับ","วันเวลา","ช่วงอายุ","พฤติกรรม","หัวใจและหลอดเลือด","ทางเดินหายใจ","HR","สีผิว/CRT","RR","ออกซิเจน","การหายใจ/เสียงปอด","คะแนนรวม","มีหมวดที่ได้ 3","เวลากรอก(วินาที)","อุปกรณ์"];
+const f=s=>{const d=bkk(s);return ymd(d)+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
+const L=rows.map((r,i)=>[i+1,f(r.assessed_at),AGE_TH[r.age_band]||r.age_band,r.behavior_score,r.cardio_score,r.resp_score,r.hr_score,r.skin_score,r.rr_score,r.o2_score,r.wob_score,r.total_score,r.red_score?"มี":"ไม่มี",r.duration_sec??"",DEV[r.device_type]||r.device_type]);
+const csv="\ufeff"+[H,...L].map(a=>a.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+a.download=`pews_${$("d1").value}_${$("d2").value}.csv`;document.body.appendChild(a);a.click();a.remove()}
 </script>
 </body>
 </html>
