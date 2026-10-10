@@ -69,6 +69,19 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .card p{margin:4px 0 0;color:var(--mute);font-size:.92rem;line-height:1.5}
 .card.f{border-left-color:#7a5bd1}.card.f .ic{background:#efeafd}
 .card.a{border-left-color:#2f9e6a}.card.a .ic{background:#e5f5ec}
+.inst{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;font:inherit;font-family:Prompt,Sarabun,sans-serif;font-weight:600;font-size:1rem;padding:14px;border-radius:16px;border:2px dashed #b9dde2;background:var(--tealSoft);color:var(--teal);cursor:pointer}
+.inst[hidden]{display:none}
+.mbg{position:fixed;inset:0;background:rgba(22,50,79,.45);display:flex;align-items:flex-end;justify-content:center;z-index:50;padding:12px}
+.mbg[hidden]{display:none}
+@media (min-width:700px){.mbg{align-items:center}}
+.mdl{background:#fff;border-radius:20px;max-width:480px;width:100%;padding:20px 20px calc(16px + env(safe-area-inset-bottom,0px));max-height:85vh;overflow:auto}
+.mdl h3{font-family:Prompt,Sarabun,sans-serif;font-size:1.15rem;margin:0 0 4px}
+.mdl .sub{color:var(--mute);font-size:.9rem;margin:0 0 12px}
+.mdl ol{margin:0;padding-left:1.4em;line-height:1.7}
+.mdl li{margin-bottom:8px}
+.mdl b{color:var(--teal)}
+.mdl .k{display:inline-block;border:1.5px solid var(--line);border-radius:8px;padding:0 6px;font-weight:600;background:#f8fbfd}
+.mdl .x{display:block;width:100%;margin-top:14px;font:inherit;font-weight:600;padding:12px;border-radius:12px;border:none;background:var(--teal);color:#fff;cursor:pointer}
 .card.r{border-left-color:#1b5e8f}.card.r .ic{background:#e4eef7}
 @media (min-width:700px){.card.r{grid-column:1/-1}}
 </style>
@@ -77,13 +90,34 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 <div class="head"><div class="in"><h1>เครื่องมือประเมินผู้ป่วย</h1><p>โปรดเลือกแบบประเมิน</p></div></div>
 <div class="wrap">
 <div class="menu">
-<a class="card" href="news2.html?v=20261010i"><div class="ic">🩺</div><div><h2>NEWS2 / PEWS</h2><p>คะแนนเตือนภาวะวิกฤต</p></div></a>
-<a class="card f" href="fall.html?v=20261010i"><div class="ic">🛏️</div><div><h2>Fall Risk</h2><p>ความเสี่ยงพลัดตกหกล้ม</p></div></a>
-<a class="card a" href="adl.html?v=20261010i"><div class="ic">🧍</div><div><h2>ADL</h2><p>การทำกิจวัตรประจำวัน</p></div></a>
-<a class="card r" href="report.html?v=20261010i"><div class="ic">📊</div><div><h2>รายงานการใช้งาน</h2><p>สถิติการใช้งาน NEWS2 และ PEWS</p></div></a>
+<a class="card" href="news2.html?v=20261010j"><div class="ic">🩺</div><div><h2>NEWS2 / PEWS</h2><p>คะแนนเตือนภาวะวิกฤต</p></div></a>
+<a class="card f" href="fall.html?v=20261010j"><div class="ic">🛏️</div><div><h2>Fall Risk</h2><p>ความเสี่ยงพลัดตกหกล้ม</p></div></a>
+<a class="card a" href="adl.html?v=20261010j"><div class="ic">🧍</div><div><h2>ADL</h2><p>การทำกิจวัตรประจำวัน</p></div></a>
+<a class="card r" href="report.html?v=20261010j"><div class="ic">📊</div><div><h2>รายงานการใช้งาน</h2><p>สถิติการใช้งาน NEWS2 และ PEWS</p></div></a>
 </div>
+<button class="inst" id="inst" type="button" hidden>📲 เพิ่มไอคอนบนหน้าจอ</button>
 <div class="note">ใช้ประกอบการตัดสินใจทางคลินิก ไม่แทนดุลยพินิจของพยาบาลและแพทย์</div>
 </div>
+<div class="mbg" id="mbg" hidden><div class="mdl" role="dialog" aria-modal="true" aria-labelledby="mt"><h3 id="mt">เพิ่มไอคอนบนหน้าจอ</h3><p class="sub" id="ms"></p><ol id="mo"></ol><button class="x" id="mx" type="button">ปิด</button></div></div>
+<script>
+// ปุ่มเพิ่มไอคอนบนหน้าจอ: Android/คอมพิวเตอร์ที่รองรับจะติดตั้งทันที อุปกรณ์อื่นแสดงขั้นตอนตามเบราว์เซอร์ที่ใช้
+(()=>{const btn=document.getElementById("inst"),bg=document.getElementById("mbg");let ev=null;
+const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1),
+android=/Android/.test(ua),inapp=/Line\/|FBAN|FBAV|Instagram|MicroMessenger/i.test(ua),
+standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+if(standalone)return;btn.hidden=false;
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();ev=e});
+addEventListener("appinstalled",()=>{btn.hidden=true;bg.hidden=true});
+const show=(sub,steps)=>{document.getElementById("ms").textContent=sub;document.getElementById("mo").innerHTML=steps.map(x=>"<li>"+x+"</li>").join("");bg.hidden=false};
+btn.onclick=async()=>{
+if(ev){ev.prompt();const r=await ev.userChoice.catch(()=>null);ev=null;if(r&&r.outcome==="accepted")btn.hidden=true;return}
+if(inapp)return show("กำลังเปิดผ่านแอป LINE หรือ Facebook ซึ่งไม่รองรับการเพิ่มไอคอน",["กดปุ่ม <span class=k>⋯</span> หรือ <span class=k>⋮</span> ที่มุมจอ","เลือก <b>เปิดในเบราว์เซอร์</b> (Safari หรือ Chrome)","ในเบราว์เซอร์ กดปุ่ม <b>📲 เพิ่มไอคอนบนหน้าจอ</b> อีกครั้ง"]);
+if(ios)return show(/CriOS|FxiOS|EdgiOS/.test(ua)?"iPhone / iPad (Chrome, Edge หรือ Firefox)":"iPhone / iPad (Safari)",["กดปุ่ม <b>แชร์</b> <span class=k>⬆︎</span> (iPhone: แถบด้านล่าง · iPad: มุมขวาบน · Chrome: มุมขวาบนของช่องที่อยู่เว็บ)","เลื่อนรายการลง แล้วเลือก <b>เพิ่มไปยังหน้าจอโฮม</b>","กด <b>เพิ่ม</b> ที่มุมขวาบน","ไอคอน <b>ประเมินผู้ป่วย</b> จะอยู่บนหน้าจอโฮม"]);
+if(android)return show("Android",["กดปุ่ม <span class=k>⋮</span> ที่มุมขวาบน (Samsung Internet: ปุ่ม <span class=k>☰</span> ด้านล่าง)","เลือก <b>ติดตั้งแอป</b> หรือ <b>เพิ่มลงในหน้าจอหลัก</b>","กด <b>ติดตั้ง</b> หรือ <b>เพิ่ม</b>","ไอคอน <b>ประเมินผู้ป่วย</b> จะอยู่บนหน้าจอหลัก"]);
+show("คอมพิวเตอร์",["Chrome / Edge: กดไอคอน <b>ติดตั้ง</b> <span class=k>⊕</span> ที่ด้านขวาของช่องที่อยู่เว็บ หรือเมนู <span class=k>⋮</span> → <b>ติดตั้งแอป</b>","Safari (Mac): เมนู <b>ไฟล์</b> → <b>เพิ่มไปยัง Dock</b>","Firefox: ไม่รองรับ โปรดใช้ Chrome หรือ Edge หรือบันทึกเป็นบุ๊กมาร์ก"])};
+document.getElementById("mx").onclick=()=>bg.hidden=true;bg.onclick=e=>{if(e.target===bg)bg.hidden=true};
+})();
+</script>
 <script>if("serviceWorker"in navigator&&location.protocol.indexOf("http")===0)navigator.serviceWorker.register("sw.js").catch(()=>{})</script>
 </body>
 </html>

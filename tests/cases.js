@@ -74,4 +74,17 @@ for(const [a,risk,tot,txt] of [['70',[3],'1.5','ระดับ 1'],['85',[1],'3
 for(const j of risk)await pick(2,j);const t=await T(p),r=await Rs(p);ok(t===tot&&r.includes(txt),`Fall ผู้สูงอายุ อายุ ${a}: ${tot} ${txt}`,`${t} / ${r}`)}
 if(p.errs.length)ok(false,'Fall JavaScript error',p.errs.join(';'));await p.close()}
 
+// ปุ่มเพิ่มไอคอนบนหน้าจอ: แสดงขั้นตอนตามอุปกรณ์/เบราว์เซอร์
+for(const [nm,ua,w,want] of [
+['iPhone Safari','Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',360,'Safari'],
+['iPhone Chrome','Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/120.0 Mobile/15E148 Safari/604.1',360,'Chrome'],
+['Android','Mozilla/5.0 (Linux; Android 14; SM-A546E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36',360,'Android'],
+['LINE','Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Safari Line/13.0',360,'LINE'],
+['คอมพิวเตอร์','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/120.0',1280,'คอมพิวเตอร์']]){
+const ctx=await b.newContext({userAgent:ua,viewport:{width:w,height:740}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.goto(ROOT+'index.html');await p.click('#inst');const sub=await p.textContent('#ms'),vis=await p.isVisible('#mbg');
+const fits=await p.evaluate(()=>{const r=document.querySelector('.mdl').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&document.documentElement.scrollWidth<=innerWidth});
+await p.click('#mx');const closed=await p.isHidden('#mbg');
+ok(vis&&sub.includes(want)&&fits&&closed&&!errs.length,`ปุ่มเพิ่มไอคอน: ${nm}`,`${sub} visible=${vis} fits=${fits} closed=${closed} ${errs.join(';')}`);await ctx.close()}
+
 await b.close();console.log(fail?`ไม่ผ่าน ${fail} จาก ${n} กรณี`:`ผ่านทั้งหมด ${n} กรณี`);process.exit(fail?1:0)})();
