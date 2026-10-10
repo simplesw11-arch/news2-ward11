@@ -91,9 +91,9 @@ for(const [nm,ua,w,want] of [
 ['LINE','Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Safari Line/13.0',360,'LINE'],
 ['คอมพิวเตอร์','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/120.0',1280,'คอมพิวเตอร์']]){
 const ctx=await b.newContext({userAgent:ua,viewport:{width:w,height:740}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
-await p.goto(ROOT+'index.html');await p.click('#inst');const sub=await p.textContent('#ms'),vis=await p.isVisible('#mbg');
+await p.goto(ROOT+'index.html');await p.click('#inst');const sub=await p.textContent('#ms'),vis=await p.isVisible('#mbg');const qr=await p.evaluate(()=>{const i=document.querySelector('.qr img');return i.complete&&i.naturalWidth>0&&i.getBoundingClientRect().width>=150});
 const fits=await p.evaluate(()=>{const r=document.querySelector('.mdl').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&document.documentElement.scrollWidth<=innerWidth});
 await p.click('#mx');const closed=await p.isHidden('#mbg');
-ok(vis&&sub.includes(want)&&fits&&closed&&!errs.length,`ปุ่มเพิ่มไอคอน: ${nm}`,`${sub} visible=${vis} fits=${fits} closed=${closed} ${errs.join(';')}`);await ctx.close()}
+ok(vis&&sub.includes(want)&&qr&&fits&&closed&&!errs.length,`ปุ่มเพิ่มไอคอน + QR: ${nm}`,`${sub} visible=${vis} qr=${qr} fits=${fits} closed=${closed} ${errs.join(';')}`);await ctx.close()}
 
 await b.close();console.log(fail?`ไม่ผ่าน ${fail} จาก ${n} กรณี`:`ผ่านทั้งหมด ${n} กรณี`);process.exit(fail?1:0)})();
