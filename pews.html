@@ -156,7 +156,7 @@ t.textContent=sum;t.style.background=col;t.style.color=dark?"#3a2c00":"#fff";
 res.innerHTML=`<b>${txt}</b><div>${red?"มีหมวดที่ได้ 3 คะแนน":`พฤติกรรม ${b} · หัวใจ ${c} · หายใจ ${s}`}</div>`}
 const ageIn=()=>{const y=num($("ageY").value),m=num($("ageM").value);const a=y==null&&m==null?null:(y||0)+(m||0)/12;
 if(a==null||a<0){AGE=null;$("norm").textContent="";0}
-else if(a>=15){AGE=null;0;$("norm").innerHTML='ผู้ป่วยอายุ 15 ปีขึ้นไป โปรดใช้ <a href="news2.html?v=20261010w">แบบประเมิน NEWS2</a>'}
+else if(a>=15){AGE=null;0;$("norm").innerHTML='ผู้ป่วยอายุ 15 ปีขึ้นไป โปรดใช้ <a href="news2.html?v=20261010x">แบบประเมิน NEWS2</a>'}
 else{AGE=a;const h=norm(HRN,a),r=norm(RRN,a);$("norm").textContent=`ค่าปกติตามอายุ: ชีพจร ${h[1]}–${h[2]} ครั้ง/นาที · อัตราการหายใจ ${r[1]}–${r[2]} ครั้ง/นาที`}
 calc()};
 $("ageY").oninput=ageIn;$("ageM").oninput=ageIn;

@@ -79,6 +79,10 @@ select{font:inherit;font-size:16px;padding:4px 2px;border:1.5px solid var(--teal
 .mode button{background:none;color:var(--mute);padding:9px 6px}
 .mode button.on{background:var(--teal);color:#fff}
 .hide{display:none!important}
+.row2x{display:flex;justify-content:flex-end;margin-top:10px}
+tr.shr{cursor:pointer}tr.shr td:nth-child(2)::after{content:" ▾";color:var(--mute)}tr.shr.open td:nth-child(2)::after{content:" ▴"}
+tr.sub td{background:#f7fafc;font-size:.85rem;color:var(--mute);text-align:left;padding-left:18px}
+.pk{display:block;font-size:.75rem;color:var(--mute)}
 #tip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;font-size:.85rem;padding:6px 10px;border-radius:8px;display:none;z-index:9;white-space:nowrap}
 </style>
 </head>
@@ -130,6 +134,26 @@ select{font:inherit;font-size:16px;padding:4px 2px;border:1.5px solid var(--teal
 <div class="card"><h2>อุปกรณ์ที่ใช้</h2><div class="bars" id="dev"></div></div>
 <div class="card"><h2>ระบบปฏิบัติการ</h2><div class="bars" id="osb"></div><p class="note" id="devn"></p></div>
 </div>
+
+<div class="card"><h2>จำนวนการประเมินรายชั่วโมง</h2>
+<div class="cols" id="hourly"></div>
+<div class="axis"><span>00 น.</span><span>06 น.</span><span>12 น.</span><span>18 น.</span><span>23 น.</span></div>
+<p class="note">รวมทุกวันในช่วงที่เลือก · แตะแท่งเพื่อดูจำนวน</p></div>
+
+<div class="card"><h2>สรุปรายเวร</h2>
+<div class="note" id="shSum" style="margin:0 0 8px"></div>
+<div class="tw"><table><thead><tr><th>วันที่</th><th>เวร</th><th>ประเมิน</th><th>เครื่อง</th><th>คะแนนเฉลี่ย</th><th id="shHiH">เสี่ยงปานกลางขึ้นไป</th><th>เวลากรอกเฉลี่ย</th></tr></thead><tbody id="shTb"></tbody></table></div>
+<p class="note">แตะแถวเพื่อดูจำนวนครั้งของแต่ละเครื่องในเวรนั้น · เวรดึก (00:00–07:59) นับรวมในวันที่ของเวลานั้น</p>
+<div class="row2x"><button class="dl" id="csvSh" type="button">ส่งออกสรุปรายเวร (CSV)</button></div></div>
+
+<div class="card"><h2>สรุปรายเครื่อง</h2>
+<div class="tw"><table><thead><tr><th>เครื่อง</th><th>เช้า</th><th>บ่าย</th><th>ดึก</th><th>รวม</th><th>ใช้งานล่าสุด</th></tr></thead><tbody id="dvTb"></tbody></table></div>
+<p class="note">ในแต่ละเวรแสดงจำนวนครั้ง และช่วงเวลาที่เครื่องนั้นใช้บ่อยที่สุด · ชื่อเครื่องคือประเภทเครื่อง ระบบปฏิบัติการ และรหัสสุ่ม 4 ตัว ไม่ระบุตัวบุคคล · นับได้เฉพาะข้อมูลที่บันทึกหลังเริ่มเก็บรหัสเครื่อง</p>
+<div class="row2x"><button class="dl" id="csvDv" type="button">ส่งออกสรุปรายเครื่อง (CSV)</button></div></div>
+
+<div class="card"><h2 id="hiH">รายการผลเสี่ยงสูง</h2>
+<div class="tw"><table><thead><tr><th>วันเวลา</th><th>เวร</th><th>คะแนน</th><th>ระดับ</th><th>เครื่อง</th></tr></thead><tbody id="hiTb"></tbody></table></div>
+<p class="note" id="hiN"></p></div>
 
 <div class="card"><h2 id="tblH">รายการทั้งหมด (แก้ไขคะแนนได้)</h2>
 <div class="tw"><table><thead id="th"><tr><th>วันเวลา</th><th>BT</th><th>PR</th><th>RR</th><th>SBP</th><th>SpO₂</th><th>O₂</th><th>AVPU</th><th>รวม</th><th>ความเสี่ยง</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
@@ -224,7 +248,47 @@ const cnt={};rows.forEach(r=>{const k=ymd(bkk(r.assessed_at));cnt[k]=(cnt[k]||0)
 const days=[];for(let d=new Date($("d1").value+"T00:00:00"),e=new Date($("d2").value+"T00:00:00");d<=e&&days.length<400;d.setDate(d.getDate()+1))days.push(ymd(d));
 const mx=Math.max(...days.map(d=>cnt[d]||0),1);
 $("daily").innerHTML=days.map(d=>`<div class="col" data-tip="${thDate(d)}: ${cnt[d]||0} ครั้ง" style="height:${(cnt[d]||0)/mx*100}%;${cnt[d]?"":"min-height:0;background:transparent"}"></div>`).join("");
-$("ax1").textContent=thDate(days[0]);$("ax2").textContent=days.length>1?thDate(days[days.length-1]):"";table()}
+$("ax1").textContent=thDate(days[0]);$("ax2").textContent=days.length>1?thDate(days[days.length-1]):"";table();extra()}
+// ===== สรุปรายเวร / รายเครื่อง / รายชั่วโมง / ผลเสี่ยงสูง =====
+const SHIFTS=["เช้า","บ่าย","ดึก"],shiftOf=h=>h>=8&&h<16?"เช้า":h>=16?"บ่าย":"ดึก";
+const OSS={ios:"iOS",android:"Android",windows:"Windows",mac:"Mac",other:"อื่น ๆ"},DVS={mobile:"มือถือ",tablet:"แท็บเล็ต",desktop:"คอมพิวเตอร์"};
+const devKey=r=>r.device_id||"";
+const devName=r=>r.device_id?`${DVS[r.device_type]||""} · ${OSS[r.os]||""} · ${String(r.device_id).replace(/-/g,"").slice(-4).toUpperCase()}`.replace(/^ · | · $/g,""):"ไม่ทราบ (ก่อนเริ่มเก็บรหัสเครื่อง)";
+const isHi=r=>M==="pews"?plev(r)==="red":(r.risk_level==="medium"||r.risk_level==="high");
+const hh=h=>String(h).padStart(2,"0");
+const peak=list=>{if(!list.length)return"";const c={};list.forEach(h=>c[h]=(c[h]||0)+1);const h=+Object.keys(c).sort((a,b)=>c[b]-c[a]||a-b)[0];return `บ่อยสุด ${hh(h)}:00–${hh(h)}:59`};
+let SH=[],DV=[];
+function extra(){const R2=rows.map(r=>{const d=bkk(r.assessed_at);return{r,d,day:ymd(d),h:d.getHours(),sh:shiftOf(d.getHours())}});
+// รายชั่วโมง
+const hc=Array(24).fill(0);R2.forEach(x=>hc[x.h]++);const hm=Math.max(...hc,1);
+$("hourly").innerHTML=hc.map((c,h)=>`<div class="col" data-tip="${hh(h)}:00–${hh(h)}:59 · ${c} ครั้ง" style="height:${c/hm*100}%;${c?"":"min-height:0;background:transparent"}"></div>`).join("");
+// รายเวร
+const g={};R2.forEach(x=>{const k=x.day+"|"+x.sh;(g[k]=g[k]||{day:x.day,sh:x.sh,items:[]}).items.push(x)});
+SH=Object.values(g).sort((a,b)=>b.day.localeCompare(a.day)||SHIFTS.indexOf(b.sh)-SHIFTS.indexOf(a.sh)).map(s=>{const it=s.items,n=it.length,ds={};it.forEach(x=>{const k=devKey(x.r);(ds[k]=ds[k]||{name:devName(x.r),n:0}).n++});
+const dur=it.map(x=>x.r.duration_sec).filter(v=>v!=null&&v<3600);
+return{...s,n,devs:Object.entries(ds).filter(([k])=>k).length,devList:Object.values(ds).sort((a,b)=>b.n-a.n),avg:it.reduce((a,x)=>a+x.r.total_score,0)/n,hi:it.filter(x=>isHi(x.r)).length,dur:dur.length?Math.round(dur.reduce((a,b)=>a+b,0)/dur.length):null}});
+$("shHiH").textContent=M==="pews"?"≥5 หรือหมวดได้ 3":"เสี่ยงปานกลางขึ้นไป";
+$("shTb").innerHTML=SH.length?SH.map((s,i)=>`<tr class="shr" data-i="${i}"><td>${thDate(s.day)}</td><td>${s.sh}</td><td><b>${s.n}</b></td><td>${s.devs||"–"}</td><td>${s.avg.toFixed(1)}</td><td>${s.hi}</td><td>${s.dur!=null?s.dur+" วิ":"–"}</td></tr>`).join(""):'<tr><td colspan="7" class="empty">ไม่มีข้อมูลในช่วงนี้</td></tr>';
+const avgBy=sh=>{const L=SH.filter(s=>s.sh===sh);return L.length?`${sh} เฉลี่ย ${(L.reduce((a,s)=>a+s.n,0)/L.length).toFixed(1)} ครั้ง/เวร · ${(L.reduce((a,s)=>a+s.devs,0)/L.length).toFixed(1)} เครื่อง/เวร`:null};
+$("shSum").textContent=SHIFTS.map(avgBy).filter(Boolean).join("  |  ")||"";
+// รายเครื่อง
+const dv={};R2.forEach(x=>{const k=devKey(x.r);const o=dv[k]=dv[k]||{name:devName(x.r),by:{เช้า:[],บ่าย:[],ดึก:[]},last:null};o.by[x.sh].push(x.h);if(!o.last||x.d>o.last)o.last=x.d});
+DV=Object.values(dv).map(o=>({...o,total:SHIFTS.reduce((a,s)=>a+o.by[s].length,0)})).sort((a,b)=>b.total-a.total);
+$("dvTb").innerHTML=DV.length?DV.map(o=>`<tr><td style="text-align:left">${o.name}</td>${SHIFTS.map(s=>`<td>${o.by[s].length||"–"}${o.by[s].length?`<span class="pk">${peak(o.by[s])}</span>`:""}</td>`).join("")}<td><b>${o.total}</b></td><td>${o.last.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"})} ${hh(o.last.getHours())}:${hh(o.last.getMinutes())}</td></tr>`).join(""):'<tr><td colspan="6" class="empty">ไม่มีข้อมูลในช่วงนี้</td></tr>';
+// ผลเสี่ยงสูง
+const HI=R2.filter(x=>isHi(x.r)).sort((a,b)=>b.d-a.d);
+$("hiH").textContent=M==="pews"?"รายการ PEWS ≥5 คะแนน หรือมีหมวดที่ได้ 3":"รายการ NEWS2 เสี่ยงปานกลางขึ้นไป (≥5 คะแนน)";
+$("hiTb").innerHTML=HI.length?HI.slice(0,200).map(x=>`<tr><td>${fdt(x.r.assessed_at)}</td><td>${x.sh}</td><td><b>${x.r.total_score}</b></td><td>${M==="pews"?(x.r.total_score<5?"หมวดได้ 3":"≥5 คะแนน"):(RS[x.r.risk_level]||x.r.risk_level)}</td><td style="text-align:left">${devName(x.r)}</td></tr>`).join(""):'<tr><td colspan="5" class="empty">ไม่มีรายการในช่วงนี้</td></tr>';
+$("hiN").textContent=HI.length?`ทั้งหมด ${HI.length} รายการ`+(HI.length>200?" (แสดง 200 รายการล่าสุด)":""):""}
+$("shTb").addEventListener("click",e=>{const tr=e.target.closest("tr.shr");if(!tr)return;const s=SH[+tr.dataset.i];
+if(tr.classList.toggle("open")){tr.insertAdjacentHTML("afterend",s.devList.map(d=>`<tr class="sub" data-p="${tr.dataset.i}"><td colspan="7">└ ${d.name}: <b>${d.n}</b> ครั้ง</td></tr>`).join(""))}
+else document.querySelectorAll(`#shTb tr.sub[data-p="${tr.dataset.i}"]`).forEach(x=>x.remove())});
+const dlCsv=(H,L,name)=>{const csv="\ufeff"+[H,...L].map(a=>a.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download=name;document.body.appendChild(a);a.click();a.remove()};
+$("csvSh").onclick=()=>dlCsv(["วันที่ (ค.ศ.)","วันที่ (พ.ศ.)","เวร","จำนวนประเมิน","จำนวนเครื่อง","คะแนนเฉลี่ย",M==="pews"?"≥5 หรือหมวดได้ 3":"เสี่ยงปานกลางขึ้นไป","เวลากรอกเฉลี่ย(วินาที)","รายเครื่อง"],
+SH.map(s=>[s.day,thD(new Date(s.day+"T00:00:00")),s.sh,s.n,s.devs,s.avg.toFixed(1),s.hi,s.dur??"",s.devList.map(d=>d.name+" = "+d.n).join(" ; ")]),fname((M==="pews"?"PEWS":"NEWS2")+"_รายเวร"));
+$("csvDv").onclick=()=>dlCsv(["เครื่อง","เช้า (ครั้ง)","เช้า ช่วงที่ใช้บ่อย","บ่าย (ครั้ง)","บ่าย ช่วงที่ใช้บ่อย","ดึก (ครั้ง)","ดึก ช่วงที่ใช้บ่อย","รวม","ใช้งานล่าสุด"],
+DV.map(o=>[o.name,...SHIFTS.flatMap(s=>[o.by[s].length,peak(o.by[s]).replace("บ่อยสุด ","")]),o.total,ymd(o.last)+" "+hh(o.last.getHours())+":"+hh(o.last.getMinutes())]),fname((M==="pews"?"PEWS":"NEWS2")+"_รายเครื่อง"));
 
 const KS=["temp_score","pulse_score","rr_score","sbp_score","spo2_score","o2_score","avpu_score"];
 const OPT={o2_score:[0,2],avpu_score:[0,3]};
