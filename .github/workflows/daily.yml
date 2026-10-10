@@ -5,11 +5,18 @@ on:
   schedule:
     - cron: '7 0 * * *'
   workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
 jobs:
   check:
     name: ตรวจเว็บจริงและฐานข้อมูล
     runs-on: ubuntu-latest
     steps:
+      # GitHub หยุดงานตามเวลาเมื่อ repo ไม่มีการแก้ไข 60 วัน → สั่งเปิดงานนี้ซ้ำทุกวันเพื่อไม่ให้ถูกหยุด
+      - name: กันงานประจำวันถูกหยุด
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/daily.yml/enable" || echo "::warning::สั่งเปิดงานซ้ำไม่สำเร็จ (ไม่กระทบการตรวจ)"
       - uses: actions/checkout@v4
         with: { ref: main }
       - name: ฐานข้อมูลตอบสนอง (อ่านอย่างเดียว ไม่เพิ่มข้อมูล)
