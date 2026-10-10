@@ -5,7 +5,7 @@ const pw=require('playwright');
 const ENGINES=(process.env.ENGINES||'chromium').split(',');const path=require('path'),fs=require('fs');
 const ROOT='file://'+path.resolve(__dirname,'..')+'/',OUT=path.join(__dirname,'out');fs.mkdirSync(OUT,{recursive:true});
 const SCREENS=[['mobile',360,740,true],['mobile-land',740,360,true],['ipad-mini',744,1133,true],['ipad-mini-land',1133,744,true],['ipad',820,1180,true],['ipad-land',1180,820,true],['desktop',1280,800,false]];
-const PAGES=['index','news2','pews','fall','adl','report'];
+const PAGES=['index','news2','pews','fall','adl','report','settings'];
 const MOCK='[]';
 (async()=>{let fail=0;for(const eng of ENGINES){const b=await pw[eng].launch();
 for(const [name0,w,h,touch] of SCREENS)for(const pg of PAGES){const name=eng==='chromium'?name0:name0+'-'+eng;if(eng==='webkit'&&name0==='desktop')continue;

@@ -16,6 +16,12 @@ window.fetch=function(u,o){u=String(u);if(u.indexOf('supabase.co')<0)return real
 var body={};try{body=JSON.parse(o&&o.body||'{}')}catch(e){}
 var m=u.match(/rpc\/(news2|pews)_report/);
 if(m)return Promise.resolve(new Response(JSON.stringify(demo(m[1],body.date_from,body.date_to)),{status:200,headers:{'Content-Type':'application/json'}}));
+var J=function(x){return Promise.resolve(new Response(JSON.stringify(x),{status:200,headers:{'Content-Type':'application/json'}}))};
+var SK='w11_staging_settings',gs=function(){try{return JSON.parse(localStorage.getItem(SK)||'{}')}catch(_){return{}}};
+// เว็บทดลอง: ตั้งค่าเก็บในเครื่องนี้เท่านั้น รหัสผ่านใดก็เข้าได้
+if(/rpc\/get_settings/.test(u))return J(gs());
+if(/rpc\/check_admin_pin/.test(u))return J(!!body.pin);
+if(/rpc\/set_hidden_tools/.test(u)){var st=gs();st.hidden_tools=body.hidden||[];try{localStorage.setItem(SK,JSON.stringify(st))}catch(_){}return J(st)}
 var e=u.match(/rpc\/(news2|pews)_edit/);
 if(e)return Promise.resolve(new Response(JSON.stringify(Object.assign({id:body.row_id,assessed_at:new Date().toISOString(),total_score:0,risk_level:'none',red_score:false},body)),{status:200,headers:{'Content-Type':'application/json'}}));
 return Promise.resolve(new Response(null,{status:204}))};

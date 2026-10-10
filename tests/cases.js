@@ -96,4 +96,23 @@ const fits=await p.evaluate(()=>{const r=document.querySelector('.mdl').getBound
 await p.click('#mx');const closed=await p.isHidden('#mbg');
 ok(vis&&sub.includes(want)&&qr&&fits&&closed&&!errs.length,`ปุ่มเพิ่มไอคอน + QR: ${nm}`,`${sub} visible=${vis} qr=${qr} fits=${fits} closed=${closed} ${errs.join(';')}`);await ctx.close()}
 
+// ตั้งค่าผู้ดูแล: ซ่อนแบบประเมินในหน้าหลัก
+{const ctx=await b.newContext({viewport:{width:390,height:800}});let hidden=['adl'],calls=[];
+await ctx.route('**/rpc/get_settings',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({hidden_tools:hidden})}));
+await ctx.route('**/rpc/check_admin_pin',r=>{const pin=JSON.parse(r.request().postData()).pin;r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(pin==='ถูกต้อง1234')})});
+await ctx.route('**/rpc/set_hidden_tools',r=>{const b2=JSON.parse(r.request().postData());calls.push(b2);hidden=b2.hidden;r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({hidden_tools:hidden})})});
+const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.goto(ROOT+'index.html');await p.waitForTimeout(500);
+const vis=async()=>p.evaluate(()=>[...document.querySelectorAll('.card[data-tool]')].filter(c=>getComputedStyle(c).display!=='none').map(c=>c.dataset.tool).join(','));
+ok(await vis()==='news2,fall,report','ตั้งค่า: หน้าหลักซ่อน ADL ตามที่ตั้งไว้',await vis());
+await p.goto(ROOT+'settings.html');await p.fill('#pin','ผิด');await p.click('#enter');await p.waitForTimeout(300);
+ok((await p.textContent('#lmsg')).includes('ไม่ถูกต้อง')&&await p.isHidden('#panel'),'ตั้งค่า: รหัสผ่านผิดเข้าไม่ได้',await p.textContent('#lmsg'));
+await p.fill('#pin','ถูกต้อง1234');await p.click('#enter');await p.waitForTimeout(400);
+ok(await p.isVisible('#panel')&&!(await p.isChecked('#list input[data-k=adl]')),'ตั้งค่า: รหัสผ่านถูกเข้าได้ และแสดงสถานะปัจจุบัน','');
+await p.click('#list .tg:nth-child(3) .sw');await p.click('#list .tg:nth-child(2) .sw');await p.click('#save');await p.waitForTimeout(400);
+ok(calls.length===1&&calls[0].pin==='ถูกต้อง1234'&&JSON.stringify(calls[0].hidden)==='["fall"]','ตั้งค่า: บันทึกส่งรายการที่ซ่อนถูกต้อง (เปิด ADL ปิด Fall)',JSON.stringify(calls));
+await p.goto(ROOT+'index.html');await p.waitForTimeout(500);ok(await vis()==='news2,adl,report'&&!errs.length,'ตั้งค่า: หน้าหลักแสดงตามค่าใหม่',await vis()+' '+errs.join(';'));
+hidden=['news2','fall','adl','report'];await p.reload();await p.waitForTimeout(500);ok(await p.isVisible('#empty'),'ตั้งค่า: ซ่อนทั้งหมดแล้วแสดงข้อความแจ้ง','');
+await ctx.close()}
+
 await b.close();console.log(fail?`ไม่ผ่าน ${fail} จาก ${n} กรณี`:`ผ่านทั้งหมด ${n} กรณี`);process.exit(fail?1:0)})();

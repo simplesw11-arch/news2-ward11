@@ -1,6 +1,6 @@
 // ใช้งานได้แม้ไม่มีเน็ต: หน้าเว็บโหลดจากเน็ตก่อน (ได้เวอร์ชันล่าสุด) ถ้าไม่มีเน็ตใช้สำเนาในเครื่อง
-const CACHE='w11-v7';
-const PAGES=['./','index.html','news2.html','pews.html','fall.html','adl.html','report.html','manifest.webmanifest','icon-192.png','icon-512.png','qr.svg'];
+const CACHE='w11-v8';
+const PAGES=['./','index.html','news2.html','pews.html','fall.html','adl.html','report.html','settings.html','manifest.webmanifest','icon-192.png','icon-512.png','qr.svg'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>Promise.all(PAGES.map(u=>c.add(u).catch(()=>{})))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url);
