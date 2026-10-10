@@ -122,7 +122,7 @@ t.textContent=sum;t.style.background=c;t.style.color=dark?"#3a2c00":"#fff";
 r.innerHTML=`<b>${txt}</b><div>${act}</div>`}
 document.getElementById("clr").onclick=()=>{g.classList.add("hide");document.querySelectorAll("#ageq button").forEach(b=>b.classList.remove("on"));document.querySelectorAll("input").forEach(i=>i.value="");document.querySelectorAll(".seg button").forEach(b=>b.classList.remove("on"));P.forEach(p=>set(p.k,null));try{LOG.reset()}catch(e){}window.scrollTo(0,0)};
 document.querySelectorAll("#ageq button").forEach(b=>b.onclick=()=>{
-if(b.dataset.a==="0"){location.href="pews.html?v=20261010u";return}
+if(b.dataset.a==="0"){location.href="pews.html?v=20261010v";return}
 b.classList.add("on");g.classList.remove("hide");const i=g.querySelector("input");if(i&&!i.value){i.focus({preventScroll:true});show(i.closest(".p"))}});
 /* เก็บสถิติการใช้งานแบบไม่ระบุตัวตน (Supabase) — เก็บเฉพาะคะแนน ไม่เก็บค่าสัญญาณชีพดิบ/ข้อมูลผู้ป่วย */
 const LOG=((TABLE,build)=>{

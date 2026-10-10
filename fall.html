@@ -73,6 +73,7 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .agebox{margin-bottom:12px;border-top-color:var(--teal)}.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.chips i{font-style:normal;font-size:.8rem;font-weight:400;background:#fff;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--ink)}.src{font-size:.8rem;color:var(--mute);margin:4px 2px 12px}
 .p.hl{box-shadow:0 0 0 3px var(--teal),0 2px 10px rgba(22,50,79,.07);animation:pulse 1s ease 2}@keyframes pulse{50%{box-shadow:0 0 0 7px rgba(15,124,140,.25)}}@media (prefers-reduced-motion:reduce){.p.hl{animation:none}}.p{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 12px)}
 .inrow{display:flex;gap:8px}.inrow input{flex:1;min-width:0}.nx{font:inherit;font-weight:600;flex:none;padding:0 16px;border:none;border-radius:12px;background:var(--teal);color:#fff;cursor:pointer}
+.anyn{display:block;width:100%;padding:12px 16px;margin-top:2px}
 .seg button:disabled{opacity:.4;cursor:not-allowed}
 .lockn{font-size:.82rem;color:var(--teal);font-weight:600;margin-top:-2px}
 </style>
@@ -116,7 +117,9 @@ items:[
 {n:"อายุ",u:"ระบุอายุ หรือเลือกช่วงอายุ",age:a=>a<65?2:a<80?0:1,o:[["อายุ 65–79 ปี",0.5],["อายุ 80 ปีขึ้นไป",1],["อายุน้อยกว่า 65 ปี",0]]},
 {n:"ปัจจัยเสี่ยง",u:"เลือกทุกข้อที่พบ",any:1,o:[["มีภาวะสับสน (ไม่อยู่บนเตียงตามคำแนะนำ)","",2],["พยายามจะลงจากเตียง / ไม่สงบ","",5],["มีประวัติการหกล้ม","",1],["การเคลื่อนไหว การทรงตัว และการเดินผิดปกติ","",1],["มีอาการอ่อนเพลียโดยทั่วไป","",1],["การขับถ่ายปัสสาวะเปลี่ยนแปลง","ปัสสาวะบ่อย กลั้นไม่ได้ ได้ Lasix ทางหลอดเลือดดำ",1],["ได้รับยาใน 24 ชม.ที่ผ่านมา","ยากล่อมประสาท ยานอนหลับ ยาสลบ",1],["ไม่สามารถเคลื่อนย้าย/เคลื่อนที่ได้","",-5]]}],
 level:s=>s>=4.5?["var(--s3)","ความเสี่ยงระดับ 3 (≥ 4.5)"]:s>=2.5?["var(--s2)","ความเสี่ยงระดับ 2 (2.5–4)"]:s>=0.5?["var(--s1)","ความเสี่ยงระดับ 1 (0.5–2)",1]:["var(--s0)","ไม่อยู่ในเกณฑ์ความเสี่ยง (< 0.5)"]}};
-let cur="ped",S={},AGE=null,AUTO=false;
+let cur="ped",S={},AGE=null,AUTO=false,CONF={};
+// ข้อที่ยังต้องดู: ข้อเลือก 1 ตัวเลือกที่ยังไม่ตอบ หรือข้อเลือกหลายตัวเลือกที่ยังไม่กด "ข้อถัดไป ›"
+const todo=(t,k)=>!t.items[k].age&&(t.items[k].any?!CONF[k]:S[k]==null);
 const hlTo=c=>{c.classList.remove("hl");void c.offsetWidth;c.classList.add("hl");setTimeout(()=>c.scrollIntoView({behavior:"smooth",block:"start"}),120)};
 
 const ageIn=document.getElementById("age"),pick=document.getElementById("pick");
@@ -131,7 +134,7 @@ if(!n){n=document.createElement("div");n.className="lockn";d.querySelector(".row
 n.textContent="🔒 เลือกจากอายุที่กรอก ("+AGE+" ปี) · แก้ไขที่ช่องอายุด้านบน"}
 // กรอกอายุเสร็จ → ไปข้อที่ต้องตอบข้อแรก (ข้ามข้ออายุ; ถ้าไม่มีข้อเลือกได้ 1 ตัวเลือกเหลือ ไปข้อเลือกได้หลายตัวเลือก)
 function ageNext(){clearTimeout(ageIn._t);if(AGE==null)return;ageIn.blur();const t=T[cur],g=document.getElementById("g");
-let j=t.items.findIndex((x,k)=>!x.age&&!x.any&&S[k]==null);if(j<0)j=t.items.findIndex(x=>!x.age&&x.any);if(j>=0)setTimeout(()=>hlTo(g.children[j]),400)}
+const j=t.items.findIndex((x,k)=>todo(t,k));if(j>=0)setTimeout(()=>hlTo(g.children[j]),400)}
 ageIn.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();ageNext()}};
 document.getElementById("agenx").onmousedown=e=>e.preventDefault();document.getElementById("agenx").onclick=ageNext;
 ageIn.oninput=()=>{const a=parseFloat(ageIn.value.replace(",","."));AGE=isNaN(a)?null:a;clearTimeout(ageIn._t);
@@ -139,15 +142,18 @@ if(AGE==null){pick.textContent="";syncAge();return}
 const k=tabFor(AGE);if(k!==cur)show(k);else syncAge();ageIn._t=setTimeout(()=>{if(document.activeElement===ageIn)ageNext()},1500);pick.textContent="ใช้แบบประเมิน: "+T[k].tab+" ("+T[k].sub+") · สามารถเปลี่ยนแบบประเมินได้ที่แท็บด้านล่าง"};
 const tabs=document.getElementById("tabs");
 Object.entries(T).forEach(([k,v])=>{const b=document.createElement("button");b.innerHTML=`<b>${v.tab}</b><small>${v.sub}</small>`;b.onclick=()=>show(k);b.dataset.k=k;tabs.appendChild(b)});
-function show(k){cur=k;S={};const t=T[k];
+function show(k){cur=k;S={};CONF={};const t=T[k];
 tabs.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.k===k));
 document.getElementById("src").textContent=t.src;
 const g=document.getElementById("g");g.innerHTML="";
 t.items.forEach((it,i)=>{const d=document.createElement("div");d.className="p"+(it.any?" wide":"");
 d.innerHTML=`<div class="row"><div class="lab">${it.n}<small>${it.u}</small></div><div class="pt">${it.any?"0":"–"}</div></div><div class="seg col">${it.o.map(o=>{const sc=o[o.length-1],x=o.length===3&&o[1]?(Array.isArray(o[1])?`<span class="chips">${o[1].map(m=>`<i>${m}</i>`).join("")}</span>`:`<span class="x">${o[1]}</span>`):"";return `<button data-v="${sc}"><span class="k">${o[0]}${x}</span><span class="d">${sc>0?"+":""}${sc}</span></button>`}).join("")}</div>`;
 g.appendChild(d);if(it.any)S[i]=0;
-d.querySelectorAll("button").forEach(b=>b.onclick=e=>{const first=!it.any&&S[i]==null;d.classList.remove("hl");if(it.any)b.classList.toggle("on");else{d.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on")}
-const v=[...d.querySelectorAll("button.on")].reduce((a,x)=>a+ +x.dataset.v,0);S[i]=v;
+// ข้อเลือกหลายตัวเลือก (ที่ไม่ใช่ข้อสุดท้าย): เลือกที่พบแล้วกด "ข้อถัดไป ›" เพื่อไปข้อต่อไป (ไม่พบเลยก็กดได้)
+if(it.any&&i<t.items.length-1){const nb=document.createElement("button");nb.type="button";nb.className="nx anyn";nb.textContent="ข้อถัดไป ›";
+nb.onclick=()=>{CONF[i]=true;d.classList.remove("hl");const j=t.items.findIndex((x,k)=>k>i&&todo(t,k));if(j>=0)hlTo(g.children[j])};d.appendChild(nb)}
+d.querySelectorAll(".seg button").forEach(b=>b.onclick=e=>{const first=!it.any&&S[i]==null;d.classList.remove("hl");if(it.any)b.classList.toggle("on");else{d.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on")}
+const v=[...d.querySelectorAll(".seg button.on")].reduce((a,x)=>a+ +x.dataset.v,0);S[i]=v;
 if(!it.any)d.classList.add("done");d.querySelector(".pt").textContent=v+" คะแนน";calc();
 // ข้อเลือกได้ 1 ตัวเลือก ตอบครั้งแรกโดยผู้ใช้ → ไปข้อถัดไปที่ยังไม่ได้ตอบ (ข้อเลือกหลายตัวเลือก/เลือกอายุอัตโนมัติ/แก้ข้อเดิม ไม่เลื่อน)
 if(first&&!AUTO){const j=t.items.findIndex((x,jj)=>jj>i&&!x.any&&S[jj]==null);if(j>=0)hlTo(g.children[j])}});
