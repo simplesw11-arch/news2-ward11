@@ -50,12 +50,16 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .res{flex:1;min-width:0}.res b{font-family:Prompt,Sarabun,sans-serif;font-weight:600;font-size:1.02rem;display:block}.res div{font-size:.88rem;color:var(--mute);margin-top:2px}
 .reset{font:inherit;font-weight:600;padding:10px 16px;border-radius:12px;border:none;background:var(--tealSoft);color:var(--teal);flex:none;cursor:pointer}
 .note{margin-top:16px;font-size:.82rem;color:var(--mute);line-height:1.55;text-align:center}
+#g.hide{display:none}
+#ageq{margin-bottom:12px;border-top-color:var(--teal)}
 .home{display:inline-block;color:#fff;text-decoration:none;font-size:.9rem;opacity:.9;margin-bottom:6px;padding:4px 0}</style>
 </head>
 <body>
 <div class="head"><div class="in"><a class="home" href="./">← กลับหน้าหลัก</a><h1>NEWS2 คำนวณคะแนน</h1><p>National Early Warning Score 2 · กรอกค่าสัญญาณชีพ ระบบคำนวณคะแนนโดยอัตโนมัติ</p></div></div>
 <div class="wrap">
-<div class="grid" id="g"></div>
+<div class="p wide" id="ageq"><div class="row"><div class="lab">ผู้ป่วยอายุ 16 ปีขึ้นไปใช่หรือไม่<small>NEWS2 ใช้สำหรับผู้ป่วยอายุ 16 ปีขึ้นไป · ผู้ป่วยเด็กใช้แบบประเมิน PEWS</small></div></div>
+<div class="seg"><button data-a="1"><span class="k">ใช่</span><span class="d">ประเมินด้วย NEWS2</span></button><button data-a="0"><span class="k">ไม่ใช่</span><span class="d">ไปยังแบบประเมิน PEWS (เด็ก)</span></button></div></div>
+<div class="grid hide" id="g"></div>
 <div class="note">เกณฑ์ตามตาราง NEWS2 (RCP 2017) ใช้ประกอบการตัดสินใจทางคลินิก ไม่แทนดุลยพินิจของพยาบาลและแพทย์</div>
 </div>
 <div class="bar"><div class="in">
@@ -107,7 +111,10 @@ else if(sum>=1){c="var(--s1)";dark=true;txt="ต่ำ (Low) · ประเม�
 else{c="var(--s0)";txt="ต่ำมาก · ไม่ต้องประเมินต่อ";act="ให้การพยาบาลและบันทึก V/S ตามรอบปกติ"}
 t.textContent=sum;t.style.background=c;t.style.color=dark?"#3a2c00":"#fff";
 r.innerHTML=`<b>${txt}</b><div>${act}</div>`}
-document.getElementById("clr").onclick=()=>{document.querySelectorAll("input").forEach(i=>i.value="");document.querySelectorAll(".seg button").forEach(b=>b.classList.remove("on"));P.forEach(p=>set(p.k,null));try{LOG.reset()}catch(e){}window.scrollTo(0,0)};
+document.getElementById("clr").onclick=()=>{g.classList.add("hide");document.querySelectorAll("#ageq button").forEach(b=>b.classList.remove("on"));document.querySelectorAll("input").forEach(i=>i.value="");document.querySelectorAll(".seg button").forEach(b=>b.classList.remove("on"));P.forEach(p=>set(p.k,null));try{LOG.reset()}catch(e){}window.scrollTo(0,0)};
+document.querySelectorAll("#ageq button").forEach(b=>b.onclick=()=>{
+if(b.dataset.a==="0"){location.href="pews.html";return}
+b.classList.add("on");g.classList.remove("hide");const i=g.querySelector("input");if(i&&!i.value){i.focus({preventScroll:true});show(i.closest(".p"))}});
 /* เก็บสถิติการใช้งานแบบไม่ระบุตัวตน (Supabase) — เก็บเฉพาะคะแนน ไม่เก็บค่าสัญญาณชีพดิบ/ข้อมูลผู้ป่วย */
 const LOG=(()=>{
 const URL_="https://bouxgjkhlywhxmtuyvpp.supabase.co/rest/v1/news2_usage",

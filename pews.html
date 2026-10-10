@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<title>PEWS คำนวณคะแนน</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#eef4f8;--card:#ffffff;--ink:#16324f;--mute:#62758a;--line:#dbe6ee;--teal:#0f7c8c;--tealSoft:#e3f3f5;
+--s0:#2f9e6a;--s1:#f4c430;--s2:#f08a3c;--s3:#e0485a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Sarabun,"Noto Sans Thai",system-ui,sans-serif;font-size:17px}
+.head{background:linear-gradient(135deg,#0f7c8c,#1b5e8f);color:#fff;padding:18px 18px 46px}
+.head .in{max-width:1100px;margin:0 auto}
+.head h1{font-family:Prompt,Sarabun,sans-serif;font-size:1.5rem;margin:0}
+.head p{margin:4px 0 0;opacity:.85;font-size:.92rem}
+.wrap{max-width:1100px;margin:-32px auto 0;padding:0 14px 150px}
+.grid{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:700px){.grid{grid-template-columns:1fr 1fr}}
+@media (min-width:1050px){.grid{grid-template-columns:1fr 1fr 1fr}}
+.p{background:var(--card);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 2px 10px rgba(22,50,79,.07);border-top:5px solid var(--line)}
+.p.wide{grid-column:1/-1}
+.p[data-s="0"]{border-top-color:var(--s0)}.p[data-s="1"]{border-top-color:var(--s1)}
+.p[data-s="2"]{border-top-color:var(--s2)}.p[data-s="3"]{border-top-color:var(--s3)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.lab{font-family:Prompt,Sarabun,sans-serif;font-weight:600;font-size:1.05rem}
+.lab small{display:block;font-family:Sarabun,sans-serif;font-weight:400;color:var(--mute);font-size:.82rem}
+.pt{min-width:48px;text-align:center;font-weight:700;border-radius:999px;padding:4px 10px;background:var(--bg);color:var(--mute);font-size:.95rem}
+.p[data-s="0"] .pt{background:var(--s0);color:#fff}.p[data-s="1"] .pt{background:var(--s1);color:#3a2c00}
+.p[data-s="2"] .pt{background:var(--s2);color:#fff}.p[data-s="3"] .pt{background:var(--s3);color:#fff}
+input{width:100%;font:inherit;font-size:1.4rem;font-weight:600;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:#f8fbfd;color:var(--ink)}
+input::placeholder{font-weight:400;color:#a7b6c4;font-size:1rem}
+input:focus{outline:none;border-color:var(--teal);background:#fff}
+button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.seg{display:grid;gap:8px;grid-template-columns:1fr 1fr}
+.avpu .seg{grid-template-columns:1fr 1fr}
+@media (min-width:700px){.avpu .seg{grid-template-columns:repeat(4,1fr)}}
+.seg button{font:inherit;text-align:left;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:#f8fbfd;color:var(--ink);display:flex;flex-direction:column;gap:2px;cursor:pointer}
+.seg button .k{font-family:Prompt,Sarabun,sans-serif;font-weight:700;font-size:1.1rem}
+.seg button .d{font-size:.82rem;color:var(--mute);line-height:1.35}
+.seg button.on{border-color:var(--teal);background:var(--tealSoft)}
+.seg button.on .k{color:var(--teal)}
+.inrow{display:flex;gap:8px}.inrow input{flex:1;min-width:0}.nx{font:inherit;font-weight:600;flex:none;padding:0 16px;border:none;border-radius:12px;background:var(--teal);color:#fff;cursor:pointer}.nx:active{opacity:.85}.p.hl{box-shadow:0 0 0 3px var(--teal),0 2px 10px rgba(22,50,79,.07);animation:pulse 1s ease 2}@keyframes pulse{50%{box-shadow:0 0 0 7px rgba(15,124,140,.25)}}@media (prefers-reduced-motion:reduce){.p.hl{animation:none}}.p{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 12px)}body.typing .bar{display:none}body.typing .wrap{padding-bottom:60vh}.tip{font-size:.92rem;color:var(--ink);background:#f4f8fb;border-left:4px solid var(--teal);border-radius:8px;padding:12px 14px;line-height:1.65}.tip b{display:block;font-family:Prompt,Sarabun,sans-serif;font-weight:600;color:var(--teal);margin-bottom:4px}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));background:#fff;border-top-left-radius:22px;border-top-right-radius:22px;box-shadow:0 -6px 24px rgba(22,50,79,.12)}
+.bar .in{max-width:1100px;margin:0 auto;display:flex;gap:14px;align-items:center}
+.total{font-family:Prompt,Sarabun,sans-serif;font-size:2.3rem;font-weight:700;width:74px;height:74px;border-radius:20px;display:grid;place-items:center;background:var(--bg);color:var(--mute);flex:none}
+.res{flex:1;min-width:0}.res b{font-family:Prompt,Sarabun,sans-serif;font-weight:600;font-size:1.02rem;display:block}.res div{font-size:.88rem;color:var(--mute);margin-top:2px}
+.reset{font:inherit;font-weight:600;padding:10px 16px;border-radius:12px;border:none;background:var(--tealSoft);color:var(--teal);flex:none;cursor:pointer}
+.note{margin-top:16px;font-size:.82rem;color:var(--mute);line-height:1.55;text-align:center}
+#g.hide{display:none}
+#ageq{margin-bottom:12px;border-top-color:var(--teal)}
+.home{display:inline-block;color:#fff;text-decoration:none;font-size:.9rem;opacity:.9;margin-bottom:6px;padding:4px 0}.seg.col{grid-template-columns:1fr}
+.seg.col button{flex-direction:row;justify-content:space-between;align-items:center;gap:10px}
+.seg.col button .k{font-size:.98rem;font-weight:600;font-family:Sarabun,sans-serif}
+.seg.col button .d{flex:none;font-weight:700;color:var(--teal);font-size:.9rem}
+.sub{font-family:Prompt,Sarabun,sans-serif;font-weight:600;font-size:.92rem;color:var(--teal);margin-top:4px}
+.hint{font-size:.82rem;color:var(--mute);line-height:1.5}
+.inrow{display:flex;gap:8px;align-items:center}
+.inrow input{flex:1;min-width:0}
+.calc{font-size:.85rem;color:var(--ink);background:#f4f8fb;border-radius:8px;padding:8px 10px;line-height:1.5}
+.calc:empty{display:none}
+#agebox{margin-bottom:12px;border-top-color:var(--teal)}
+#g.hide{display:none}
+</style>
+</head>
+<body>
+<div class="head"><div class="in"><a class="home" href="./">← กลับหน้าหลัก</a><h1>PEWS คำนวณคะแนน</h1><p>Pediatric Early Warning Score · สำหรับผู้ป่วยอายุต่ำกว่า 16 ปี</p></div></div>
+<div class="wrap">
+<div class="p wide" id="agebox"><div class="row"><div class="lab">อายุผู้ป่วย<small>ระบุเป็นปี · อายุต่ำกว่า 1 ปีให้ใส่ทศนิยม เช่น 3 เดือน = 0.25, 6 เดือน = 0.5</small></div></div>
+<input id="age" type="text" inputmode="decimal" placeholder="เช่น 0.5, 3, 12" autocomplete="off"><div class="hint" id="norm"></div></div>
+<div class="grid hide" id="g">
+<div class="p" id="c_beh"><div class="row"><div class="lab">พฤติกรรม<small>Behavior</small></div><div class="pt">–</div></div>
+<div class="seg col" data-k="beh">
+<button data-v="0"><span class="k">เล่นได้ ปฏิบัติกิจกรรมได้เหมาะสมตามวัย</span><span class="d">0</span></button>
+<button data-v="1"><span class="k">ง่วงหลับ</span><span class="d">1</span></button>
+<button data-v="2"><span class="k">พักไม่ได้ ปลอบให้พักได้ยาก</span><span class="d">2</span></button>
+<button data-v="3"><span class="k">ตอบสนองต่อความปวดลดลง หรือเซื่องซึม สับสน</span><span class="d">3</span></button></div></div>
+
+<div class="p" id="c_cv"><div class="row"><div class="lab">ระบบหัวใจและหลอดเลือด<small>Cardiovascular</small></div><div class="pt">–</div></div>
+<div class="sub">อัตราการเต้นของหัวใจ (ครั้ง/นาที)</div>
+<div class="inrow"><input id="hr" type="text" inputmode="numeric" placeholder="ระบุค่า ครั้ง/นาที" autocomplete="off"></div>
+<div class="calc" id="hrc"></div>
+<div class="sub">สีผิวและ capillary refill</div>
+<div class="seg col" data-k="skin">
+<button data-v="0"><span class="k">สีผิวชมพู หรือ capillary refill 1–2 วินาที</span><span class="d">0</span></button>
+<button data-v="1"><span class="k">สีผิวซีดหรือดำคล้ำ หรือ capillary refill 3 วินาที</span><span class="d">1</span></button>
+<button data-v="2"><span class="k">สีผิวคล้ำหรือเขียว หรือ capillary refill 4 วินาที</span><span class="d">2</span></button>
+<button data-v="3"><span class="k">สีผิวคล้ำเขียวหรือตัวลาย หรือ capillary refill ≥ 5 วินาที</span><span class="d">3</span></button></div></div>
+
+<div class="p" id="c_rs"><div class="row"><div class="lab">ระบบทางเดินหายใจ<small>Respiratory</small></div><div class="pt">–</div></div>
+<div class="sub">อัตราการหายใจ (ครั้ง/นาที)</div>
+<div class="inrow"><input id="rr" type="text" inputmode="numeric" placeholder="ระบุค่า ครั้ง/นาที" autocomplete="off"></div>
+<div class="calc" id="rrc"></div>
+<div class="sub">การได้รับออกซิเจน</div>
+<div class="seg col" data-k="o2">
+<button data-v="0"><span class="k">ไม่ได้รับออกซิเจน หรือต่ำกว่าเกณฑ์ด้านล่าง</span><span class="d">0</span></button>
+<button data-v="1"><span class="k">FiO₂ > 30% หรือ O₂ flow ≥ 3 ลิตร/นาที</span><span class="d">1</span></button>
+<button data-v="2"><span class="k">FiO₂ > 40% หรือ O₂ flow ≥ 6 ลิตร/นาที</span><span class="d">2</span></button>
+<button data-v="3"><span class="k">FiO₂ > 50% หรือ O₂ flow ≥ 8 ลิตร/นาที</span><span class="d">3</span></button></div>
+<div class="sub">การหายใจและเสียงปอด</div>
+<div class="seg col" data-k="wob">
+<button data-v="0"><span class="k">ไม่มี retraction เสียงปอดปกติ ไม่มีเสียง wheeze</span><span class="d">0</span></button>
+<button data-v="1"><span class="k">Mild retraction หรือได้ยินเสียง wheeze ช่วงท้ายของการหายใจออกโดยใช้ stethoscope</span><span class="d">1</span></button>
+<button data-v="2"><span class="k">Moderate retraction หรือได้ยินเสียง wheeze ขณะหายใจออก (ใช้หรือไม่ใช้ stethoscope)</span><span class="d">2</span></button>
+<button data-v="3"><span class="k">Severe retraction หรือหายใจมีเสียง grunting หรือได้ยินเสียง wheeze โดยไม่ต้องใช้ stethoscope</span><span class="d">3</span></button></div></div>
+</div>
+<div class="note">ดัดแปลงจาก Brighton PEWS (Monaghan, 2005) ตามแบบที่ประยุกต์ใช้โดยงานการพยาบาลผู้ป่วยกุมารเวชศาสตร์ โรงพยาบาลมหาราชนครเชียงใหม่ (วารสารพยาบาลสวนดอก, 2560) · ค่าปกติตามอายุอ้างอิง American Heart Association 2010<br>คะแนนแต่ละหมวดใช้ค่าสูงสุดของเกณฑ์ที่พบ · ใช้ประกอบการตัดสินใจทางคลินิก ไม่แทนดุลยพินิจของพยาบาลและแพทย์</div>
+</div>
+<div class="bar"><div class="in">
+<div class="total" id="t">–</div>
+<div class="res" id="r"></div>
+<button class="reset" id="clr">ล้างข้อมูล</button>
+</div></div>
+<script>
+// ค่าปกติตามอายุ (AHA 2010) [อายุต่ำกว่า (ปี), ต่ำสุด, สูงสุด]
+const HRN=[[0.25,85,205],[2,100,190],[10,60,140],[99,60,100]];
+const RRN=[[1,30,60],[4,24,40],[6,22,34],[13,18,30],[99,12,16]];
+const norm=(T,a)=>T.find(x=>a<x[0]);
+const $=id=>document.getElementById(id),g=$("g");
+const S={beh:null,skin:null,o2:null,wob:null};let AGE=null;
+const num=s=>{const v=parseFloat(String(s).replace(",","."));return isNaN(v)?null:v};
+function hrScore(){const v=num($("hr").value);if(v==null||AGE==null)return null;const[,lo,hi]=norm(HRN,AGE);
+if(v<lo)return[3,`ต่ำกว่าค่าปกติ (${lo}–${hi}) · หัวใจเต้นช้า`];const d=v-hi;
+if(d>=30)return[3,`เร็วกว่าค่าปกติ ${d} ครั้ง/นาที`];if(d>=20)return[2,`เร็วกว่าค่าปกติ ${d} ครั้ง/นาที`];
+if(d>=10)return[1,`เร็วกว่าค่าปกติ ${d} ครั้ง/นาที · เกณฑ์นี้ใช้เมื่อไม่มีไข้`];return[0,`อยู่ในเกณฑ์ (ค่าปกติ ${lo}–${hi})`]}
+function rrScore(){const v=num($("rr").value);if(v==null||AGE==null)return null;const[,lo,hi]=norm(RRN,AGE);
+if(lo-v>=5)return[3,`ต่ำกว่าค่าปกติ ${lo-v} ครั้ง/นาที`];const d=v-hi;
+if(d>=20)return[2,`เร็วกว่าค่าปกติ ${d} ครั้ง/นาที`];if(d>=10)return[1,`เร็วกว่าค่าปกติ ${d} ครั้ง/นาที`];
+return[0,`อยู่ในเกณฑ์ (ค่าปกติ ${lo}–${hi})`]}
+function card(id,parts){const c=$(id),known=parts.filter(x=>x!=null);const done=known.length===parts.length;
+const v=known.length?Math.max(...known):null;
+if(!done){delete c.dataset.s;c.querySelector(".pt").textContent=v==null?"–":"≥ "+v;return null}
+c.dataset.s=v;c.querySelector(".pt").textContent=v+" คะแนน";return v}
+function calc(){const h=hrScore(),r=rrScore();
+$("hrc").textContent=h?`${h[1]} → ${h[0]} คะแนน`:"";$("rrc").textContent=r?`${r[1]} → ${r[0]} คะแนน`:"";
+const b=card("c_beh",[S.beh]),c=card("c_cv",[h&&h[0],S.skin]),s=card("c_rs",[r&&r[0],S.o2,S.wob]);
+const t=$("t"),res=$("r"),got=[b,c,s].filter(x=>x!=null).length;
+if(AGE==null){t.textContent="–";t.style.background="";t.style.color="";res.innerHTML="<b>โปรดระบุอายุผู้ป่วย</b><div>ยังไม่มีผลคะแนน</div>";return}
+if(got<3){t.textContent="–";t.style.background="";t.style.color="";res.innerHTML=`<b>ประเมินแล้ว ${got}&nbsp;จาก&nbsp;3&nbsp;หมวด</b><div>โปรดกรอกข้อมูลให้ครบทุกหมวด</div>`;return}
+const sum=b+c+s,red=[b,c,s].includes(3);let col,txt,dark=false;
+if(sum>=5||red){col="var(--s3)";txt="PEWS "+sum+" คะแนน"}
+else if(sum===4){col="var(--s2)";txt="PEWS 4 คะแนน"}
+else if(sum===3){col="var(--s1)";dark=true;txt="PEWS 3 คะแนน"}
+else{col="var(--s0)";txt="PEWS "+sum+" คะแนน"}
+t.textContent=sum;t.style.background=col;t.style.color=dark?"#3a2c00":"#fff";
+res.innerHTML=`<b>${txt}</b><div>${red?"มีหมวดที่ได้ 3 คะแนน":`พฤติกรรม ${b} · หัวใจ ${c} · หายใจ ${s}`}</div>`}
+$("age").oninput=()=>{const a=num($("age").value);
+if(a==null||a<0){AGE=null;$("norm").textContent="";g.classList.add("hide")}
+else if(a>=16){AGE=null;g.classList.add("hide");$("norm").innerHTML='ผู้ป่วยอายุ 16 ปีขึ้นไป โปรดใช้ <a href="news2.html">แบบประเมิน NEWS2</a>'}
+else{AGE=a;g.classList.remove("hide");const h=norm(HRN,a),r=norm(RRN,a);$("norm").textContent=`ค่าปกติตามอายุ: ชีพจร ${h[1]}–${h[2]} ครั้ง/นาที · อัตราการหายใจ ${r[1]}–${r[2]} ครั้ง/นาที`}
+calc()};
+$("hr").oninput=calc;$("rr").oninput=calc;
+document.querySelectorAll(".seg").forEach(sg=>sg.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+sg.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");S[sg.dataset.k]=+b.dataset.v;calc()}));
+$("clr").onclick=()=>{document.querySelectorAll("input").forEach(i=>i.value="");document.querySelectorAll(".seg button").forEach(b=>b.classList.remove("on"));
+for(const k in S)S[k]=null;AGE=null;$("norm").textContent="";g.classList.add("hide");calc();window.scrollTo(0,0)};
+calc();
+</script>
+</body>
+</html>
