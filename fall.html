@@ -129,7 +129,7 @@ calc()}
 function calc(){const t=T[cur],tt=document.getElementById("t"),r=document.getElementById("r");
 const need=t.items.filter(i=>!i.any).length,got=t.items.filter((it,i)=>!it.any&&S[i]!=null).length;
 const sum=Object.values(S).reduce((a,b)=>a+b,0);
-if(got<need){tt.textContent="–";tt.style.background="";tt.style.color="";r.innerHTML=`<b>เลือกแล้ว ${got}/${need} ข้อ</b><div>โปรดเลือกคำตอบให้ครบทุกข้อ</div>`;return}
+if(got<need){tt.textContent="–";tt.style.background="";tt.style.color="";r.innerHTML=`<b>เลือกแล้ว ${got}&nbsp;จาก&nbsp;${need}&nbsp;ข้อ</b><div>โปรดเลือกคำตอบให้ครบทุกข้อ</div>`;return}
 const[c,txt,dark]=t.level(sum);tt.textContent=sum;tt.style.background=c;tt.style.color=dark?"#3a2c00":"#fff";
 r.innerHTML=`<b>${txt}</b><div>${t.tab} · ${t.sub}</div>`}
 document.getElementById("clr").onclick=()=>{ageIn.value="";AGE=null;pick.textContent="";show(cur);window.scrollTo(0,0)};
