@@ -122,4 +122,27 @@ await ctx.route('**/rpc/check_admin_pin',r=>r.fulfill({status:200,contentType:'a
 const p=await ctx.newPage();await p.goto(ROOT+'settings.html');await p.waitForTimeout(500);
 ok(await p.isVisible('#panel')&&await p.isHidden('#login')&&await p.isHidden('#out2'),'ตั้งค่า: ยังไม่ตั้งรหัสผ่าน → เข้าได้ทันที','');await ctx.close()}
 
+// เลื่อนจอหลังแตะเลือก: ตอบครั้งแรก → ไปข้อถัดไปที่ยังไม่ได้ตอบ · แก้ข้อเดิม/ข้อเลือกหลายตัว/ข้อสุดท้าย → ไม่เลื่อน
+{const ctx=await b.newContext({viewport:{width:390,height:740},hasTouch:true});await ctx.route('**supabase**',r=>r.fulfill({status:200,contentType:'application/json',body:'[]'}));
+const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+const hlId=()=>p.evaluate(()=>[...document.querySelectorAll('.p.hl')].map(e=>e.id||'').join(',')||'-');
+const inView=sel=>p.evaluate(s=>{const r=document.querySelector(s).getBoundingClientRect();return r.top<innerHeight*0.6&&r.bottom>0},sel);
+const tap=async sel=>{await p.$eval(sel,e=>e.click());await p.waitForTimeout(900)};
+const sy=()=>p.evaluate(()=>Math.round(scrollY));
+await p.goto(ROOT+'news2.html');await p.click('#ageq button[data-a="1"]');
+for(const [k,v] of [['bt','37'],['pr','80'],['rr','16'],['sbp','120'],['spo2','98']])await p.fill(`#c_${k} input`,v);
+await p.evaluate(()=>{document.activeElement.blur()});await p.waitForTimeout(600);
+await tap('#c_o2 .seg button:nth-child(1)');ok(await hlId()==='c_avpu'&&await inView('#c_avpu'),'เลื่อนจอ NEWS2: ออกซิเจน → AVPU',await hlId());
+let y=await sy();await tap('#c_o2 .seg button:nth-child(2)');ok(Math.abs(await sy()-y)<5,'เลื่อนจอ NEWS2: แก้ข้อออกซิเจน → ไม่เลื่อน',`${y}→${await sy()}`);
+await p.goto(ROOT+'pews.html');await p.fill('#ageY','5');await p.fill('#hr','100');await p.fill('#rr','25');await p.evaluate(()=>document.activeElement.blur());
+for(const [k,n] of [['beh','c_skin'],['skin','c_o2'],['o2','c_wob']]){await tap(`.seg[data-k=${k}] button[data-v="0"]`);ok(await hlId()===n&&await inView('#'+n),`เลื่อนจอ PEWS: ${k} → ${n.slice(2)}`,await hlId())}
+await tap('.seg[data-k=wob] button[data-v="0"]');y=await sy();await tap('.seg[data-k=beh] button[data-v="1"]');ok(Math.abs(await sy()-y)<5,'เลื่อนจอ PEWS: แก้ข้อพฤติกรรม → ไม่เลื่อน',`${y}→${await sy()}`);
+await p.goto(ROOT+'fall.html');await p.fill('#age','5');await p.evaluate(()=>document.activeElement.blur());await p.waitForTimeout(600);
+ok(await hlId()==='-','เลื่อนจอ Fall เด็ก: เลือกอายุอัตโนมัติ → ไม่เลื่อน',await hlId());
+await tap('#g > .p:nth-child(2) .seg button:nth-child(1)');ok(await p.evaluate(()=>document.querySelector('#g > .p:nth-child(3)').classList.contains('hl'))&&await inView('#g > .p:nth-child(3)'),'เลื่อนจอ Fall เด็ก: ข้อ 2 → ข้อ 3',await hlId());
+await p.fill('#age','45');await p.evaluate(()=>document.activeElement.blur());await p.waitForTimeout(400);y=await sy();
+await tap('#g > .p:nth-child(1) .seg button:nth-child(1)');ok(await hlId()==='-'&&Math.abs(await sy()-y)<5,'เลื่อนจอ Fall ผู้ใหญ่: ข้อเลือกหลายตัวเลือก → ไม่เลื่อน',await hlId());
+await p.goto(ROOT+'adl.html');await tap('#c0 button[data-v="2"]');ok(await hlId()==='c1'&&await inView('#c1'),'เลื่อนจอ ADL: ข้อ 1 → ข้อ 2',await hlId());
+ok(!errs.length,'เลื่อนจอ: ไม่มี JavaScript error',errs.join(';'));await ctx.close()}
+
 await b.close();console.log(fail?`ไม่ผ่าน ${fail} จาก ${n} กรณี`:`ผ่านทั้งหมด ${n} กรณี`);process.exit(fail?1:0)})();

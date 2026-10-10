@@ -66,6 +66,7 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .p.done .pt{background:var(--teal);color:#fff}
 .src{font-size:.85rem;color:var(--mute);background:var(--card);border-radius:18px;padding:12px 14px;margin:0 0 12px;box-shadow:0 2px 10px rgba(22,50,79,.07);line-height:1.55}
 .pt{white-space:nowrap}
+.p.hl{box-shadow:0 0 0 3px var(--teal),0 2px 10px rgba(22,50,79,.07);animation:pulse 1s ease 2}@keyframes pulse{50%{box-shadow:0 0 0 7px rgba(15,124,140,.25)}}@media (prefers-reduced-motion:reduce){.p.hl{animation:none}}.p{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 12px)}
 </style>
 </head>
 <body>
@@ -123,12 +124,14 @@ const I=[
 ["กลั้นไม่ได้บางครั้ง (เป็นน้อยกว่าวันละ 1 ครั้ง)",1],
 ["กลั้นได้เป็นปกติ",2]]}];
 const S={},g=document.getElementById("g");
+const hlTo=c=>{c.classList.remove("hl");void c.offsetWidth;c.classList.add("hl");setTimeout(()=>c.scrollIntoView({behavior:"smooth",block:"start"}),120)};
+
 I.forEach((it,i)=>{const d=document.createElement("div");d.className="p";d.id="c"+i;
 d.innerHTML=`<div class="row"><div class="lab">${it.n}<small>${it.u}</small></div><div class="pt">–</div></div><div class="seg col">${it.o.map(o=>`<button data-v="${o[1]}"><span class="k">${o[0]}</span><span class="d">${o[1]}</span></button>`).join("")}</div>`;
 g.appendChild(d);
 d.querySelectorAll("button").forEach(b=>b.onclick=()=>{d.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
 const first=S[i]==null;S[i]=+b.dataset.v;d.classList.add("done");d.querySelector(".pt").textContent=S[i]+" คะแนน";calc()
-const n=d.nextElementSibling;if(first&&n&&S[i+1]==null)setTimeout(()=>n.scrollIntoView({behavior:"smooth",block:"start"}),120)})});
+d.classList.remove("hl");if(first){const j=I.findIndex((x,jj)=>jj>i&&S[jj]==null);if(j>=0)hlTo(document.getElementById("c"+j))}})});
 function grp(s){const n=t=>`<span style=white-space:nowrap>(${t} คะแนน)</span>`;return s>=12?["var(--s0)","พึ่งพาน้อย "+n("≥12"),"Mild severe dependence"]:s>=9?["var(--s1)","พึ่งพาปานกลาง "+n("9–11"),"Moderately severe dependence",1]:s>=5?["var(--s2)","พึ่งพามาก "+n("5–8"),"Severe dependence"]:["var(--s3)","พึ่งพาโดยสมบูรณ์ "+n("0–4"),"Total dependence"]}
 function calc(){const t=document.getElementById("t"),r=document.getElementById("r");
 const got=Object.keys(S).length;

@@ -96,7 +96,10 @@ if(p.opt)h+=`<div class="seg">${p.opt.map(o=>`<button data-v="${o[1]}"><span cla
 else h+=`<div class="inrow"><input type="text" inputmode="${p.dec?"decimal":"numeric"}" enterkeyhint="next" placeholder="ระบุค่า ${p.u}" autocomplete="off"><button class="nx" type="button">ข้อถัดไป ›</button></div>`;
 if(p.tip)h+=`<div class="tip">${p.tip}</div>`;
 d.innerHTML=h;g.appendChild(d);
-if(p.opt)d.querySelectorAll("button").forEach(b=>b.onclick=()=>{d.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");set(p.k,+b.dataset.v);d.classList.remove("hl");const n=d.nextElementSibling,ni=n&&n.querySelector("input");if(ni&&!ni.value){ni.focus({preventScroll:true});show(n)}});
+if(p.opt)d.querySelectorAll("button").forEach(b=>b.onclick=()=>{const first=S[p.k]==null;d.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");set(p.k,+b.dataset.v);d.classList.remove("hl");
+// ตอบข้อนี้ครั้งแรก → ไปข้อถัดไปที่ยังไม่ได้ตอบ (แก้ข้อเดิมไม่เลื่อน)
+if(!first)return;const cards=[...g.children],n=cards.slice(cards.indexOf(d)+1).find(c=>S[c.id.slice(2)]==null);if(!n)return;const ni=n.querySelector("input");
+if(ni){ni.focus({preventScroll:true});show(n)}else{hl(n);setTimeout(()=>n.scrollIntoView({behavior:"smooth",block:"center"}),350)}});
 else{const i=d.querySelector("input");i.oninput=()=>{const v=parseFloat(i.value.replace(",","."));set(p.k,isNaN(v)?null:p.f(v));clearTimeout(i._t);if(isNaN(v))return;if(p.done&&p.done(i.value.trim()))i._t=setTimeout(go,150);else i._t=setTimeout(()=>{if(document.activeElement===i)go()},1500)};
 const go=()=>{const cards=[...g.children],n=cards[cards.indexOf(d)+1];if(!n){i.blur();return}const ni=n.querySelector("input");if(ni){ni.focus({preventScroll:true});show(n)}else{i.blur();hl(n);setTimeout(()=>n.scrollIntoView({behavior:"smooth",block:"center"}),350)}};
 d.querySelector(".nx").onmousedown=e=>e.preventDefault();d.querySelector(".nx").onclick=go;
@@ -119,7 +122,7 @@ t.textContent=sum;t.style.background=c;t.style.color=dark?"#3a2c00":"#fff";
 r.innerHTML=`<b>${txt}</b><div>${act}</div>`}
 document.getElementById("clr").onclick=()=>{g.classList.add("hide");document.querySelectorAll("#ageq button").forEach(b=>b.classList.remove("on"));document.querySelectorAll("input").forEach(i=>i.value="");document.querySelectorAll(".seg button").forEach(b=>b.classList.remove("on"));P.forEach(p=>set(p.k,null));try{LOG.reset()}catch(e){}window.scrollTo(0,0)};
 document.querySelectorAll("#ageq button").forEach(b=>b.onclick=()=>{
-if(b.dataset.a==="0"){location.href="pews.html?v=20261010q";return}
+if(b.dataset.a==="0"){location.href="pews.html?v=20261010r";return}
 b.classList.add("on");g.classList.remove("hide");const i=g.querySelector("input");if(i&&!i.value){i.focus({preventScroll:true});show(i.closest(".p"))}});
 /* เก็บสถิติการใช้งานแบบไม่ระบุตัวตน (Supabase) — เก็บเฉพาะคะแนน ไม่เก็บค่าสัญญาณชีพดิบ/ข้อมูลผู้ป่วย */
 const LOG=((TABLE,build)=>{

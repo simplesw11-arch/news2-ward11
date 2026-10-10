@@ -66,6 +66,7 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .hint{font-size:.82rem;color:var(--mute);line-height:1.5}
 .inrow{display:flex;gap:8px;align-items:center}
 .inrow input{flex:1;min-width:0}
+.inrow .nx{align-self:stretch}
 .calc{font-size:.85rem;color:var(--ink);background:#f4f8fb;border-radius:8px;padding:8px 10px;line-height:1.5}
 .calc:empty{display:none}
 #agebox{margin-bottom:12px;border-top-color:var(--teal)}
@@ -75,38 +76,35 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 <body>
 <div class="head"><div class="in"><a class="home" href="./">← กลับหน้าหลัก</a><h1>PEWS คำนวณคะแนน</h1><p>Pediatric Early Warning Score · สำหรับผู้ป่วยอายุต่ำกว่า 15 ปี</p></div></div>
 <div class="wrap">
-<div class="p wide" id="agebox"><div class="row"><div class="lab">อายุผู้ป่วย<small>ระบุปีและเดือน · อายุต่ำกว่า 1 ปีให้ระบุเฉพาะเดือน</small></div></div>
-<div class="inrow"><input id="ageY" type="text" inputmode="numeric" enterkeyhint="next" placeholder="ปี" autocomplete="off"><span class="hint">ปี</span><input id="ageM" type="text" inputmode="numeric" enterkeyhint="next" placeholder="เดือน" autocomplete="off"><span class="hint">เดือน</span></div><div class="hint" id="norm"></div></div>
-<div class="grid hide" id="g">
+<div class="p wide" id="agebox"><div class="row"><div class="lab">ข้อมูลที่ต้องกรอก<small>อายุ ชีพจร และอัตราการหายใจ</small></div></div>
+<div class="sub">อายุผู้ป่วย <span class="hint">· ระบุปีและเดือน อายุต่ำกว่า 1 ปีให้ระบุเฉพาะเดือน</span></div>
+<div class="inrow"><input id="ageY" type="text" inputmode="numeric" enterkeyhint="next" placeholder="ปี" autocomplete="off"><span class="hint">ปี</span><input id="ageM" type="text" inputmode="numeric" enterkeyhint="next" placeholder="เดือน" autocomplete="off"><span class="hint">เดือน</span></div><div class="hint" id="norm"></div>
+<div class="sub">อัตราการเต้นของหัวใจ (ครั้ง/นาที)</div>
+<div class="inrow"><input id="hr" type="text" inputmode="numeric" enterkeyhint="next" placeholder="ระบุค่า ครั้ง/นาที" autocomplete="off"><button class="nx" type="button" data-for="hr">ข้อถัดไป ›</button></div>
+<div class="calc" id="hrc"></div>
+<div class="sub">อัตราการหายใจ (ครั้ง/นาที)</div>
+<div class="inrow"><input id="rr" type="text" inputmode="numeric" enterkeyhint="next" placeholder="ระบุค่า ครั้ง/นาที" autocomplete="off"><button class="nx" type="button" data-for="rr">ข้อถัดไป ›</button></div>
+<div class="calc" id="rrc"></div></div>
+<div class="grid" id="g">
 <div class="p" id="c_beh"><div class="row"><div class="lab">พฤติกรรม<small>Behavior</small></div><div class="pt">–</div></div>
 <div class="seg col" data-k="beh">
 <button data-v="0"><span class="k">เล่นได้ ปฏิบัติกิจกรรมได้เหมาะสมตามวัย</span><span class="d">0</span></button>
 <button data-v="1"><span class="k">ง่วงหลับ</span><span class="d">1</span></button>
 <button data-v="2"><span class="k">พักไม่ได้ ปลอบให้พักได้ยาก</span><span class="d">2</span></button>
 <button data-v="3"><span class="k">ตอบสนองต่อความปวดลดลง หรือเซื่องซึม สับสน</span><span class="d">3</span></button></div></div>
-
-<div class="p" id="c_cv"><div class="row"><div class="lab">ระบบหัวใจและหลอดเลือด<small>Cardiovascular</small></div><div class="pt">–</div></div>
-<div class="sub">อัตราการเต้นของหัวใจ (ครั้ง/นาที)</div>
-<div class="inrow"><input id="hr" type="text" inputmode="numeric" enterkeyhint="next" placeholder="ระบุค่า ครั้ง/นาที" autocomplete="off"><button class="nx" type="button" data-for="hr">ข้อถัดไป ›</button></div>
-<div class="calc" id="hrc"></div>
-<div class="sub">สีผิวและ capillary refill</div>
+<div class="p" id="c_skin"><div class="row"><div class="lab">สีผิวและ capillary refill<small>Cardiovascular · ใช้คะแนนสูงสุดร่วมกับชีพจร</small></div><div class="pt">–</div></div>
 <div class="seg col" data-k="skin">
 <button data-v="0"><span class="k">สีผิวชมพู หรือ capillary refill 1–2 วินาที</span><span class="d">0</span></button>
 <button data-v="1"><span class="k">สีผิวซีดหรือดำคล้ำ หรือ capillary refill 3 วินาที</span><span class="d">1</span></button>
 <button data-v="2"><span class="k">สีผิวคล้ำหรือเขียว หรือ capillary refill 4 วินาที</span><span class="d">2</span></button>
 <button data-v="3"><span class="k">สีผิวคล้ำเขียวหรือตัวลาย หรือ capillary refill ≥ 5 วินาที</span><span class="d">3</span></button></div></div>
-
-<div class="p" id="c_rs"><div class="row"><div class="lab">ระบบทางเดินหายใจ<small>Respiratory</small></div><div class="pt">–</div></div>
-<div class="sub">อัตราการหายใจ (ครั้ง/นาที)</div>
-<div class="inrow"><input id="rr" type="text" inputmode="numeric" enterkeyhint="next" placeholder="ระบุค่า ครั้ง/นาที" autocomplete="off"><button class="nx" type="button" data-for="rr">ข้อถัดไป ›</button></div>
-<div class="calc" id="rrc"></div>
-<div class="sub">การได้รับออกซิเจน</div>
+<div class="p" id="c_o2"><div class="row"><div class="lab">การได้รับออกซิเจน<small>Respiratory · ใช้คะแนนสูงสุดร่วมกับอัตราการหายใจ</small></div><div class="pt">–</div></div>
 <div class="seg col" data-k="o2">
 <button data-v="0"><span class="k">ไม่ได้รับออกซิเจน หรือต่ำกว่าเกณฑ์ด้านล่าง</span><span class="d">0</span></button>
 <button data-v="1"><span class="k">FiO₂ > 30% หรือ O₂ flow ≥ 3 ลิตร/นาที</span><span class="d">1</span></button>
 <button data-v="2"><span class="k">FiO₂ > 40% หรือ O₂ flow ≥ 6 ลิตร/นาที</span><span class="d">2</span></button>
-<button data-v="3"><span class="k">FiO₂ > 50% หรือ O₂ flow ≥ 8 ลิตร/นาที</span><span class="d">3</span></button></div>
-<div class="sub">การหายใจและเสียงปอด</div>
+<button data-v="3"><span class="k">FiO₂ > 50% หรือ O₂ flow ≥ 8 ลิตร/นาที</span><span class="d">3</span></button></div></div>
+<div class="p" id="c_wob"><div class="row"><div class="lab">การหายใจและเสียงปอด<small>Respiratory · ใช้คะแนนสูงสุดร่วมกับอัตราการหายใจ</small></div><div class="pt">–</div></div>
 <div class="seg col" data-k="wob">
 <button data-v="0"><span class="k">ไม่มี retraction เสียงปอดปกติ ไม่มีเสียง wheeze</span><span class="d">0</span></button>
 <button data-v="1"><span class="k">Mild retraction หรือได้ยินเสียง wheeze ช่วงท้ายของการหายใจออกโดยใช้ stethoscope</span><span class="d">1</span></button>
@@ -144,7 +142,8 @@ let LAST=null;
 function calc(){calc0();try{LOG.upd(AGE!=null&&(Object.values(S).some(v=>v!=null)||!!$("hr").value||!!$("rr").value))}catch(e){}}
 function calc0(){LAST=null;const h=hrScore(),r=rrScore();
 $("hrc").textContent=h?`${h[1]} → ${h[0]} คะแนน`:"";$("rrc").textContent=r?`${r[1]} → ${r[0]} คะแนน`:"";
-const b=card("c_beh",[S.beh]),c=card("c_cv",[h&&h[0],S.skin]),s=card("c_rs",[r&&r[0],S.o2,S.wob]);
+card("c_beh",[S.beh]);card("c_skin",[S.skin]);card("c_o2",[S.o2]);card("c_wob",[S.wob]);
+const mx=a=>a.some(x=>x==null)?null:Math.max(...a),b=S.beh,c=mx([h&&h[0],S.skin]),s=mx([r&&r[0],S.o2,S.wob]);
 const t=$("t"),res=$("r"),got=[b,c,s].filter(x=>x!=null).length;
 if(AGE==null){t.textContent="–";t.style.background="";t.style.color="";res.innerHTML="<b>โปรดระบุอายุผู้ป่วย</b><div>ยังไม่มีผลคะแนน</div>";return}
 if(got<3){t.textContent="–";t.style.background="";t.style.color="";res.innerHTML=`<b>ประเมินแล้ว ${got}&nbsp;จาก&nbsp;3&nbsp;หมวด</b><div>โปรดกรอกข้อมูลให้ครบทุกหมวด</div>`;return}
@@ -156,15 +155,16 @@ else{col="var(--s0)";txt="PEWS "+sum+" คะแนน"}
 t.textContent=sum;t.style.background=col;t.style.color=dark?"#3a2c00":"#fff";
 res.innerHTML=`<b>${txt}</b><div>${red?"มีหมวดที่ได้ 3 คะแนน":`พฤติกรรม ${b} · หัวใจ ${c} · หายใจ ${s}`}</div>`}
 const ageIn=()=>{const y=num($("ageY").value),m=num($("ageM").value);const a=y==null&&m==null?null:(y||0)+(m||0)/12;
-if(a==null||a<0){AGE=null;$("norm").textContent="";g.classList.add("hide")}
-else if(a>=15){AGE=null;g.classList.add("hide");$("norm").innerHTML='ผู้ป่วยอายุ 15 ปีขึ้นไป โปรดใช้ <a href="news2.html?v=20261010q">แบบประเมิน NEWS2</a>'}
-else{AGE=a;g.classList.remove("hide");const h=norm(HRN,a),r=norm(RRN,a);$("norm").textContent=`ค่าปกติตามอายุ: ชีพจร ${h[1]}–${h[2]} ครั้ง/นาที · อัตราการหายใจ ${r[1]}–${r[2]} ครั้ง/นาที`}
+if(a==null||a<0){AGE=null;$("norm").textContent="";0}
+else if(a>=15){AGE=null;0;$("norm").innerHTML='ผู้ป่วยอายุ 15 ปีขึ้นไป โปรดใช้ <a href="news2.html?v=20261010r">แบบประเมิน NEWS2</a>'}
+else{AGE=a;const h=norm(HRN,a),r=norm(RRN,a);$("norm").textContent=`ค่าปกติตามอายุ: ชีพจร ${h[1]}–${h[2]} ครั้ง/นาที · อัตราการหายใจ ${r[1]}–${r[2]} ครั้ง/นาที`}
 calc()};
 $("ageY").oninput=ageIn;$("ageM").oninput=ageIn;
 $("hr").oninput=calc;$("rr").oninput=calc;
 // เลื่อนช่องอัตโนมัติ: ปี (0–1 ปี → ช่องเดือน, ≥2 ปี → ชีพจร) → เดือน → ชีพจร → อัตราการหายใจ → หมวดพฤติกรรม
-const focusIn=id=>{const i=$(id);i.focus({preventScroll:true});setTimeout(()=>i.closest(".p").scrollIntoView({behavior:"smooth",block:"start"}),60)};
-const toBeh=()=>{document.activeElement&&document.activeElement.blur();const c=$("c_beh");c.classList.remove("hl");void c.offsetWidth;c.classList.add("hl");setTimeout(()=>c.scrollIntoView({behavior:"smooth",block:"center"}),300)};
+const focusIn=id=>{const i=$(id);i.focus({preventScroll:true});setTimeout(()=>i.scrollIntoView({behavior:"smooth",block:"nearest"}),60)};
+const hlTo=c=>{c.classList.remove("hl");void c.offsetWidth;c.classList.add("hl");setTimeout(()=>c.scrollIntoView({behavior:"smooth",block:"start"}),120)};
+const toBeh=()=>{document.activeElement&&document.activeElement.blur();const n=["beh","skin","o2","wob"].find(k=>S[k]==null);if(n)setTimeout(()=>hlTo($("c_"+n)),200)};
 const NEXT={ageY:()=>{const y=num($("ageY").value);if(y==null||y>=15)return;if(y<2){$("ageM").focus()}else focusIn("hr")},ageM:()=>{if(AGE!=null)focusIn("hr")},hr:()=>focusIn("rr"),rr:toBeh};
 // พิมพ์ครบแน่นอนแล้วเลื่อนทันที ถ้ายังอาจพิมพ์ต่อ (เช่น "1" อาจเป็น 1 หรือ 12) รอ 1.5 วินาที
 const DONE={ageY:v=>/^\d{2}$|^[02-9]$/.test(v),ageM:v=>/^\d{2}$|^[02-9]$/.test(v),hr:v=>/^[12]\d{2}$|^[3-9]\d$/.test(v),rr:v=>/^\d{2}$/.test(v)};
@@ -174,9 +174,11 @@ i._t=setTimeout(()=>{if(document.activeElement===i)NEXT[id]()},DONE[id](v)?150:1
 i.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();clearTimeout(i._t);NEXT[id]()}}});
 document.querySelectorAll(".nx").forEach(b=>{b.onmousedown=e=>e.preventDefault();b.onclick=()=>NEXT[b.dataset.for]()});
 document.querySelectorAll(".seg").forEach(sg=>sg.querySelectorAll("button").forEach(b=>b.onclick=()=>{
-sg.querySelectorAll("button").forEach(x=>x.classList.remove("on"));sg.closest(".p").classList.remove("hl");b.classList.add("on");S[sg.dataset.k]=+b.dataset.v;calc()}));
+const first=S[sg.dataset.k]==null;sg.querySelectorAll("button").forEach(x=>x.classList.remove("on"));sg.closest(".p").classList.remove("hl");b.classList.add("on");S[sg.dataset.k]=+b.dataset.v;calc();
+// ตอบข้อนี้ครั้งแรก → เลื่อนไปข้อแตะเลือกถัดไปที่ยังไม่ได้ตอบ (แก้ข้อเดิมไม่เลื่อน)
+if(first){const ks=["beh","skin","o2","wob"],n=ks.slice(ks.indexOf(sg.dataset.k)+1).find(k=>S[k]==null);if(n)hlTo($("c_"+n))}}));
 $("clr").onclick=()=>{document.querySelectorAll("input").forEach(i=>i.value="");document.querySelectorAll(".seg button").forEach(b=>b.classList.remove("on"));
-for(const k in S)S[k]=null;AGE=null;$("norm").textContent="";g.classList.add("hide");calc();try{LOG.reset()}catch(e){}window.scrollTo(0,0)};
+for(const k in S)S[k]=null;AGE=null;$("norm").textContent="";0;calc();try{LOG.reset()}catch(e){}window.scrollTo(0,0)};
 calc();
 /* เก็บสถิติการใช้งานแบบไม่ระบุตัวตน (Supabase) — เก็บเฉพาะคะแนนและช่วงอายุ ไม่เก็บอายุจริง ค่าสัญญาณชีพดิบ หรือข้อมูลผู้ป่วย */
 const LOG=((TABLE,build)=>{
