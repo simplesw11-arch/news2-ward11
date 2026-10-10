@@ -81,6 +81,18 @@ for(const j of risk)await pick(1,j);await pick(2,go);const t=await T(p),r=await 
 // ผู้สูงอายุ: ข้อ 1 อายุอัตโนมัติ, ข้อ 2 ปัจจัยเสี่ยง
 for(const [a,risk,tot,txt] of [['70',[3],'1.5','ระดับ 1'],['85',[1],'3','ระดับ 2'],['85',[2],'6','ระดับ 3']]){await p.blurAll();await p.click('#clr');await p.fill('#age',a);await p.blurAll();
 for(const j of risk)await pick(2,j);const t=await T(p),r=await Rs(p);ok(t===tot&&r.includes(txt),`Fall ผู้สูงอายุ อายุ ${a}: ${tot} ${txt}`,`${t} / ${r}`)}
+// ข้ออายุล็อกตามอายุที่กรอก + กรอกอายุเสร็จแล้วเลื่อนไปข้อถัดไป
+const onIdx=()=>p.evaluate(()=>[...document.querySelectorAll('#g > .p:nth-child(1) .seg button')].findIndex(b=>b.classList.contains('on')));
+const hlN=()=>p.evaluate(()=>[...document.querySelectorAll('#g > .p')].findIndex(e=>e.classList.contains('hl'))+1);
+await p.blurAll();await p.click('#clr');await p.fill('#age','5');await p.blurAll();
+const dis=await p.evaluate(()=>[...document.querySelectorAll('#g > .p:nth-child(1) .seg button')].map(b=>b.disabled).join(','));
+await p.$eval('#g > .p:nth-child(1) .seg button:nth-child(1)',e=>e.click());
+ok(await onIdx()===1&&dis==='true,false,true,true','Fall ล็อกอายุ: อายุ 5 ปี → ล็อก "3–7 ปี" แตะช่องอื่นไม่ได้',`on=${await onIdx()} disabled=${dis}`);
+await p.fill('#age','10');await p.blurAll();ok(await onIdx()===2,'Fall ล็อกอายุ: แก้อายุเป็น 10 ปี → เปลี่ยนเป็น "7–13 ปี"',String(await onIdx()));
+await p.fill('#age','');await p.blurAll();ok(await p.evaluate(()=>[...document.querySelectorAll('#g > .p:nth-child(1) .seg button')].every(b=>!b.disabled)),'Fall ล็อกอายุ: ลบอายุ → ปลดล็อก แตะเลือกเองได้','');
+for(const [a,want,nm] of [['5',2,'เด็ก → ข้อ 2'],['45',2,'ผู้ใหญ่ → Get up & go'],['70',2,'ผู้สูงอายุ → ปัจจัยเสี่ยง']]){await p.blurAll();await p.click('#clr');await p.click('#age');await p.keyboard.type(a,{delay:50});await p.keyboard.press('Enter');await p.waitForTimeout(700);
+ok(await hlN()===want,`Fall กรอกอายุเสร็จ: ${nm}`,String(await hlN()))}
+await p.blurAll();await p.click('#clr');await p.click('#age');await p.keyboard.type('8',{delay:50});await p.waitForTimeout(2200);ok(await hlN()===2,'Fall กรอกอายุแล้วหยุด 1.5 วินาที → เลื่อนไปข้อถัดไป',String(await hlN()));
 if(p.errs.length)ok(false,'Fall JavaScript error',p.errs.join(';'));await p.close()}
 
 // ปุ่มเพิ่มไอคอนบนหน้าจอ: แสดงขั้นตอนตามอุปกรณ์/เบราว์เซอร์
