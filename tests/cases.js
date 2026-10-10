@@ -115,4 +115,11 @@ await p.goto(ROOT+'index.html');await p.waitForTimeout(500);ok(await vis()==='ne
 hidden=['news2','fall','adl','report'];await p.reload();await p.waitForTimeout(500);ok(await p.isVisible('#empty'),'ตั้งค่า: ซ่อนทั้งหมดแล้วแสดงข้อความแจ้ง','');
 await ctx.close()}
 
+// ยังไม่ได้ตั้งรหัสผ่าน: เข้าได้ทันทีโดยไม่ต้องใส่รหัส
+{const ctx=await b.newContext({viewport:{width:390,height:800}});
+await ctx.route('**/rpc/get_settings',r=>r.fulfill({status:200,contentType:'application/json',body:'{}'}));
+await ctx.route('**/rpc/check_admin_pin',r=>r.fulfill({status:200,contentType:'application/json',body:'true'}));
+const p=await ctx.newPage();await p.goto(ROOT+'settings.html');await p.waitForTimeout(500);
+ok(await p.isVisible('#panel')&&await p.isHidden('#login')&&await p.isHidden('#out2'),'ตั้งค่า: ยังไม่ตั้งรหัสผ่าน → เข้าได้ทันที','');await ctx.close()}
+
 await b.close();console.log(fail?`ไม่ผ่าน ${fail} จาก ${n} กรณี`:`ผ่านทั้งหมด ${n} กรณี`);process.exit(fail?1:0)})();

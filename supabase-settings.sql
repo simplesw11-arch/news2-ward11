@@ -1,6 +1,5 @@
 -- หน้าตั้งค่าผู้ดูแล (settings.html): เปิด/ปิดแบบประเมินในหน้าหลัก
--- ก่อนกด Run ให้เปลี่ยน 'ตั้งรหัสผ่านที่นี่' เป็นรหัสผ่านผู้ดูแล (แนะนำอย่างน้อย 8 ตัวอักษร)
--- เปลี่ยนรหัสผ่านภายหลัง: รันเฉพาะคำสั่ง insert ... on conflict ด้านล่างอีกครั้งด้วยรหัสใหม่
+-- รันได้ทันที ไม่ต้องแก้อะไร
 
 create schema if not exists private;
 revoke all on schema private from public, anon, authenticated;
@@ -9,9 +8,11 @@ create table if not exists private.admin_pin (
   id int primary key default 1 check (id = 1),
   pin_hash text not null
 );
-insert into private.admin_pin (id, pin_hash)
-values (1, encode(sha256(convert_to('ตั้งรหัสผ่านที่นี่', 'UTF8')), 'hex'))
-on conflict (id) do update set pin_hash = excluded.pin_hash;
+-- ตอนนี้ยังไม่ใช้รหัสผ่าน (ยังไม่มีแถวในตารางนี้ = ใครก็เข้าหน้าตั้งค่าได้)
+-- เมื่อต้องการใช้รหัสผ่าน ให้รันคำสั่งนี้ (เปลี่ยน 'ตั้งรหัสผ่านที่นี่'):
+-- insert into private.admin_pin (id, pin_hash)
+-- values (1, encode(sha256(convert_to('ตั้งรหัสผ่านที่นี่', 'UTF8')), 'hex'))
+-- on conflict (id) do update set pin_hash = excluded.pin_hash;
 
 create table if not exists public.app_settings (
   key        text primary key,
@@ -31,6 +32,9 @@ create or replace function public.check_admin_pin(pin text)
 returns boolean language plpgsql security definer set search_path = ''
 as $$
 begin
+  if not exists (select 1 from private.admin_pin) then
+    return true;  -- ยังไม่ได้ตั้งรหัสผ่าน
+  end if;
   if pin is not null and encode(sha256(convert_to(pin, 'UTF8')), 'hex')
      = (select pin_hash from private.admin_pin where id = 1) then
     return true;

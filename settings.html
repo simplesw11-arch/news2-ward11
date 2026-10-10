@@ -126,7 +126,7 @@ const B="https://bouxgjkhlywhxmtuyvpp.supabase.co/rest/v1/rpc/",KEY="sb_publisha
 const $=id=>document.getElementById(id);
 const rpc=(f,body)=>fetch(B+f,{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY,Authorization:"Bearer "+KEY},body:JSON.stringify(body||{})});
 const TOOLS=[["news2","🩺","NEWS2 / PEWS","คะแนนเตือนภาวะวิกฤต"],["fall","🛏️","Fall Risk","ความเสี่ยงพลัดตกหกล้ม"],["adl","🧍","ADL","การทำกิจวัตรประจำวัน"],["report","📊","รายงานการใช้งาน","สถิติการใช้งาน NEWS2 และ PEWS"]];
-let PIN=null,saved=[];
+let PIN=null,saved=[],NOPIN=false;
 const msg=(id,t,err)=>{$(id).className="msg"+(err?" err":"");$(id).textContent=t};
 function render(h){$("list").innerHTML=TOOLS.map(([k,ic,n,d])=>`<div class="tg"><div class="ic">${ic}</div><div class="t"><b>${n}</b><small>${d}</small></div><span class="st" id="st_${k}"></span><label class="sw"><input type="checkbox" data-k="${k}" ${h.includes(k)?"":"checked"} aria-label="แสดง ${n}"><span></span></label></div>`).join("");
 document.querySelectorAll("#list input").forEach(i=>{i.onchange=upd});upd()}
@@ -134,12 +134,12 @@ function cur(){return[...document.querySelectorAll("#list input")].filter(i=>!i.
 function upd(){document.querySelectorAll("#list input").forEach(i=>{const s=$("st_"+i.dataset.k);s.textContent=i.checked?"แสดง":"ซ่อน";s.style.color=i.checked?"var(--teal)":"var(--mute)"});
 const ch=JSON.stringify(cur().sort())!==JSON.stringify([...saved].sort());$("save").disabled=!ch;$("cancel").disabled=!ch;
 if(cur().length===TOOLS.length)msg("smsg","คำเตือน: หากซ่อนทั้งหมด หน้าหลักจะไม่มีแบบประเมินให้เลือก",true);else if(ch)msg("smsg","มีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก");else msg("smsg","")}
-async function enter(p){msg("lmsg","กำลังตรวจสอบรหัสผ่าน…");$("enter").disabled=true;
+async function enter(p){msg("lmsg","กำลังตรวจสอบ…");$("enter").disabled=true;
 try{const r=await rpc("check_admin_pin",{pin:p});if(!r.ok)throw r.status;const ok=await r.json();
 if(ok!==true){msg("lmsg","รหัสผ่านไม่ถูกต้อง",true);try{sessionStorage.removeItem("w11_admin")}catch(e){}return}
 PIN=p;try{sessionStorage.setItem("w11_admin",p)}catch(e){}
 const g=await rpc("get_settings");const j=g.ok?await g.json():{};saved=(j&&j.hidden_tools)||[];
-$("login").classList.add("hide");$("panel").classList.remove("hide");$("out2").classList.remove("hide");render(saved)}
+$("login").classList.add("hide");$("panel").classList.remove("hide");$("out2").classList.toggle("hide",NOPIN);render(saved)}
 catch(e){msg("lmsg","ไม่สามารถเชื่อมต่อได้ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ต ("+e+")",true)}finally{$("enter").disabled=false}}
 $("enter").onclick=()=>{const p=$("pin").value;if(!p)return msg("lmsg","โปรดระบุรหัสผ่าน",true);enter(p)};
 $("pin").onkeydown=e=>{if(e.key==="Enter")$("enter").click()};
@@ -149,7 +149,10 @@ try{const r=await rpc("set_hidden_tools",{pin:PIN,hidden:h});if(!r.ok)throw r.st
 try{localStorage.setItem("w11_hidden_tools",JSON.stringify(saved))}catch(e){}render(saved);msg("smsg","บันทึกเรียบร้อยแล้ว หน้าหลักทุกเครื่องจะแสดงตามนี้เมื่อเปิดครั้งถัดไป")}
 catch(e){msg("smsg","ไม่สามารถบันทึกข้อมูลได้ โปรดลองอีกครั้ง",true);upd()}};
 $("logout").onclick=()=>{try{sessionStorage.removeItem("w11_admin")}catch(e){}location.reload()};
-try{const p=sessionStorage.getItem("w11_admin");if(p)enter(p)}catch(e){}
+// ถ้ายังไม่ได้ตั้งรหัสผ่าน (ฐานข้อมูลตอบ true กับรหัสว่าง) เข้าหน้าตั้งค่าได้ทันที
+(async()=>{let p="";try{p=sessionStorage.getItem("w11_admin")||""}catch(e){}
+try{const r=await rpc("check_admin_pin",{pin:p});if(r.ok&&await r.json()===true){NOPIN=!p;return enter(p)}}catch(e){}
+if(p)enter(p)})();
 </script>
 <script>if("serviceWorker"in navigator&&location.protocol.indexOf("http")===0)navigator.serviceWorker.register("sw.js").catch(()=>{})</script>
 </body>
