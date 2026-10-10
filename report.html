@@ -240,18 +240,22 @@ if(!c){tip.style.display="none";return}tip.textContent=c.dataset.tip;tip.style.d
 const w=tip.offsetWidth;tip.style.left=Math.min(innerWidth-w-8,Math.max(8,e.clientX-w/2))+"px";tip.style.top=(e.clientY-40)+"px"});
 $("daily").addEventListener("pointerleave",()=>tip.style.display="none");
 
-$("csv").onclick=()=>{if(M==="pews")return csvPews();const H=["ลำดับ","วันเวลา","วันที่ (พ.ศ.)","BT","PR","RR","SBP","SpO2","O2","AVPU","คะแนนรวม","ระดับความเสี่ยง","Red score","เวลากรอก(วินาที)","อุปกรณ์"];
-const f=s=>{const d=bkk(s);return ymd(d)+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
-const L=rows.map((r,i)=>[i+1,f(r.assessed_at),thD(bkk(r.assessed_at)),r.temp_score,r.pulse_score,r.rr_score,r.sbp_score,r.spo2_score,r.o2_score,r.avpu_score,r.total_score,RISK_TH[r.risk_level]||r.risk_level,r.red_score?"มี":"ไม่มี",r.duration_sec??"",DEV[r.device_type]||r.device_type]);
+const MTH=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+const PH=["วันที่ (ค.ศ.)","วันที่ (พ.ศ.)","เวลา","เดือน","เวร"];
+const pre=s=>{const d=bkk(s),h=d.getHours();return[ymd(d),thD(d),String(h).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"),MTH[d.getMonth()]+" "+(d.getFullYear()+543),h>=8&&h<16?"เช้า":h>=16?"บ่าย":"ดึก"]};
+const fname=t=>{const a=new Date($("d1").value+"T00:00:00"),b=new Date($("d2").value+"T00:00:00"),last=new Date(a.getFullYear(),a.getMonth()+1,0).getDate();
+const my=d=>MTH[d.getMonth()]+(d.getFullYear()+543);const dm=d=>d.getDate()+MTH[d.getMonth()]+String(d.getFullYear()+543).slice(2);
+return t+"_"+(a.getDate()===1&&b.getFullYear()===a.getFullYear()&&b.getMonth()===a.getMonth()&&b.getDate()===last?my(a):dm(a)+"-"+dm(b))+".csv"};
+$("csv").onclick=()=>{if(M==="pews")return csvPews();const H=["ลำดับ",...PH,"BT","PR","RR","SBP","SpO2","O2","AVPU","คะแนนรวม","ระดับความเสี่ยง","Red score","เวลากรอก(วินาที)","อุปกรณ์"];
+const L=rows.map((r,i)=>[i+1,...pre(r.assessed_at),r.temp_score,r.pulse_score,r.rr_score,r.sbp_score,r.spo2_score,r.o2_score,r.avpu_score,r.total_score,RISK_TH[r.risk_level]||r.risk_level,r.red_score?"มี":"ไม่มี",r.duration_sec??"",DEV[r.device_type]||r.device_type]);
 const csv="﻿"+[H,...L].map(a=>a.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
 const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
-a.download=`news2_${$("d1").value}_${$("d2").value}.csv`;document.body.appendChild(a);a.click();a.remove()};
-function csvPews(){const H=["ลำดับ","วันเวลา","วันที่ (พ.ศ.)","ช่วงอายุ","พฤติกรรม","หัวใจและหลอดเลือด","ทางเดินหายใจ","HR","สีผิว/CRT","RR","ออกซิเจน","การหายใจ/เสียงปอด","คะแนนรวม","มีหมวดที่ได้ 3","เวลากรอก(วินาที)","อุปกรณ์"];
-const f=s=>{const d=bkk(s);return ymd(d)+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
-const L=rows.map((r,i)=>[i+1,f(r.assessed_at),thD(bkk(r.assessed_at)),AGE_TH[r.age_band]||r.age_band,r.behavior_score,r.cardio_score,r.resp_score,r.hr_score,r.skin_score,r.rr_score,r.o2_score,r.wob_score,r.total_score,r.red_score?"มี":"ไม่มี",r.duration_sec??"",DEV[r.device_type]||r.device_type]);
+a.download=fname("NEWS2");document.body.appendChild(a);a.click();a.remove()};
+function csvPews(){const H=["ลำดับ",...PH,"ช่วงอายุ","พฤติกรรม","หัวใจและหลอดเลือด","ทางเดินหายใจ","HR","สีผิว/CRT","RR","ออกซิเจน","การหายใจ/เสียงปอด","คะแนนรวม","มีหมวดที่ได้ 3","เวลากรอก(วินาที)","อุปกรณ์"];
+const L=rows.map((r,i)=>[i+1,...pre(r.assessed_at),AGE_TH[r.age_band]||r.age_band,r.behavior_score,r.cardio_score,r.resp_score,r.hr_score,r.skin_score,r.rr_score,r.o2_score,r.wob_score,r.total_score,r.red_score?"มี":"ไม่มี",r.duration_sec??"",DEV[r.device_type]||r.device_type]);
 const csv="\ufeff"+[H,...L].map(a=>a.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
 const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
-a.download=`pews_${$("d1").value}_${$("d2").value}.csv`;document.body.appendChild(a);a.click();a.remove()}
+a.download=fname("PEWS");document.body.appendChild(a);a.click();a.remove()}
 </script>
 </body>
 </html>
