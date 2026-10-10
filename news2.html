@@ -65,12 +65,12 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 </div></div>
 <script>
 const P=[
+{k:"bt",n:"Temperature",u:"°C",done:v=>/^\d{2}[.,]\d$/.test(v),dec:1,f:v=>v<=35?3:v<=36?1:v<=38?0:v<=39?1:2},
+{k:"pr",n:"Pulse",u:"ครั้ง/นาที",done:v=>/^[12]\d{2}$|^[3-9]\d$/.test(v),f:v=>v<=40?3:v<=50?1:v<=90?0:v<=110?1:v<=130?2:3},
 {k:"rr",n:"Respiratory rate",u:"ครั้ง/นาที",done:v=>/^[1-5]\d$|^[6-9]$/.test(v),f:v=>v<=8?3:v<=11?1:v<=20?0:v<=24?2:3},
+{k:"sbp",n:"Systolic BP",u:"mmHg",done:v=>/^[12]\d{2}$|^[3-9]\d$/.test(v),f:v=>v<=90?3:v<=100?2:v<=110?1:v<=219?0:3},
 {k:"spo2",n:"SpO₂",u:"%",done:v=>/^1\d{2}$|^[2-9]\d$/.test(v),f:v=>v<=91?3:v<=93?2:v<=95?1:0},
 {k:"o2",n:"การใช้ออกซิเจน",u:"O₂ supplement",opt:[["ไม่ใช้",0,"Room air"],["ใช้",2,"Cannula, mask, HFNC ฯลฯ"]]},
-{k:"sbp",n:"Systolic BP",u:"mmHg",done:v=>/^[12]\d{2}$|^[3-9]\d$/.test(v),f:v=>v<=90?3:v<=100?2:v<=110?1:v<=219?0:3},
-{k:"pr",n:"Pulse",u:"ครั้ง/นาที",done:v=>/^[12]\d{2}$|^[3-9]\d$/.test(v),f:v=>v<=40?3:v<=50?1:v<=90?0:v<=110?1:v<=130?2:3},
-{k:"bt",n:"Temperature",u:"°C",done:v=>/^\d{2}[.,]\d$/.test(v),dec:1,f:v=>v<=35?3:v<=36?1:v<=38?0:v<=39?1:2},
 {k:"avpu",n:"ระดับความรู้สึกตัว",u:"AVPU",cls:"avpu wide",opt:[
 ["A · Alert",0,"ตื่นเอง ลืมตาเอง พูดคุยรู้เรื่อง"],
 ["V · Voice",3,"ต้องเรียกจึงลืมตาหรือตอบสนอง"],

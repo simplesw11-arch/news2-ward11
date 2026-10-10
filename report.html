@@ -113,7 +113,7 @@ select{font:inherit;font-size:16px;padding:4px 2px;border:1.5px solid var(--teal
 </div>
 
 <div class="card"><h2>รายการทั้งหมด (แก้ไขคะแนนได้)</h2>
-<div class="tw"><table><thead><tr><th>วันเวลา</th><th>RR</th><th>SpO₂</th><th>O₂</th><th>SBP</th><th>Pulse</th><th>Temp</th><th>AVPU</th><th>รวม</th><th>ความเสี่ยง</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="tw"><table><thead><tr><th>วันเวลา</th><th>BT</th><th>PR</th><th>RR</th><th>SBP</th><th>SpO₂</th><th>O₂</th><th>AVPU</th><th>รวม</th><th>ความเสี่ยง</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
 <p class="note">เลือก “แก้ไข” เพื่อปรับคะแนนรายข้อ ระบบจะคำนวณคะแนนรวมและระดับความเสี่ยงใหม่โดยอัตโนมัติ</p></div>
 
 <div class="card" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between">
@@ -130,7 +130,7 @@ KEY="sb_publishable_UCUPBieE6U2zWezBdNU40w_51N8Llqy";
 const $=id=>document.getElementById(id);
 const RISK=[["high","สูง (≥7)","var(--s3)"],["medium","ปานกลาง (5–6)","var(--s2)"],["low_medium_red","ต่ำ–ปานกลาง (มี 3 คะแนนในข้อเดียว)","#f5a05a"],["low","ต่ำ (1–4)","var(--s1)"],["none","ต่ำมาก (0)","var(--s0)"]];
 const RISK_TH=Object.fromEntries(RISK.map(r=>[r[0],r[1]]));
-const PAR=[["rr_score","Respiratory rate"],["spo2_score","SpO₂"],["o2_score","การใช้ออกซิเจน"],["sbp_score","Systolic BP"],["pulse_score","Pulse"],["temp_score","Temperature"],["avpu_score","ระดับความรู้สึกตัว (AVPU)"]];
+const PAR=[["temp_score","Temperature"],["pulse_score","Pulse"],["rr_score","Respiratory rate"],["sbp_score","Systolic BP"],["spo2_score","SpO₂"],["o2_score","การใช้ออกซิเจน"],["avpu_score","ระดับความรู้สึกตัว (AVPU)"]];
 const DEV={mobile:"โทรศัพท์มือถือ",tablet:"แท็บเล็ต / iPad",desktop:"คอมพิวเตอร์"};
 let rows=[];
 
@@ -181,7 +181,7 @@ const mx=Math.max(...days.map(d=>cnt[d]||0),1);
 $("daily").innerHTML=days.map(d=>`<div class="col" data-tip="${thDate(d)}: ${cnt[d]||0} ครั้ง" style="height:${(cnt[d]||0)/mx*100}%;${cnt[d]?"":"min-height:0;background:transparent"}"></div>`).join("");
 $("ax1").textContent=thDate(days[0]);$("ax2").textContent=days.length>1?thDate(days[days.length-1]):"";table()}
 
-const KS=["rr_score","spo2_score","o2_score","sbp_score","pulse_score","temp_score","avpu_score"];
+const KS=["temp_score","pulse_score","rr_score","sbp_score","spo2_score","o2_score","avpu_score"];
 const OPT={o2_score:[0,2],avpu_score:[0,3]};
 const RC=Object.fromEntries(RISK.map(r=>[r[0],r[2]]));
 const RS={high:"สูง",medium:"ปานกลาง",low_medium_red:"ต่ำ–ปานกลาง",low:"ต่ำ",none:"ต่ำมาก"};
@@ -208,9 +208,9 @@ if(!c){tip.style.display="none";return}tip.textContent=c.dataset.tip;tip.style.d
 const w=tip.offsetWidth;tip.style.left=Math.min(innerWidth-w-8,Math.max(8,e.clientX-w/2))+"px";tip.style.top=(e.clientY-40)+"px"});
 $("daily").addEventListener("pointerleave",()=>tip.style.display="none");
 
-$("csv").onclick=()=>{const H=["ลำดับ","วันเวลา","RR","SpO2","O2","SBP","Pulse","Temp","AVPU","คะแนนรวม","ระดับความเสี่ยง","Red score","เวลากรอก(วินาที)","อุปกรณ์"];
+$("csv").onclick=()=>{const H=["ลำดับ","วันเวลา","BT","PR","RR","SBP","SpO2","O2","AVPU","คะแนนรวม","ระดับความเสี่ยง","Red score","เวลากรอก(วินาที)","อุปกรณ์"];
 const f=s=>{const d=bkk(s);return ymd(d)+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
-const L=rows.map((r,i)=>[i+1,f(r.assessed_at),r.rr_score,r.spo2_score,r.o2_score,r.sbp_score,r.pulse_score,r.temp_score,r.avpu_score,r.total_score,RISK_TH[r.risk_level]||r.risk_level,r.red_score?"มี":"ไม่มี",r.duration_sec??"",DEV[r.device_type]||r.device_type]);
+const L=rows.map((r,i)=>[i+1,f(r.assessed_at),r.temp_score,r.pulse_score,r.rr_score,r.sbp_score,r.spo2_score,r.o2_score,r.avpu_score,r.total_score,RISK_TH[r.risk_level]||r.risk_level,r.red_score?"มี":"ไม่มี",r.duration_sec??"",DEV[r.device_type]||r.device_type]);
 const csv="﻿"+[H,...L].map(a=>a.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
 const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
 a.download=`news2_${$("d1").value}_${$("d2").value}.csv`;document.body.appendChild(a);a.click();a.remove()};
