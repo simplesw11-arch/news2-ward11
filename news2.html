@@ -94,7 +94,7 @@ i.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();go()}}}});
 document.addEventListener("focusin",e=>{if(e.target.tagName==="INPUT"){document.body.classList.add("typing");show(e.target.closest(".p"))}});
 document.addEventListener("focusout",()=>setTimeout(()=>{if(!document.activeElement||document.activeElement.tagName!=="INPUT")document.body.classList.remove("typing")},50));
 document.addEventListener("touchstart",e=>{const a=document.activeElement;if(a&&a.tagName==="INPUT"&&!e.target.closest(".inrow"))a.blur()},{passive:true});
-function set(k,s){S[k]=s;const c=document.getElementById("c_"+k);if(s==null){delete c.dataset.s;c.querySelector(".pt").textContent="–"}else{c.dataset.s=s;c.querySelector(".pt").textContent=s+" คะแนน"}calc()}
+function set(k,s){S[k]=s;const c=document.getElementById("c_"+k);if(s==null){delete c.dataset.s;c.querySelector(".pt").textContent="–"}else{c.dataset.s=s;c.querySelector(".pt").textContent=s+" คะแนน"}calc();try{LOG.upd()}catch(e){}}
 function calc(){const t=document.getElementById("t"),r=document.getElementById("r");
 const v=P.map(p=>S[p.k]).filter(x=>x!=null);
 if(v.length<P.length){t.textContent=v.length?v.reduce((a,b)=>a+b,0):"–";t.style.background="";t.style.color="";
@@ -107,7 +107,30 @@ else if(sum>=1){c="var(--s1)";dark=true;txt="ต่ำ (Low) · ประเม�
 else{c="var(--s0)";txt="ต่ำมาก · ไม่ต้องประเมินต่อ";act="ให้การพยาบาลและบันทึก V/S ตามรอบปกติ"}
 t.textContent=sum;t.style.background=c;t.style.color=dark?"#3a2c00":"#fff";
 r.innerHTML=`<b>${txt}</b><div>${act}</div>`}
-document.getElementById("clr").onclick=()=>{document.querySelectorAll("input").forEach(i=>i.value="");document.querySelectorAll(".seg button").forEach(b=>b.classList.remove("on"));P.forEach(p=>set(p.k,null));window.scrollTo(0,0)};
+document.getElementById("clr").onclick=()=>{document.querySelectorAll("input").forEach(i=>i.value="");document.querySelectorAll(".seg button").forEach(b=>b.classList.remove("on"));P.forEach(p=>set(p.k,null));try{LOG.reset()}catch(e){}window.scrollTo(0,0)};
+/* เก็บสถิติการใช้งานแบบไม่ระบุตัวตน (Supabase) — เก็บเฉพาะคะแนน ไม่เก็บค่าสัญญาณชีพดิบ/ข้อมูลผู้ป่วย */
+const LOG=(()=>{
+const URL_="https://bouxgjkhlywhxmtuyvpp.supabase.co/rest/v1/news2_usage",
+KEY="PASTE_PUBLISHABLE_KEY_HERE",WAIT=3000;
+let t0=null,sent=false,tm=null;
+const dev=()=>{const u=navigator.userAgent||"",tp=navigator.maxTouchPoints||0;
+if(/iPad|Tablet/i.test(u)||(/Macintosh/.test(u)&&tp>1)||(/Android/i.test(u)&&!/Mobile/i.test(u)))return"tablet";
+if(/Mobi|iPhone|iPod|Android/i.test(u))return"mobile";return"desktop"};
+const row=()=>{const v=P.map(p=>S[p.k]);if(v.some(x=>x==null))return null;
+const sum=v.reduce((a,b)=>a+b,0),red=v.includes(3);
+const risk=sum>=7?"high":sum>=5?"medium":red?"low_medium_red":sum>=1?"low":"none";
+return{assessed_at:new Date().toISOString(),rr_score:S.rr,spo2_score:S.spo2,o2_score:S.o2,sbp_score:S.sbp,
+pulse_score:S.pr,temp_score:S.bt,avpu_score:S.avpu,total_score:sum,risk_level:risk,red_score:red,
+duration_sec:t0?Math.max(0,Math.round((Date.now()-t0)/1000)):null,device_type:dev()}};
+const send=()=>{tm=null;if(sent)return;const r=row();if(!r)return;sent=true;
+if(!KEY||KEY.indexOf("PASTE_")===0)return;
+try{fetch(URL_,{method:"POST",keepalive:true,headers:{"Content-Type":"application/json",apikey:KEY,
+Authorization:"Bearer "+KEY,Prefer:"return=minimal"},body:JSON.stringify(r)}).catch(()=>{})}catch(e){}};
+addEventListener("pagehide",()=>{if(tm){clearTimeout(tm);send()}});
+return{
+upd(){if(sent)return;const n=P.filter(p=>S[p.k]!=null).length;if(n&&!t0)t0=Date.now();
+clearTimeout(tm);tm=null;if(n===P.length)tm=setTimeout(send,WAIT)},
+reset(){clearTimeout(tm);tm=null;t0=null;sent=false}}})();
 </script>
 </body>
 </html>
