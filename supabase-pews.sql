@@ -3,7 +3,7 @@ create table if not exists public.pews_usage (
   id              bigint generated always as identity primary key,
   created_at      timestamptz not null default now(),
   assessed_at     timestamptz not null,
-  age_band        text not null check (age_band in ('0-3m','3-12m','1-2y','2-4y','4-6y','6-10y','10-13y','13-16y')),
+  age_band        text not null check (age_band in ('0-3m','3-12m','1-2y','2-4y','4-6y','6-10y','10-13y','13-15y','13-16y')),
   behavior_score  smallint not null check (behavior_score between 0 and 3),
   cardio_score    smallint not null check (cardio_score between 0 and 3),
   resp_score      smallint not null check (resp_score between 0 and 3),
@@ -24,3 +24,8 @@ grant insert on table public.pews_usage to anon;
 
 drop policy if exists "anon insert only" on public.pews_usage;
 create policy "anon insert only" on public.pews_usage for insert to anon with check (true);
+
+-- ปรับช่วงอายุสูงสุดเป็น 13-15 ปี (ตัดเด็ก/ผู้ใหญ่ที่ 15 ปี) สำหรับตารางที่สร้างไว้แล้ว
+alter table public.pews_usage drop constraint if exists pews_usage_age_band_check;
+alter table public.pews_usage add constraint pews_usage_age_band_check
+  check (age_band in ('0-3m','3-12m','1-2y','2-4y','4-6y','6-10y','10-13y','13-15y','13-16y'));

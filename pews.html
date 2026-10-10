@@ -67,7 +67,7 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 </style>
 </head>
 <body>
-<div class="head"><div class="in"><a class="home" href="./">← กลับหน้าหลัก</a><h1>PEWS คำนวณคะแนน</h1><p>Pediatric Early Warning Score · สำหรับผู้ป่วยอายุต่ำกว่า 16 ปี</p></div></div>
+<div class="head"><div class="in"><a class="home" href="./">← กลับหน้าหลัก</a><h1>PEWS คำนวณคะแนน</h1><p>Pediatric Early Warning Score · สำหรับผู้ป่วยอายุต่ำกว่า 15 ปี</p></div></div>
 <div class="wrap">
 <div class="p wide" id="agebox"><div class="row"><div class="lab">อายุผู้ป่วย<small>ระบุปีและเดือน · อายุต่ำกว่า 1 ปีให้ระบุเฉพาะเดือน</small></div></div>
 <div class="inrow"><input id="ageY" type="text" inputmode="numeric" placeholder="ปี" autocomplete="off"><span class="hint">ปี</span><input id="ageM" type="text" inputmode="numeric" placeholder="เดือน" autocomplete="off"><span class="hint">เดือน</span></div><div class="hint" id="norm"></div></div>
@@ -151,7 +151,7 @@ t.textContent=sum;t.style.background=col;t.style.color=dark?"#3a2c00":"#fff";
 res.innerHTML=`<b>${txt}</b><div>${red?"มีหมวดที่ได้ 3 คะแนน":`พฤติกรรม ${b} · หัวใจ ${c} · หายใจ ${s}`}</div>`}
 const ageIn=()=>{const y=num($("ageY").value),m=num($("ageM").value);const a=y==null&&m==null?null:(y||0)+(m||0)/12;
 if(a==null||a<0){AGE=null;$("norm").textContent="";g.classList.add("hide")}
-else if(a>=16){AGE=null;g.classList.add("hide");$("norm").innerHTML='ผู้ป่วยอายุ 16 ปีขึ้นไป โปรดใช้ <a href="news2.html?v=20261010c">แบบประเมิน NEWS2</a>'}
+else if(a>=15){AGE=null;g.classList.add("hide");$("norm").innerHTML='ผู้ป่วยอายุ 15 ปีขึ้นไป โปรดใช้ <a href="news2.html?v=20261010d">แบบประเมิน NEWS2</a>'}
 else{AGE=a;g.classList.remove("hide");const h=norm(HRN,a),r=norm(RRN,a);$("norm").textContent=`ค่าปกติตามอายุ: ชีพจร ${h[1]}–${h[2]} ครั้ง/นาที · อัตราการหายใจ ${r[1]}–${r[2]} ครั้ง/นาที`}
 calc()};
 $("ageY").oninput=ageIn;$("ageM").oninput=ageIn;
@@ -169,7 +169,7 @@ let t0=null,sent=false,tm=null;
 const dev=()=>{const u=navigator.userAgent||"",tp=navigator.maxTouchPoints||0;
 if(/iPad|Tablet/i.test(u)||(/Macintosh/.test(u)&&tp>1)||(/Android/i.test(u)&&!/Mobile/i.test(u)))return"tablet";
 if(/Mobi|iPhone|iPod|Android/i.test(u))return"mobile";return"desktop"};
-const band=a=>a<0.25?"0-3m":a<1?"3-12m":a<2?"1-2y":a<4?"2-4y":a<6?"4-6y":a<10?"6-10y":a<13?"10-13y":"13-16y";
+const band=a=>a<0.25?"0-3m":a<1?"3-12m":a<2?"1-2y":a<4?"2-4y":a<6?"4-6y":a<10?"6-10y":a<13?"10-13y":"13-15y";
 const send=()=>{tm=null;if(sent||!LAST||AGE==null)return;sent=true;const L=LAST;
 const row={assessed_at:new Date().toISOString(),age_band:band(AGE),behavior_score:L.beh,cardio_score:L.cv,resp_score:L.rs,
 hr_score:L.h,skin_score:S.skin,rr_score:L.r,o2_score:S.o2,wob_score:S.wob,total_score:L.sum,red_score:L.red,

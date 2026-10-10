@@ -143,7 +143,7 @@ let rows=[],M="news2";
 const PL=[["red","สูง (≥5 หรือมีหมวดที่ได้ 3)","var(--s3)"],["orange","4 คะแนน","var(--s2)"],["yellow","3 คะแนน","var(--s1)"],["green","0–2 คะแนน","var(--s0)"]];
 const plev=r=>r.total_score>=5||r.red_score?"red":r.total_score===4?"orange":r.total_score===3?"yellow":"green";
 const PPAR=[["behavior_score","พฤติกรรม"],["cardio_score","ระบบหัวใจและหลอดเลือด"],["resp_score","ระบบทางเดินหายใจ"]];
-const AGES=[["0-3m","แรกเกิด–3 เดือน"],["3-12m","3–12 เดือน"],["1-2y","1–2 ปี"],["2-4y","2–4 ปี"],["4-6y","4–6 ปี"],["6-10y","6–10 ปี"],["10-13y","10–13 ปี"],["13-16y","13–16 ปี"]];
+const AGES=[["0-3m","แรกเกิด–3 เดือน"],["3-12m","3–12 เดือน"],["1-2y","1–2 ปี"],["2-4y","2–4 ปี"],["4-6y","4–6 ปี"],["6-10y","6–10 ปี"],["10-13y","10–13 ปี"],["13-15y","13–15 ปี"],["13-16y","13–16 ปี (ข้อมูลเดิม)"]];
 const AGE_TH=Object.fromEntries(AGES);
 const NEWS2_TH=document.getElementById("th").innerHTML;
 document.querySelectorAll("#mode button").forEach(b=>b.onclick=()=>{if(M===b.dataset.m)return;M=b.dataset.m;
