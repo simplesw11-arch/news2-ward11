@@ -128,6 +128,7 @@ select{font:inherit;font-size:16px;padding:4px 2px;border:1.5px solid var(--teal
 <div class="card"><h2 id="paramH">ข้อที่ได้คะแนน (≥1) บ่อยที่สุด</h2><div class="bars" id="param"></div>
 <p class="note">ร้อยละของการประเมินที่ได้คะแนนตั้งแต่ 1 ขึ้นไป</p></div>
 <div class="card"><h2>อุปกรณ์ที่ใช้</h2><div class="bars" id="dev"></div></div>
+<div class="card"><h2>ระบบปฏิบัติการ</h2><div class="bars" id="osb"></div><p class="note" id="devn"></p></div>
 </div>
 
 <div class="card"><h2 id="tblH">รายการทั้งหมด (แก้ไขคะแนนได้)</h2>
@@ -150,6 +151,7 @@ const RISK=[["high","สูง (≥7)","var(--s3)"],["medium","ปานกล�
 const RISK_TH=Object.fromEntries(RISK.map(r=>[r[0],r[1]]));
 const PAR=[["temp_score","Temperature"],["pulse_score","Pulse"],["rr_score","Respiratory rate"],["sbp_score","Systolic BP"],["spo2_score","SpO₂"],["o2_score","การใช้ออกซิเจน"],["avpu_score","ระดับความรู้สึกตัว (AVPU)"]];
 const DEV={mobile:"โทรศัพท์มือถือ",tablet:"แท็บเล็ต / iPad",desktop:"คอมพิวเตอร์"};
+const OS={ios:"iOS (iPhone / iPad)",android:"Android",windows:"Windows",mac:"Mac",other:"อื่น ๆ"};
 let rows=[],M="news2";
 // PEWS ยังไม่มีแนวทางรายงานแพทย์ของหอผู้ป่วย จึงใช้ "ช่วงคะแนน + สี" เหมือนกันทุกที่ ไม่ตั้งชื่อระดับเอง
 const PL=[["red","≥5 คะแนน หรือมีหมวดที่ได้ 3","var(--s3)"],["orange","4 คะแนน","var(--s2)"],["yellow","3 คะแนน","var(--s1)"],["green","0–2 คะแนน","var(--s0)"]];
@@ -215,6 +217,9 @@ const sh={เช้า:0,บ่าย:0,ดึก:0};rows.forEach(r=>{const h=bk
 bars("shift",Object.entries(sh),n);
 bars("param",(P?PPAR:PAR).map(([k,l])=>[l,rows.filter(r=>r[k]>0).length]).sort((a,b)=>b[1]-a[1]),n);
 bars("dev",Object.entries(DEV).map(([k,l])=>[l,rows.filter(r=>r.device_type===k).length]),n);
+const osRows=rows.filter(r=>r.os);bars("osb",Object.entries(OS).map(([k,l])=>[l,osRows.filter(r=>r.os===k).length]).filter(x=>x[1]),osRows.length);
+const ids=new Set(rows.map(r=>r.device_id).filter(Boolean));
+$("devn").textContent=(ids.size?`จำนวนเครื่องที่ใช้งานในช่วงนี้: ${ids.size} เครื่อง · `:"")+"นับจากรหัสเครื่องแบบสุ่ม ไม่ระบุตัวบุคคล (เปิดผ่านเบราว์เซอร์และไอคอนบนหน้าจอในเครื่องเดียวกัน อาจนับเป็น 2 เครื่อง)"+(osRows.length<rows.length?` · ไม่มีข้อมูลระบบปฏิบัติการ ${rows.length-osRows.length} รายการ (บันทึกก่อนเริ่มเก็บข้อมูลนี้)`:"");
 const cnt={};rows.forEach(r=>{const k=ymd(bkk(r.assessed_at));cnt[k]=(cnt[k]||0)+1});
 const days=[];for(let d=new Date($("d1").value+"T00:00:00"),e=new Date($("d2").value+"T00:00:00");d<=e&&days.length<400;d.setDate(d.getDate()+1))days.push(ymd(d));
 const mx=Math.max(...days.map(d=>cnt[d]||0),1);
@@ -257,13 +262,13 @@ const pre=s=>{const d=bkk(s),h=d.getHours();return[ymd(d),thD(d),String(h).padSt
 const fname=t=>{const a=new Date($("d1").value+"T00:00:00"),b=new Date($("d2").value+"T00:00:00"),last=new Date(a.getFullYear(),a.getMonth()+1,0).getDate();
 const my=d=>MTH[d.getMonth()]+(d.getFullYear()+543);const dm=d=>d.getDate()+MTH[d.getMonth()]+String(d.getFullYear()+543).slice(2);
 return t+"_"+(a.getDate()===1&&b.getFullYear()===a.getFullYear()&&b.getMonth()===a.getMonth()&&b.getDate()===last?my(a):dm(a)+"-"+dm(b))+".csv"};
-$("csv").onclick=()=>{if(M==="pews")return csvPews();const H=["ลำดับ",...PH,"BT","PR","RR","SBP","SpO2","O2","AVPU","คะแนนรวม","ระดับความเสี่ยง","Red score","เวลากรอก(วินาที)","อุปกรณ์"];
-const L=rows.map((r,i)=>[i+1,...pre(r.assessed_at),r.temp_score,r.pulse_score,r.rr_score,r.sbp_score,r.spo2_score,r.o2_score,r.avpu_score,r.total_score,RISK_TH[r.risk_level]||r.risk_level,r.red_score?"มี":"ไม่มี",r.duration_sec??"",DEV[r.device_type]||r.device_type]);
+$("csv").onclick=()=>{if(M==="pews")return csvPews();const H=["ลำดับ",...PH,"BT","PR","RR","SBP","SpO2","O2","AVPU","คะแนนรวม","ระดับความเสี่ยง","Red score","เวลากรอก(วินาที)","อุปกรณ์","ระบบปฏิบัติการ","รหัสเครื่อง"];
+const L=rows.map((r,i)=>[i+1,...pre(r.assessed_at),r.temp_score,r.pulse_score,r.rr_score,r.sbp_score,r.spo2_score,r.o2_score,r.avpu_score,r.total_score,RISK_TH[r.risk_level]||r.risk_level,r.red_score?"มี":"ไม่มี",r.duration_sec??"",DEV[r.device_type]||r.device_type,OS[r.os]||"",r.device_id?String(r.device_id).slice(0,8):""]);
 const csv="﻿"+[H,...L].map(a=>a.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
 const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
 a.download=fname("NEWS2");document.body.appendChild(a);a.click();a.remove()};
-function csvPews(){const H=["ลำดับ",...PH,"ช่วงอายุ","พฤติกรรม","หัวใจและหลอดเลือด","ทางเดินหายใจ","HR","สีผิว/CRT","RR","ออกซิเจน","การหายใจ/เสียงปอด","คะแนนรวม","ช่วงคะแนน","มีหมวดที่ได้ 3","เวลากรอก(วินาที)","อุปกรณ์"];
-const L=rows.map((r,i)=>[i+1,...pre(r.assessed_at),AGE_TH[r.age_band]||r.age_band,r.behavior_score,r.cardio_score,r.resp_score,r.hr_score,r.skin_score,r.rr_score,r.o2_score,r.wob_score,r.total_score,PLT[plev(r)],r.red_score?"มี":"ไม่มี",r.duration_sec??"",DEV[r.device_type]||r.device_type]);
+function csvPews(){const H=["ลำดับ",...PH,"ช่วงอายุ","พฤติกรรม","หัวใจและหลอดเลือด","ทางเดินหายใจ","HR","สีผิว/CRT","RR","ออกซิเจน","การหายใจ/เสียงปอด","คะแนนรวม","ช่วงคะแนน","มีหมวดที่ได้ 3","เวลากรอก(วินาที)","อุปกรณ์","ระบบปฏิบัติการ","รหัสเครื่อง"];
+const L=rows.map((r,i)=>[i+1,...pre(r.assessed_at),AGE_TH[r.age_band]||r.age_band,r.behavior_score,r.cardio_score,r.resp_score,r.hr_score,r.skin_score,r.rr_score,r.o2_score,r.wob_score,r.total_score,PLT[plev(r)],r.red_score?"มี":"ไม่มี",r.duration_sec??"",DEV[r.device_type]||r.device_type,OS[r.os]||"",r.device_id?String(r.device_id).slice(0,8):""]);
 const csv="\ufeff"+[H,...L].map(a=>a.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
 const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
 a.download=fname("PEWS");document.body.appendChild(a);a.click();a.remove()}

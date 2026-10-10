@@ -111,7 +111,7 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 <button data-v="2"><span class="k">Moderate retraction หรือได้ยินเสียง wheeze ขณะหายใจออก (ใช้หรือไม่ใช้ stethoscope)</span><span class="d">2</span></button>
 <button data-v="3"><span class="k">Severe retraction หรือหายใจมีเสียง grunting หรือได้ยินเสียง wheeze โดยไม่ต้องใช้ stethoscope</span><span class="d">3</span></button></div></div>
 </div>
-<div class="note">ดัดแปลงจาก Brighton PEWS (Monaghan, 2005) ตามแบบที่ประยุกต์ใช้โดยงานการพยาบาลผู้ป่วยกุมารเวชศาสตร์ โรงพยาบาลมหาราชนครเชียงใหม่ (วารสารพยาบาลสวนดอก, 2560) · ค่าปกติตามอายุอ้างอิง American Heart Association 2010<br>คะแนนแต่ละหมวดใช้ค่าสูงสุดของเกณฑ์ที่พบ · ใช้ประกอบการตัดสินใจทางคลินิก ไม่แทนดุลยพินิจของพยาบาลและแพทย์</div>
+<div class="note">ดัดแปลงจาก Brighton PEWS (Monaghan, 2005) ตามแบบที่ประยุกต์ใช้โดยงานการพยาบาลผู้ป่วยกุมารเวชศาสตร์ โรงพยาบาลมหาราชนครเชียงใหม่ (วารสารพยาบาลสวนดอก, 2560) · ค่าปกติตามอายุอ้างอิง American Heart Association 2010<br>คะแนนแต่ละหมวดใช้ค่าสูงสุดของเกณฑ์ที่พบ · ใช้ประกอบการตัดสินใจทางคลินิก ไม่แทนดุลยพินิจของพยาบาลและแพทย์<br>ระบบบันทึกสถิติการใช้งานแบบไม่ระบุตัวตน</div>
 </div>
 <div class="bar"><div class="in">
 <div class="total" id="t">–</div>
@@ -156,7 +156,7 @@ t.textContent=sum;t.style.background=col;t.style.color=dark?"#3a2c00":"#fff";
 res.innerHTML=`<b>${txt}</b><div>${red?"มีหมวดที่ได้ 3 คะแนน":`พฤติกรรม ${b} · หัวใจ ${c} · หายใจ ${s}`}</div>`}
 const ageIn=()=>{const y=num($("ageY").value),m=num($("ageM").value);const a=y==null&&m==null?null:(y||0)+(m||0)/12;
 if(a==null||a<0){AGE=null;$("norm").textContent="";0}
-else if(a>=15){AGE=null;0;$("norm").innerHTML='ผู้ป่วยอายุ 15 ปีขึ้นไป โปรดใช้ <a href="news2.html?v=20261010v">แบบประเมิน NEWS2</a>'}
+else if(a>=15){AGE=null;0;$("norm").innerHTML='ผู้ป่วยอายุ 15 ปีขึ้นไป โปรดใช้ <a href="news2.html?v=20261010w">แบบประเมิน NEWS2</a>'}
 else{AGE=a;const h=norm(HRN,a),r=norm(RRN,a);$("norm").textContent=`ค่าปกติตามอายุ: ชีพจร ${h[1]}–${h[2]} ครั้ง/นาที · อัตราการหายใจ ${r[1]}–${r[2]} ครั้ง/นาที`}
 calc()};
 $("ageY").oninput=ageIn;$("ageM").oninput=ageIn;
@@ -188,6 +188,9 @@ const LOG=((TABLE,build)=>{
 const B="https://bouxgjkhlywhxmtuyvpp.supabase.co/rest/v1/",KEY="sb_publishable_UCUPBieE6U2zWezBdNU40w_51N8Llqy",
 H={"Content-Type":"application/json",apikey:KEY,Authorization:"Bearer "+KEY};
 const uid=()=>{try{return crypto.randomUUID()}catch(e){return"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==="x"?r:r&3|8).toString(16)})}};
+// ระบบปฏิบัติการ และรหัสเครื่องแบบสุ่ม (ไม่ระบุตัวบุคคล ใช้นับจำนวนเครื่องที่ใช้งาน)
+const osName=()=>{const u=navigator.userAgent||"";if(/iPhone|iPad|iPod/.test(u)||(/Macintosh/.test(u)&&navigator.maxTouchPoints>1))return"ios";if(/Android/.test(u))return"android";if(/Windows/.test(u))return"windows";if(/Macintosh/.test(u))return"mac";return"other"};
+const devId=()=>{try{let d=localStorage.getItem("w11_device_id");if(!d){d=uid();localStorage.setItem("w11_device_id",d)}return d}catch(e){return null}};
 const dev=()=>{const u=navigator.userAgent||"",tp=navigator.maxTouchPoints||0;
 if(/iPad|Tablet/i.test(u)||(/Macintosh/.test(u)&&tp>1)||(/Android/i.test(u)&&!/Mobile/i.test(u)))return"tablet";
 if(/Mobi|iPhone|iPod|Android/i.test(u))return"mobile";return"desktop"};
@@ -200,7 +203,7 @@ const flush=()=>{if(!navigator.onLine)return;const q=rd();Object.entries(q).forE
 addEventListener("online",flush);setTimeout(flush,1500);
 const save=()=>{tm=null;let r;try{r=build()}catch(e){r=null}if(!r)return;
 if(!at)at=new Date().toISOString();
-r=Object.assign({assessed_at:at},r,{duration_sec:t0?Math.max(0,Math.round((Date.now()-t0)/1000)):null,device_type:dev()});
+r=Object.assign({assessed_at:at},r,{duration_sec:t0?Math.max(0,Math.round((Date.now()-t0)/1000)):null,device_type:dev(),os:osName(),device_id:devId()});
 const s=JSON.stringify(r);if(s===last)return;last=s;
 try{if(legacy){if(!legacyDone){legacyDone=true;post(TABLE,r).catch(()=>{})}return}
 post("rpc/"+TABLE.replace("_usage","_save"),{k:key,r}).then(x=>{if(x.status===404&&!legacyDone){legacy=true;legacyDone=true;post(TABLE,r).catch(()=>{})}}).catch(()=>{})}catch(e){}};

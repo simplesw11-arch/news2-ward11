@@ -168,4 +168,15 @@ await tap('#g > .p:nth-child(1) .seg button:nth-child(1)');ok(await hlId()==='-'
 await p.goto(ROOT+'adl.html');await tap('#c0 button[data-v="2"]');ok(await hlId()==='c1'&&await inView('#c1'),'เลื่อนจอ ADL: ข้อ 1 → ข้อ 2',await hlId());
 ok(!errs.length,'เลื่อนจอ: ไม่มี JavaScript error',errs.join(';'));await ctx.close()}
 
+// เก็บระบบปฏิบัติการและรหัสเครื่อง (รหัสเดิมทุกการประเมินจากเครื่องเดียวกัน)
+{const ctx=await b.newContext({viewport:{width:390,height:800},userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1'});
+const saves=[];await ctx.route('**/rpc/news2_save',r=>{saves.push(JSON.parse(r.request().postData()));r.fulfill({status:204,body:''})});
+const p=await ctx.newPage();await p.goto(ROOT+'news2.html');
+for(let n=0;n<2;n++){await p.evaluate(()=>{document.activeElement&&document.activeElement.blur();document.body.classList.remove('typing')});await p.click('#clr');await p.click('#ageq button[data-a="1"]');
+for(const [k,v] of [['bt','37'],['pr','80'],['rr','16'],['sbp','120'],['spo2','98']])await p.fill(`#c_${k} input`,v);
+await p.$eval('#c_o2 .seg button:nth-child(1)',e=>e.click());await p.$eval('#c_avpu .seg button:nth-child(1)',e=>e.click());await p.waitForTimeout(700)}
+const r0=saves[0]&&saves[0].r,r1=saves[saves.length-1]&&saves[saves.length-1].r;
+ok(r0&&r0.os==='ios'&&/^[0-9a-f-]{36}$/.test(r0.device_id||'')&&r1.device_id===r0.device_id&&saves[0].k!==saves[saves.length-1].k,'เก็บข้อมูล: iOS + รหัสเครื่องเดิมทุกการประเมิน (แต่ละการประเมินคนละแถว)',JSON.stringify(r0));
+await ctx.close()}
+
 await b.close();console.log(fail?`ไม่ผ่าน ${fail} จาก ${n} กรณี`:`ผ่านทั้งหมด ${n} กรณี`);process.exit(fail?1:0)})();
