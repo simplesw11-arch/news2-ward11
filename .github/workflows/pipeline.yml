@@ -10,10 +10,6 @@ permissions:
   contents: write
   pages: write
   id-token: write
-concurrency:
-  group: pipeline
-  cancel-in-progress: false
-
 jobs:
   test:
     name: ทดสอบผู้ป่วยจำลองและทุกขนาดจอ
@@ -40,6 +36,7 @@ jobs:
     name: ขึ้นเว็บทดลอง
     needs: test
     runs-on: ubuntu-latest
+    concurrency: { group: pages-deploy, cancel-in-progress: false }
     environment:
       name: github-pages
       url: ${{ steps.d.outputs.page_url }}staging/
@@ -77,6 +74,7 @@ jobs:
     name: ขึ้นเว็บจริง
     needs: promote
     runs-on: ubuntu-latest
+    concurrency: { group: pages-deploy, cancel-in-progress: false }
     environment:
       name: github-pages
       url: ${{ steps.d.outputs.page_url }}

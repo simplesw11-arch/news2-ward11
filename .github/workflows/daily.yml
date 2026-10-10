@@ -1,0 +1,37 @@
+# ทุกวัน 07:07 น. (เวลาไทย): ตรวจเว็บจริงด้วยผู้ป่วยจำลอง + ตรวจฐานข้อมูล
+# การเรียกฐานข้อมูลทุกวันช่วยกันไม่ให้ Supabase แผนฟรีพักโปรเจกต์ (พักเมื่อไม่มีการใช้งาน 7 วัน)
+name: ตรวจเว็บจริงประจำวัน
+on:
+  schedule:
+    - cron: '7 0 * * *'
+  workflow_dispatch:
+jobs:
+  check:
+    name: ตรวจเว็บจริงและฐานข้อมูล
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - name: ฐานข้อมูลตอบสนอง (อ่านอย่างเดียว ไม่เพิ่มข้อมูล)
+        env:
+          B: https://bouxgjkhlywhxmtuyvpp.supabase.co/rest/v1
+          K: sb_publishable_UCUPBieE6U2zWezBdNU40w_51N8Llqy
+        run: |
+          set -e
+          D=$(date -u +%F)
+          for f in news2_report pews_report; do
+            c=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$B/rpc/$f" -H "apikey: $K" -H "Authorization: Bearer $K" -H 'Content-Type: application/json' -d "{\"date_from\":\"$D\",\"date_to\":\"$D\"}")
+            echo "$f → $c"; [ "$c" = 200 ] || { echo "::error::ฟังก์ชัน $f ใช้งานไม่ได้ ($c)"; exit 1; }
+          done
+          for t in news2_usage pews_usage; do
+            c=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$B/$t" -H "apikey: $K" -H "Authorization: Bearer $K" -H 'Content-Type: application/json' -d '{}')
+            echo "$t → $c (ต้องเป็น 400 = ตารางพร้อมรับข้อมูล แต่ข้อมูลว่างจึงไม่ถูกบันทึก)"; [ "$c" = 400 ] || { echo "::error::ตาราง $t ผิดปกติ ($c)"; exit 1; }
+          done
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install --no-save --no-package-lock playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - name: ผู้ป่วยจำลองบนเว็บจริง
+        env:
+          BASE_URL: https://simplesw11-arch.github.io/news2-ward11/
+        run: node tests/cases.js

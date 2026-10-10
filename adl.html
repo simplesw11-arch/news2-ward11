@@ -3,6 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f7c8c">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ประเมินผู้ป่วย">
 <meta name="color-scheme" content="light only">
 <title>ADL ประเมินความสามารถในการทำกิจวัตรประจำวัน</title>
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
@@ -132,5 +138,6 @@ t.textContent=sum;t.style.background=c;t.style.color=dark?"#3a2c00":"#fff";r.inn
 document.getElementById("clr").onclick=()=>{for(const k in S)delete S[k];document.querySelectorAll(".p").forEach(d=>{d.classList.remove("done");d.querySelector(".pt").textContent="–";d.querySelectorAll("button").forEach(b=>b.classList.remove("on"))});calc();window.scrollTo(0,0)};
 calc();
 </script>
+<script>if("serviceWorker"in navigator&&location.protocol.indexOf("http")===0)navigator.serviceWorker.register("sw.js").catch(()=>{})</script>
 </body>
 </html>

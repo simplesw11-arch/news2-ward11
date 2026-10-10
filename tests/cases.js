@@ -1,7 +1,8 @@
 // ผู้ป่วยจำลอง: กรอกข้อมูลอัตโนมัติแล้วเทียบคะแนน/การแปลผลกับคำตอบที่คำนวณจากเกณฑ์ต้นฉบับ (ไม่ได้คำนวณจากโค้ดของเว็บ)
 // วิธีรัน: NODE_PATH=$(npm root -g) node tests/cases.js
 const {chromium}=require('playwright');const path=require('path');
-const ROOT='file://'+path.resolve(__dirname,'..')+'/';
+// BASE_URL=https://.../ เพื่อทดสอบเว็บจริง (ค่าเริ่มต้น: ไฟล์ในเครื่อง)
+const ROOT=process.env.BASE_URL||('file://'+path.resolve(__dirname,'..')+'/');
 
 // NEWS2 (RCP 2017): [ชื่อ, BT, PR, RR, SBP, SpO2, ใช้O2(0/1), AVPU(0=A,1=V,2=P,3=U), คะแนนรวม, คำในผลการแปล]
 const NEWS2=[
