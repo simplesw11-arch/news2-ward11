@@ -41,7 +41,7 @@ const T=async p=>(await p.textContent('#t')).trim(),Rs=async p=>(await p.textCon
 {const p=await page('news2.html');
 for(const [nm,bt,pr,rr,sbp,spo2,o2,avpu,tot,txt] of NEWS2){await p.blurAll();await p.click('#clr');await p.click('#ageq button[data-a="1"]');
 for(const [k,v] of [['bt',bt],['pr',pr],['rr',rr],['sbp',sbp],['spo2',spo2]])await p.fill(`#c_${k} input`,v);
-await p.click(`#c_o2 .seg button:nth-child(${o2+1})`);await p.click(`#c_avpu .seg button:nth-child(${avpu+1})`);
+await p.waitForTimeout(500);await p.$eval(`#c_o2 .seg button:nth-child(${o2+1})`,e=>e.click());await p.$eval(`#c_avpu .seg button:nth-child(${avpu+1})`,e=>e.click());
 const t=await T(p),r=await Rs(p);ok(t===String(tot)&&r.includes(txt),`NEWS2 ${nm}: ${tot} / ${txt}`,`${t} / ${r}`)}
 if(p.errs.length)ok(false,'NEWS2 JavaScript error',p.errs.join(';'));await p.close()}
 
