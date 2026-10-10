@@ -1,13 +1,15 @@
 // ตรวจทุกหน้าในทุกขนาดจอที่กำหนด: ไม่มี error, ไม่ล้นจอแนวนอน, ปุ่มหลักใช้งานได้
 // วิธีรัน: NODE_PATH=$(npm root -g) node tests/screens.js   (ภาพหน้าจอจะอยู่ใน tests/out/)
-const {chromium}=require('playwright');const path=require('path'),fs=require('fs');
+const pw=require('playwright');
+// ENGINES=chromium,webkit (webkit = Safari บน iPhone/iPad; GitHub Actions รันทั้งสอง)
+const ENGINES=(process.env.ENGINES||'chromium').split(',');const path=require('path'),fs=require('fs');
 const ROOT='file://'+path.resolve(__dirname,'..')+'/',OUT=path.join(__dirname,'out');fs.mkdirSync(OUT,{recursive:true});
 const SCREENS=[['mobile',360,740,true],['mobile-land',740,360,true],['ipad',820,1180,true],['ipad-land',1180,820,true],['desktop',1280,800,false]];
 const PAGES=['index','news2','pews','fall','adl','report'];
 const MOCK='[]';
-(async()=>{const b=await chromium.launch();let fail=0;
-for(const [name,w,h,touch] of SCREENS)for(const pg of PAGES){
-const p=await b.newPage({viewport:{width:w,height:h},hasTouch:touch,isMobile:touch&&w<700});const errs=[];
+(async()=>{let fail=0;for(const eng of ENGINES){const b=await pw[eng].launch();
+for(const [name0,w,h,touch] of SCREENS)for(const pg of PAGES){const name=eng==='chromium'?name0:name0+'-'+eng;if(eng==='webkit'&&name0==='desktop')continue;
+const p=await b.newPage({viewport:{width:w,height:h},hasTouch:touch,isMobile:eng==='chromium'?touch&&w<700:undefined});const errs=[];
 p.on('pageerror',e=>errs.push(e.message));
 await p.route('**supabase**',r=>r.fulfill({status:200,contentType:'application/json',body:MOCK}));
 await p.goto(ROOT+pg+'.html');await p.waitForTimeout(300);
@@ -23,4 +25,4 @@ await p.evaluate(()=>{document.activeElement&&document.activeElement.blur();docu
 const sw=await p.evaluate(()=>document.documentElement.scrollWidth);if(sw>w)errs.push(`ล้นจอ ${sw}>${w}`);
 await p.screenshot({path:path.join(OUT,`${pg}-${name}.png`)});
 console.log((errs.length?'✗':'✓'),name.padEnd(12),pg.padEnd(7),errs.join('; '));if(errs.length)fail++;await p.close()}
-await b.close();console.log(fail?`พบปัญหา ${fail} รายการ`:'ผ่านทั้งหมด');process.exit(fail?1:0)})();
+await b.close()}console.log(fail?`พบปัญหา ${fail} รายการ`:'ผ่านทั้งหมด');process.exit(fail?1:0)})();

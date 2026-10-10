@@ -20,11 +20,12 @@ jobs:
         with:
           node-version: 22
       - run: npm install --no-save --no-package-lock playwright@1.56.1
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       - name: ผู้ป่วยจำลอง (คะแนนและการแปลผล)
         run: node tests/cases.js
       - name: ทุกขนาดจอ (5 ขนาด × ทุกหน้า)
         run: node tests/screens.js
+        env: { ENGINES: 'chromium,webkit' }
       - if: always()
         uses: actions/upload-artifact@v4
         with:

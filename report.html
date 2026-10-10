@@ -29,6 +29,8 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:Sarabun,"Noto Sa
 h2{font-family:Prompt,Sarabun,sans-serif;font-size:1.05rem;margin:0 0 12px;font-weight:600}
 .f{display:grid;gap:10px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 .f label{min-width:0}
+input[type=date]{-webkit-appearance:none;appearance:none;display:block;width:100%;max-width:100%;min-width:0;min-height:46px;text-align:left}
+input[type=date]::-webkit-date-and-time-value{text-align:left}
 .f label{display:flex;flex-direction:column;gap:4px;font-size:.88rem;color:var(--mute)}
 .f .go{grid-column:1/-1}
 @media (min-width:760px){.f{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}.f .go{grid-column:auto}}
