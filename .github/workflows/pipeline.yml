@@ -47,7 +47,8 @@ jobs:
         with: { ref: dev, path: dev }
         continue-on-error: true
       - run: '[ -d dev/.git ] || cp -r main dev'
-      - run: main/ci/build-site.sh main dev site
+      # ใช้สคริปต์จาก dev เพื่อให้เว็บทดลองตรงกับสิ่งที่กำลังจะขึ้นเว็บจริง
+      - run: dev/ci/build-site.sh main dev site
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with: { path: site }
