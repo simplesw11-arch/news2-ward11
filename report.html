@@ -112,6 +112,8 @@ select{font:inherit;font-size:16px;padding:4px 2px;border:1.5px solid var(--teal
 <div class="two">
 <div class="card"><h2 id="riskH">ระดับความเสี่ยง</h2><div class="bars" id="risk"></div></div>
 <div class="card hide" id="ageCard"><h2>ช่วงอายุ</h2><div class="bars" id="ageb"></div></div>
+<div class="card hide" id="ageAvgCard"><h2>คะแนนเฉลี่ยตามช่วงอายุ</h2><div class="bars" id="ageavg"></div><p class="note">คะแนนเต็ม 9 คะแนน · แสดงเฉพาะช่วงอายุที่มีข้อมูล</p></div>
+<div class="card hide" id="subCard"><h2>ข้อย่อยที่ได้คะแนน (≥1) บ่อยที่สุด</h2><div class="bars" id="subb"></div><p class="note">ร้อยละของการประเมินที่ข้อย่อยนั้นได้คะแนนตั้งแต่ 1 ขึ้นไป</p></div>
 <div class="card"><h2>แยกตามเวร</h2><div class="bars" id="shift"></div>
 <p class="note">เช้า 08:00–15:59 · บ่าย 16:00–23:59 · ดึก 00:00–07:59</p></div>
 <div class="card"><h2 id="paramH">ข้อที่ได้คะแนน (≥1) บ่อยที่สุด</h2><div class="bars" id="param"></div>
@@ -121,7 +123,7 @@ select{font:inherit;font-size:16px;padding:4px 2px;border:1.5px solid var(--teal
 
 <div class="card"><h2 id="tblH">รายการทั้งหมด (แก้ไขคะแนนได้)</h2>
 <div class="tw"><table><thead id="th"><tr><th>วันเวลา</th><th>BT</th><th>PR</th><th>RR</th><th>SBP</th><th>SpO₂</th><th>O₂</th><th>AVPU</th><th>รวม</th><th>ความเสี่ยง</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
-<p class="note" id="editNote">เลือก “แก้ไข” เพื่อปรับคะแนนรายข้อ ระบบจะคำนวณคะแนนรวมและระดับความเสี่ยงใหม่โดยอัตโนมัติ</p></div>
+<p class="note" id="editNote">เลือก “แก้ไข” เพื่อปรับคะแนนรายข้อ ระบบจะคำนวณคะแนนรวมและระดับใหม่โดยอัตโนมัติ</p></div>
 
 <div class="card" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between">
 <div><h2 style="margin:0">ส่งออกข้อมูล</h2><div class="note">ไฟล์ CSV สามารถเปิดด้วย Excel หรือ Google Sheets และแสดงภาษาไทยได้ถูกต้อง</div></div>
@@ -145,13 +147,15 @@ const plev=r=>r.total_score>=5||r.red_score?"red":r.total_score===4?"orange":r.t
 const PPAR=[["behavior_score","พฤติกรรม"],["cardio_score","ระบบหัวใจและหลอดเลือด"],["resp_score","ระบบทางเดินหายใจ"]];
 const AGES=[["0-3m","แรกเกิด–3 เดือน"],["3-12m","3–12 เดือน"],["1-2y","1–2 ปี"],["2-4y","2–4 ปี"],["4-6y","4–6 ปี"],["6-10y","6–10 ปี"],["10-13y","10–13 ปี"],["13-15y","13–15 ปี"],["13-16y","13–16 ปี (ข้อมูลเดิม)"]];
 const AGE_TH=Object.fromEntries(AGES);
+const PSUB=[["hr_score","อัตราการเต้นของหัวใจ"],["skin_score","สีผิวและ capillary refill"],["rr_score","อัตราการหายใจ"],["o2_score","การได้รับออกซิเจน"],["wob_score","การหายใจและเสียงปอด"]];
+const PKS=["behavior_score","hr_score","skin_score","rr_score","o2_score","wob_score"];
 const NEWS2_TH=document.getElementById("th").innerHTML;
 document.querySelectorAll("#mode button").forEach(b=>b.onclick=()=>{if(M===b.dataset.m)return;M=b.dataset.m;
 document.querySelectorAll("#mode button").forEach(x=>x.classList.toggle("on",x===b));const P=M==="pews";
 $("kHiL").textContent=P?"คะแนนระดับสูง":"เสี่ยงปานกลางขึ้นไป";$("riskH").textContent=P?"ระดับคะแนน":"ระดับความเสี่ยง";
-$("paramH").textContent=P?"หมวดที่ได้คะแนน (≥1) บ่อยที่สุด":"ข้อที่ได้คะแนน (≥1) บ่อยที่สุด";$("tblH").textContent=P?"รายการทั้งหมด":"รายการทั้งหมด (แก้ไขคะแนนได้)";
-$("ageCard").classList.toggle("hide",!P);$("editNote").classList.toggle("hide",P);
-$("th").innerHTML=P?"<tr><th>วันเวลา</th><th>ช่วงอายุ</th><th>พฤติกรรม</th><th>หัวใจ</th><th>หายใจ</th><th>รวม</th><th>ระดับ</th></tr>":NEWS2_TH;
+$("paramH").textContent=P?"หมวดที่ได้คะแนน (≥1) บ่อยที่สุด":"ข้อที่ได้คะแนน (≥1) บ่อยที่สุด";
+["ageCard","ageAvgCard","subCard"].forEach(i=>$(i).classList.toggle("hide",!P));
+$("th").innerHTML=P?"<tr><th>วันเวลา</th><th>ช่วงอายุ</th><th>พฤติกรรม</th><th>HR</th><th>สีผิว/CRT</th><th>RR</th><th>O₂</th><th>การหายใจ</th><th>รวม</th><th>ระดับ</th><th></th></tr>":NEWS2_TH;
 editing=null;$("out").style.display="none";load()});
 
 const ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
@@ -191,7 +195,10 @@ $("kHi").innerHTML=n?Math.round(hi*100/n)+"%<small>"+hi+" ครั้ง</small
 const ds=rows.map(r=>r.duration_sec).filter(x=>x!=null&&x<3600);
 $("kT").innerHTML=ds.length?Math.round(ds.reduce((a,b)=>a+b,0)/ds.length)+"<small>วินาที</small>":"–";
 bars("risk",P?PL.map(([k,l,c])=>[l,rows.filter(r=>plev(r)===k).length,c]):RISK.map(([k,l,c])=>[l,rows.filter(r=>r.risk_level===k).length,c]),n);
-if(P)bars("ageb",AGES.map(([k,l])=>[l,rows.filter(r=>r.age_band===k).length]),n);
+if(P){bars("ageb",AGES.map(([k,l])=>[l,rows.filter(r=>r.age_band===k).length]).filter(x=>x[1]||!/ข้อมูลเดิม/.test(x[0])),n);
+bars("subb",PSUB.map(([k,l])=>[l,rows.filter(r=>r[k]>0).length]).sort((a,b)=>b[1]-a[1]),n);
+const av=AGES.map(([k,l])=>{const g=rows.filter(r=>r.age_band===k);return g.length?[l,g.reduce((a,r)=>a+r.total_score,0)/g.length]:null}).filter(Boolean);
+$("ageavg").innerHTML=av.length?av.map(([l,v])=>`<div class="bar" title="${l}: เฉลี่ย ${v.toFixed(1)} คะแนน"><div class="t"><b>${l}</b><span>เฉลี่ย ${v.toFixed(1)} คะแนน</span></div><div class="track"><div class="fill" style="width:${v/9*100}%"></div></div></div>`).join(""):'<div class="empty">ไม่มีข้อมูลในช่วงนี้</div>'}
 const sh={เช้า:0,บ่าย:0,ดึก:0};rows.forEach(r=>{const h=bkk(r.assessed_at).getHours();sh[h>=8&&h<16?"เช้า":h>=16?"บ่าย":"ดึก"]++});
 bars("shift",Object.entries(sh),n);
 bars("param",(P?PPAR:PAR).map(([k,l])=>[l,rows.filter(r=>r[k]>0).length]).sort((a,b)=>b[1]-a[1]),n);
@@ -209,7 +216,9 @@ const RS={high:"สูง",medium:"ปานกลาง",low_medium_red:"ต่
 let editing=null;
 const fdt=s=>{const d=bkk(s);return d.toLocaleDateString("th-TH",{day:"numeric",month:"short"})+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
 function table(){const tb=$("tb");if(!rows.length){tb.innerHTML='<tr><td colspan="11" class="empty">ไม่มีข้อมูลในช่วงนี้</td></tr>';return}
-if(M==="pews"){const LC=Object.fromEntries(PL.map(x=>[x[0],x[2]]));tb.innerHTML=[...rows].reverse().map(r=>{const l=plev(r);return `<tr><td>${fdt(r.assessed_at)}</td><td>${AGE_TH[r.age_band]||r.age_band}</td><td>${r.behavior_score}</td><td>${r.cardio_score}</td><td>${r.resp_score}</td><td><b>${r.total_score}</b></td><td><span class="rk" style="background:${LC[l]};${l==="yellow"?"color:#3a2c00":""}">${l==="red"?"สูง":r.total_score+" คะแนน"}</span></td></tr>`}).join("");return}
+if(M==="pews"){const LC=Object.fromEntries(PL.map(x=>[x[0],x[2]]));tb.innerHTML=[...rows].reverse().map(r=>{const l=plev(r),e=r.id===editing;
+return `<tr data-id="${r.id}" class="${e?"ed":""}"><td>${fdt(r.assessed_at)}</td><td>${AGE_TH[r.age_band]||r.age_band}</td>${PKS.map(k=>`<td>${e?`<select data-k="${k}">${[0,1,2,3].map(v=>`<option${v===r[k]?" selected":""}>${v}</option>`).join("")}</select>`:r[k]}</td>`).join("")}<td><b>${r.total_score}</b></td><td><span class="rk" style="background:${LC[l]};${l==="yellow"?"color:#3a2c00":""}">${l==="red"?"สูง":r.total_score+" คะแนน"}</span></td>
+<td>${e?'<button class="eb sv">บันทึก</button> <button class="eb cc">ยกเลิก</button>':'<button class="eb">แก้ไข</button>'}</td></tr>`}).join("");return}
 tb.innerHTML=[...rows].reverse().map(r=>{const e=r.id===editing;
 return `<tr data-id="${r.id}" class="${e?"ed":""}"><td>${fdt(r.assessed_at)}</td>${KS.map(k=>`<td>${e?`<select data-k="${k}">${(OPT[k]||[0,1,2,3]).map(v=>`<option${v===r[k]?" selected":""}>${v}</option>`).join("")}</select>`:r[k]}</td>`).join("")}
 <td><b>${r.total_score}</b></td><td><span class="rk" style="background:${RC[r.risk_level]};${r.risk_level==="low"?"color:#3a2c00":""}">${RS[r.risk_level]||r.risk_level}</span></td>
@@ -218,8 +227,8 @@ $("tb").addEventListener("click",async e=>{const b=e.target.closest("button");if
 if(b.classList.contains("cc")){editing=null;table();return}
 if(!b.classList.contains("sv")){editing=id;table();return}
 const v={};tr.querySelectorAll("select").forEach(s=>v[s.dataset.k]=+s.value);b.disabled=true;b.textContent="กำลังบันทึก…";
-try{const r=await fetch(API.replace("news2_report","news2_edit"),{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY,Authorization:"Bearer "+KEY},
-body:JSON.stringify({row_id:id,rr:v.rr_score,spo2:v.spo2_score,o2:v.o2_score,sbp:v.sbp_score,pulse:v.pulse_score,temp:v.temp_score,avpu:v.avpu_score})});
+try{const r=await fetch(RPC+(M==="pews"?"pews_edit":"news2_edit"),{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY,Authorization:"Bearer "+KEY},
+body:JSON.stringify(M==="pews"?{row_id:id,beh:v.behavior_score,hr:v.hr_score,skin:v.skin_score,rr:v.rr_score,o2:v.o2_score,wob:v.wob_score}:{row_id:id,rr:v.rr_score,spo2:v.spo2_score,o2:v.o2_score,sbp:v.sbp_score,pulse:v.pulse_score,temp:v.temp_score,avpu:v.avpu_score})});
 if(!r.ok)throw 0;const u=await r.json();rows[rows.findIndex(x=>x.id===id)]=u;editing=null;render();$("msg").className="msg";$("msg").textContent="บันทึกการแก้ไขแล้ว"}
 catch(_){b.disabled=false;b.textContent="บันทึก";$("msg").className="msg err";$("msg").textContent="ไม่สามารถบันทึกข้อมูลได้ โปรดลองอีกครั้ง"}});
 load();

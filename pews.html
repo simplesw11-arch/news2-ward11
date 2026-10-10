@@ -135,7 +135,7 @@ const v=known.length?Math.max(...known):null;
 if(!done){delete c.dataset.s;c.querySelector(".pt").textContent=v==null?"–":"≥ "+v;return null}
 c.dataset.s=v;c.querySelector(".pt").textContent=v+" คะแนน";return v}
 let LAST=null;
-function calc(){calc0();try{LOG.upd()}catch(e){}}
+function calc(){calc0();try{LOG.upd(AGE!=null&&(Object.values(S).some(v=>v!=null)||!!$("hr").value||!!$("rr").value))}catch(e){}}
 function calc0(){LAST=null;const h=hrScore(),r=rrScore();
 $("hrc").textContent=h?`${h[1]} → ${h[0]} คะแนน`:"";$("rrc").textContent=r?`${r[1]} → ${r[0]} คะแนน`:"";
 const b=card("c_beh",[S.beh]),c=card("c_cv",[h&&h[0],S.skin]),s=card("c_rs",[r&&r[0],S.o2,S.wob]);
@@ -151,7 +151,7 @@ t.textContent=sum;t.style.background=col;t.style.color=dark?"#3a2c00":"#fff";
 res.innerHTML=`<b>${txt}</b><div>${red?"มีหมวดที่ได้ 3 คะแนน":`พฤติกรรม ${b} · หัวใจ ${c} · หายใจ ${s}`}</div>`}
 const ageIn=()=>{const y=num($("ageY").value),m=num($("ageM").value);const a=y==null&&m==null?null:(y||0)+(m||0)/12;
 if(a==null||a<0){AGE=null;$("norm").textContent="";g.classList.add("hide")}
-else if(a>=15){AGE=null;g.classList.add("hide");$("norm").innerHTML='ผู้ป่วยอายุ 15 ปีขึ้นไป โปรดใช้ <a href="news2.html?v=20261010d">แบบประเมิน NEWS2</a>'}
+else if(a>=15){AGE=null;g.classList.add("hide");$("norm").innerHTML='ผู้ป่วยอายุ 15 ปีขึ้นไป โปรดใช้ <a href="news2.html?v=20261010e">แบบประเมิน NEWS2</a>'}
 else{AGE=a;g.classList.remove("hide");const h=norm(HRN,a),r=norm(RRN,a);$("norm").textContent=`ค่าปกติตามอายุ: ชีพจร ${h[1]}–${h[2]} ครั้ง/นาที · อัตราการหายใจ ${r[1]}–${r[2]} ครั้ง/นาที`}
 calc()};
 $("ageY").oninput=ageIn;$("ageM").oninput=ageIn;
@@ -162,25 +162,27 @@ $("clr").onclick=()=>{document.querySelectorAll("input").forEach(i=>i.value="");
 for(const k in S)S[k]=null;AGE=null;$("norm").textContent="";g.classList.add("hide");calc();try{LOG.reset()}catch(e){}window.scrollTo(0,0)};
 calc();
 /* เก็บสถิติการใช้งานแบบไม่ระบุตัวตน (Supabase) — เก็บเฉพาะคะแนนและช่วงอายุ ไม่เก็บอายุจริง ค่าสัญญาณชีพดิบ หรือข้อมูลผู้ป่วย */
-const LOG=(()=>{
-const URL_="https://bouxgjkhlywhxmtuyvpp.supabase.co/rest/v1/pews_usage",
-KEY="sb_publishable_UCUPBieE6U2zWezBdNU40w_51N8Llqy",WAIT=3000;
-let t0=null,sent=false,tm=null;
+const LOG=((TABLE,build)=>{
+const B="https://bouxgjkhlywhxmtuyvpp.supabase.co/rest/v1/",KEY="sb_publishable_UCUPBieE6U2zWezBdNU40w_51N8Llqy",
+H={"Content-Type":"application/json",apikey:KEY,Authorization:"Bearer "+KEY};
+const uid=()=>{try{return crypto.randomUUID()}catch(e){return"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==="x"?r:r&3|8).toString(16)})}};
 const dev=()=>{const u=navigator.userAgent||"",tp=navigator.maxTouchPoints||0;
 if(/iPad|Tablet/i.test(u)||(/Macintosh/.test(u)&&tp>1)||(/Android/i.test(u)&&!/Mobile/i.test(u)))return"tablet";
 if(/Mobi|iPhone|iPod|Android/i.test(u))return"mobile";return"desktop"};
-const band=a=>a<0.25?"0-3m":a<1?"3-12m":a<2?"1-2y":a<4?"2-4y":a<6?"4-6y":a<10?"6-10y":a<13?"10-13y":"13-15y";
-const send=()=>{tm=null;if(sent||!LAST||AGE==null)return;sent=true;const L=LAST;
-const row={assessed_at:new Date().toISOString(),age_band:band(AGE),behavior_score:L.beh,cardio_score:L.cv,resp_score:L.rs,
-hr_score:L.h,skin_score:S.skin,rr_score:L.r,o2_score:S.o2,wob_score:S.wob,total_score:L.sum,red_score:L.red,
-duration_sec:t0?Math.max(0,Math.round((Date.now()-t0)/1000)):null,device_type:dev()};
-try{fetch(URL_,{method:"POST",keepalive:true,headers:{"Content-Type":"application/json",apikey:KEY,
-Authorization:"Bearer "+KEY,Prefer:"return=minimal"},body:JSON.stringify(row)}).catch(()=>{})}catch(e){}};
-addEventListener("pagehide",()=>{if(tm){clearTimeout(tm);send()}});
+let key=uid(),t0=null,at=null,tm=null,last="",legacy=false,legacyDone=false;
+const post=(path,body)=>fetch(B+path,{method:"POST",keepalive:true,headers:{...H,Prefer:"return=minimal"},body:JSON.stringify(body)});
+const save=()=>{tm=null;let r;try{r=build()}catch(e){r=null}if(!r)return;
+if(!at)at=new Date().toISOString();
+r=Object.assign({assessed_at:at},r,{duration_sec:t0?Math.max(0,Math.round((Date.now()-t0)/1000)):null,device_type:dev()});
+const s=JSON.stringify(r);if(s===last)return;last=s;
+try{if(legacy){if(!legacyDone){legacyDone=true;post(TABLE,r).catch(()=>{})}return}
+post("rpc/"+TABLE.replace("_usage","_save"),{k:key,r}).then(x=>{if(x.status===404&&!legacyDone){legacy=true;legacyDone=true;post(TABLE,r).catch(()=>{})}}).catch(()=>{})}catch(e){}};
+addEventListener("pagehide",()=>{if(tm){clearTimeout(tm);save()}});
 return{
-upd(){if(sent)return;const any=AGE!=null&&(Object.values(S).some(v=>v!=null)||$("hr").value||$("rr").value);if(any&&!t0)t0=Date.now();
-clearTimeout(tm);tm=null;if(LAST)tm=setTimeout(send,WAIT)},
-reset(){clearTimeout(tm);tm=null;t0=null;sent=false}}})();
+upd(started){if(started&&!t0)t0=Date.now();clearTimeout(tm);tm=setTimeout(save,400)},
+reset(){clearTimeout(tm);tm=null;key=uid();t0=null;at=null;last="";legacyDone=false}}})("pews_usage",()=>{if(!LAST||AGE==null)return null;const L=LAST,a=AGE;
+const band=a<0.25?"0-3m":a<1?"3-12m":a<2?"1-2y":a<4?"2-4y":a<6?"4-6y":a<10?"6-10y":a<13?"10-13y":"13-15y";
+return{age_band:band,behavior_score:L.beh,cardio_score:L.cv,resp_score:L.rs,hr_score:L.h,skin_score:S.skin,rr_score:L.r,o2_score:S.o2,wob_score:S.wob,total_score:L.sum,red_score:L.red}});
 </script>
 </body>
 </html>
