@@ -68,9 +68,9 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 </style>
 </head>
 <body>
-<div class="head"><div class="in"><a class="home" href="./">← หน้าหลัก</a><h1>ประเมินความเสี่ยงพลัดตกหกล้ม</h1><p>Fall Risk Assessment · เลือกแบบประเมินให้เหมาะกับผู้ป่วย</p></div></div>
+<div class="head"><div class="in"><a class="home" href="./">← กลับหน้าหลัก</a><h1>ประเมินความเสี่ยงพลัดตกหกล้ม</h1><p>Fall Risk Assessment · เลือกแบบประเมินให้เหมาะกับผู้ป่วย</p></div></div>
 <div class="wrap">
-<div class="p wide agebox"><div class="row"><div class="lab">อายุผู้ป่วย<small>กรอกอายุเป็นปี ระบบจะเลือกแบบประเมินให้อัตโนมัติ</small></div></div>
+<div class="p wide agebox"><div class="row"><div class="lab">อายุผู้ป่วย<small>โปรดระบุอายุเป็นปี ระบบจะเลือกแบบประเมินโดยอัตโนมัติ</small></div></div>
 <input id="age" type="text" inputmode="decimal" placeholder="เช่น 0.5, 8, 45, 72" autocomplete="off"><div class="src" id="pick" style="margin:0"></div></div>
 <div class="tabs" id="tabs"></div>
 <div class="src" id="src"></div>
@@ -80,14 +80,14 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 <div class="bar"><div class="in">
 <div class="total" id="t">–</div>
 <div class="res" id="r"></div>
-<button class="reset" id="clr">ล้างค่า</button>
+<button class="reset" id="clr">ล้างข้อมูล</button>
 </div></div>
 <script>
 // type: one = เลือก 1 ข้อ, any = เลือกได้หลายข้อ (ไม่เลือก = 0)
 const T={
 ped:{tab:"เด็ก",sub:"Humpty Dumpty",src:"Modified Humpty Dumpty & CHAMPS Fall Assessment Scale (ทารกและเด็ก) · ทุกข้อต้องเลือก 1 ตัวเลือก",
 items:[
-{n:"1. อายุ",u:"A: Age · พิมพ์อายุ หรือแตะเลือก",age:a=>a<3?0:a<7?1:a<13?2:3,o:[["ต่ำกว่า 3 ปี",4],["3 ถึงต่ำกว่า 7 ปี",3],["7 ถึงต่ำกว่า 13 ปี",2],["13 ปีขึ้นไป",1]]},
+{n:"1. อายุ",u:"A: Age · ระบุอายุ หรือเลือกช่วงอายุ",age:a=>a<3?0:a<7?1:a<13?2:3,o:[["ต่ำกว่า 3 ปี",4],["3 ถึงต่ำกว่า 7 ปี",3],["7 ถึงต่ำกว่า 13 ปี",2],["13 ปีขึ้นไป",1]]},
 {n:"2. ความสามารถด้านการรับรู้",u:"C: Changes in altered mental status",o:[["รับรู้ได้ แต่ประเมินตนเองไม่เหมาะสม ไม่ปฏิบัติตามคำแนะนำ การรับรู้บกพร่อง เช่น CP, delay, ทารก",3],["รับรู้ได้ แต่ลืมคำแนะนำ",2],["รับรู้ได้และปฏิบัติตามคำแนะนำได้",1]]},
 {n:"3. ประวัติการตกหกล้ม",u:"H: History of fall",o:[["มีประวัติพลัดตกหกล้ม หัดเดิน คลาน ปีนป่าย",4],["ต้องใช้อุปกรณ์หรือคาสายระบายต่าง ๆ",3],["นอนบนเตียง",2],["เดินไปมาด้วยตนเอง",1]]},
 {n:"4. การเคลื่อนไหว",u:"M: Altered mobility",o:[["ระบบประสาท มีปัญหาการมองเห็น รับฟัง การเคลื่อนไหว/พิการ",4],["พร่องออกซิเจน ขาดน้ำ เกลือแร่ ซีด นอนไม่หลับ เป็นลม มึนงง",3],["จิตเวช มีพฤติกรรมเปลี่ยน",2],["โรคอื่น ๆ",1]]},
@@ -96,22 +96,22 @@ items:[
 {n:"7. หลังการผ่าตัด",u:"S: Surgery safety",o:[["ภายใน 24 ชั่วโมง",3],["ภายใน 48 ชั่วโมง",2],["มากกว่า 48 ชั่วโมง หรือไม่ได้ผ่าตัด",1]]},
 {n:"8. การป้องกัน",u:"S: Safety interventions",o:[["ไม้กั้นเตียงชำรุด 2 ข้าง ยึดตรึงไม่ได้ ไม่มีคนเฝ้า พื้นลื่น เปียก แฉะ (ตลอดเวลา)",3],["ไม้กั้นเตียงชำรุด 1 ข้าง ยึดตรึง/มีคนเฝ้า พื้นลื่น เปียกแฉะ (บางครั้ง)",2],["ไม้กั้นเตียง/ยึดตรึง/มีคนเฝ้า พื้นแห้ง (ตลอดเวลา)",1]]}],
 level:s=>s>=17?["var(--s3)","เสี่ยงระดับสูง (≥ 17 คะแนน)"]:s>=9?["var(--s2)","เสี่ยงระดับปานกลาง (9–16 คะแนน)"]:["var(--s1)","เสี่ยงระดับน้อย (8 คะแนน)",1]},
-hen:{tab:"ผู้ใหญ่",sub:"Hendrich",src:"Fall risk assessment tool: Hendrich · ติ๊กเฉพาะข้อที่มี ข้อที่ไม่มีคิด 0 คะแนน · คะแนนเต็ม 20",
+hen:{tab:"ผู้ใหญ่",sub:"Hendrich",src:"Fall risk assessment tool: Hendrich · เลือกเฉพาะข้อที่พบ ข้อที่ไม่พบคิดเป็น 0 คะแนน · คะแนนเต็ม 20",
 items:[
-{n:"ปัจจัยเสี่ยง",u:"ติ๊กทุกข้อที่มี",any:1,o:[["อาการสับสน ไม่รู้วัน เวลา สถานที่ บุคคล","Confusion / disorientation",4],["อาการซึมเศร้า","Symptomatic depression",2],["การขับถ่ายผิดปกติ","Altered elimination",1],["อาการวิงเวียน บ้านหมุน","Dizziness / vertigo",1],["ผู้ชาย","Male gender",1],["ได้รับยากลุ่มยากันชัก (Antiepileptics)",["carbamazepine","divalproex sodium","ethotoin","ethosuximide","felbamate","fosphenytoin","gabapentin","lamotrigine","mephenytoin","methsuximide","phenobarbital","phenytoin","primidone","topiramate","trimethadione","valproic acid"],2],["ได้รับยากลุ่ม Benzodiazepines",["alprazolam","buspirone","chlordiazepoxide","clonazepam","clorazepate dipotassium","diazepam","flurazepam","halazepam","lorazepam","midazolam","oxazepam","temazepam","triazolam"],1]]},
+{n:"ปัจจัยเสี่ยง",u:"เลือกทุกข้อที่พบ",any:1,o:[["อาการสับสน ไม่รู้วัน เวลา สถานที่ บุคคล","Confusion / disorientation",4],["อาการซึมเศร้า","Symptomatic depression",2],["การขับถ่ายผิดปกติ","Altered elimination",1],["อาการวิงเวียน บ้านหมุน","Dizziness / vertigo",1],["ผู้ชาย","Male gender",1],["ได้รับยากลุ่มยากันชัก (Antiepileptics)",["carbamazepine","divalproex sodium","ethotoin","ethosuximide","felbamate","fosphenytoin","gabapentin","lamotrigine","mephenytoin","methsuximide","phenobarbital","phenytoin","primidone","topiramate","trimethadione","valproic acid"],2],["ได้รับยากลุ่ม Benzodiazepines",["alprazolam","buspirone","chlordiazepoxide","clonazepam","clorazepate dipotassium","diazepam","flurazepam","halazepam","lorazepam","midazolam","oxazepam","temazepam","triazolam"],1]]},
 {n:"Get up & go test",u:"ทดสอบการลุกยืนจากเก้าอี้ · เลือก 1 ข้อ",o:[["ยืนได้เองทันที ไม่ต้องใช้มือยัน",0],["ใช้มือช่วยยัน 1 ครั้ง ลุกยืนสำเร็จ",1],["ใช้มือช่วยยันหลายครั้ง จึงลุกยืนสำเร็จ",3],["ลุกยืนเองไม่ได้ หากไม่มีคนช่วย",4]]}],
 level:s=>s>=5?["var(--s3)","เสี่ยงสูงต่อการลื่น/ตก/หกล้ม (≥ 5)"]:s>=1?["var(--s1)","มีความเสี่ยงต่อการลื่น/ตก/หกล้ม (1–4)",1]:["var(--s0)","ไม่มีความเสี่ยง (0)"]},
-eld:{tab:"ผู้สูงอายุ",sub:"Elderly",src:"Fall risk assessment tool in elderly (ผ่องพรรณ อรุณแสง, 2549) · ติ๊กข้อที่มี ข้อที่ไม่มีคิด 0",
+eld:{tab:"ผู้สูงอายุ",sub:"Elderly",src:"Fall risk assessment tool in elderly (ผ่องพรรณ อรุณแสง, 2549) · เลือกเฉพาะข้อที่พบ ข้อที่ไม่พบคิดเป็น 0 คะแนน",
 items:[
-{n:"อายุ",u:"พิมพ์อายุ หรือแตะเลือก",age:a=>a<65?2:a<80?0:1,o:[["อายุ 65–79 ปี",0.5],["อายุ 80 ปีขึ้นไป",1],["อายุน้อยกว่า 65 ปี",0]]},
-{n:"ปัจจัยเสี่ยง",u:"ติ๊กทุกข้อที่มี",any:1,o:[["มีภาวะสับสน (ไม่อยู่บนเตียงตามคำแนะนำ)","",2],["พยายามจะลงจากเตียง / ไม่สงบ","",5],["มีประวัติการหกล้ม","",1],["การเคลื่อนไหว การทรงตัว และการเดินผิดปกติ","",1],["มีอาการอ่อนเพลียโดยทั่วไป","",1],["การขับถ่ายปัสสาวะเปลี่ยนแปลง","ปัสสาวะบ่อย กลั้นไม่ได้ ได้ Lasix ทางหลอดเลือดดำ",1],["ได้รับยาใน 24 ชม.ที่ผ่านมา","ยากล่อมประสาท ยานอนหลับ ยาสลบ",1],["ไม่สามารถเคลื่อนย้าย/เคลื่อนที่ได้","",-5]]}],
+{n:"อายุ",u:"ระบุอายุ หรือเลือกช่วงอายุ",age:a=>a<65?2:a<80?0:1,o:[["อายุ 65–79 ปี",0.5],["อายุ 80 ปีขึ้นไป",1],["อายุน้อยกว่า 65 ปี",0]]},
+{n:"ปัจจัยเสี่ยง",u:"เลือกทุกข้อที่พบ",any:1,o:[["มีภาวะสับสน (ไม่อยู่บนเตียงตามคำแนะนำ)","",2],["พยายามจะลงจากเตียง / ไม่สงบ","",5],["มีประวัติการหกล้ม","",1],["การเคลื่อนไหว การทรงตัว และการเดินผิดปกติ","",1],["มีอาการอ่อนเพลียโดยทั่วไป","",1],["การขับถ่ายปัสสาวะเปลี่ยนแปลง","ปัสสาวะบ่อย กลั้นไม่ได้ ได้ Lasix ทางหลอดเลือดดำ",1],["ได้รับยาใน 24 ชม.ที่ผ่านมา","ยากล่อมประสาท ยานอนหลับ ยาสลบ",1],["ไม่สามารถเคลื่อนย้าย/เคลื่อนที่ได้","",-5]]}],
 level:s=>s>=4.5?["var(--s3)","ความเสี่ยงระดับ 3 (≥ 4.5)"]:s>=2.5?["var(--s2)","ความเสี่ยงระดับ 2 (2.5–4)"]:s>=0.5?["var(--s1)","ความเสี่ยงระดับ 1 (0.5–2)",1]:["var(--s0)","ไม่อยู่ในเกณฑ์ความเสี่ยง (< 0.5)"]}};
 let cur="ped",S={},AGE=null;
 const ageIn=document.getElementById("age"),pick=document.getElementById("pick");
 const tabFor=a=>a<15?"ped":a<60?"hen":"eld";
 ageIn.oninput=()=>{const a=parseFloat(ageIn.value.replace(",","."));AGE=isNaN(a)?null:a;
 if(AGE==null){pick.textContent="";return}
-const k=tabFor(AGE);if(k!==cur)show(k);else{const i=T[k].items.findIndex(x=>x.age);if(i>=0)document.getElementById("g").children[i].querySelectorAll("button")[T[k].items[i].age(AGE)].click()}pick.textContent="ใช้แบบประเมิน: "+T[k].tab+" ("+T[k].sub+") · เปลี่ยนแบบเองได้ที่แท็บด้านล่าง"};
+const k=tabFor(AGE);if(k!==cur)show(k);else{const i=T[k].items.findIndex(x=>x.age);if(i>=0)document.getElementById("g").children[i].querySelectorAll("button")[T[k].items[i].age(AGE)].click()}pick.textContent="ใช้แบบประเมิน: "+T[k].tab+" ("+T[k].sub+") · สามารถเปลี่ยนแบบประเมินได้ที่แท็บด้านล่าง"};
 const tabs=document.getElementById("tabs");
 Object.entries(T).forEach(([k,v])=>{const b=document.createElement("button");b.innerHTML=`<b>${v.tab}</b><small>${v.sub}</small>`;b.onclick=()=>show(k);b.dataset.k=k;tabs.appendChild(b)});
 function show(k){cur=k;S={};const t=T[k];
@@ -129,7 +129,7 @@ calc()}
 function calc(){const t=T[cur],tt=document.getElementById("t"),r=document.getElementById("r");
 const need=t.items.filter(i=>!i.any).length,got=t.items.filter((it,i)=>!it.any&&S[i]!=null).length;
 const sum=Object.values(S).reduce((a,b)=>a+b,0);
-if(got<need){tt.textContent="–";tt.style.background="";tt.style.color="";r.innerHTML=`<b>เลือกแล้ว ${got}/${need} ข้อ</b><div>เลือกให้ครบทุกข้อที่ต้องเลือก 1 ตัวเลือก</div>`;return}
+if(got<need){tt.textContent="–";tt.style.background="";tt.style.color="";r.innerHTML=`<b>เลือกแล้ว ${got}/${need} ข้อ</b><div>โปรดเลือกคำตอบให้ครบทุกข้อ</div>`;return}
 const[c,txt,dark]=t.level(sum);tt.textContent=sum;tt.style.background=c;tt.style.color=dark?"#3a2c00":"#fff";
 r.innerHTML=`<b>${txt}</b><div>${t.tab} · ${t.sub}</div>`}
 document.getElementById("clr").onclick=()=>{ageIn.value="";AGE=null;pick.textContent="";show(cur);window.scrollTo(0,0)};

@@ -53,7 +53,7 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .home{display:inline-block;color:#fff;text-decoration:none;font-size:.9rem;opacity:.9;margin-bottom:6px;padding:4px 0}</style>
 </head>
 <body>
-<div class="head"><div class="in"><a class="home" href="./">← หน้าหลัก</a><h1>NEWS2 คำนวณคะแนน</h1><p>National Early Warning Score 2 · กรอกค่า คะแนนคำนวณให้อัตโนมัติ</p></div></div>
+<div class="head"><div class="in"><a class="home" href="./">← กลับหน้าหลัก</a><h1>NEWS2 คำนวณคะแนน</h1><p>National Early Warning Score 2 · กรอกค่าสัญญาณชีพ ระบบคำนวณคะแนนโดยอัตโนมัติ</p></div></div>
 <div class="wrap">
 <div class="grid" id="g"></div>
 <div class="note">เกณฑ์ตามตาราง NEWS2 (RCP 2017) ใช้ประกอบการตัดสินใจทางคลินิก ไม่แทนดุลยพินิจของพยาบาลและแพทย์</div>
@@ -61,7 +61,7 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 <div class="bar"><div class="in">
 <div class="total" id="t">–</div>
 <div class="res" id="r"><b>กรอกให้ครบ 7 ข้อ</b><div>ยังไม่มีผลคะแนน</div></div>
-<button class="reset" id="clr">ล้างค่า</button>
+<button class="reset" id="clr">ล้างข้อมูล</button>
 </div></div>
 <script>
 const P=[
@@ -83,7 +83,7 @@ const hl=n=>{n.classList.remove("hl");void n.offsetWidth;n.classList.add("hl")};
 P.forEach(p=>{const d=document.createElement("div");d.className="p "+(p.cls||"");d.id="c_"+p.k;
 let h=`<div class="row"><div class="lab">${p.n}<small>${p.u}</small></div><div class="pt">–</div></div>`;
 if(p.opt)h+=`<div class="seg">${p.opt.map(o=>`<button data-v="${o[1]}"><span class="k">${o[0]}</span><span class="d">${o[2]}</span></button>`).join("")}</div>`;
-else h+=`<div class="inrow"><input type="text" inputmode="${p.dec?"decimal":"numeric"}" enterkeyhint="next" placeholder="ใส่ค่า ${p.u}" autocomplete="off"><button class="nx" type="button">ถัดไป ›</button></div>`;
+else h+=`<div class="inrow"><input type="text" inputmode="${p.dec?"decimal":"numeric"}" enterkeyhint="next" placeholder="ระบุค่า ${p.u}" autocomplete="off"><button class="nx" type="button">ข้อถัดไป ›</button></div>`;
 if(p.tip)h+=`<div class="tip">${p.tip}</div>`;
 d.innerHTML=h;g.appendChild(d);
 if(p.opt)d.querySelectorAll("button").forEach(b=>b.onclick=()=>{d.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");set(p.k,+b.dataset.v);d.classList.remove("hl");const n=d.nextElementSibling,ni=n&&n.querySelector("input");if(ni&&!ni.value){ni.focus({preventScroll:true});show(n)}});
@@ -98,7 +98,7 @@ function set(k,s){S[k]=s;const c=document.getElementById("c_"+k);if(s==null){del
 function calc(){const t=document.getElementById("t"),r=document.getElementById("r");
 const v=P.map(p=>S[p.k]).filter(x=>x!=null);
 if(v.length<P.length){t.textContent=v.length?v.reduce((a,b)=>a+b,0):"–";t.style.background="";t.style.color="";
-r.innerHTML=`<b>กรอกแล้ว ${v.length}/7 ข้อ</b><div>กรอกให้ครบเพื่อดูระดับความเสี่ยง</div>`;return}
+r.innerHTML=`<b>กรอกแล้ว ${v.length} จาก 7 ข้อ</b><div>โปรดกรอกข้อมูลให้ครบเพื่อแสดงระดับความเสี่ยง</div>`;return}
 const sum=v.reduce((a,b)=>a+b,0),red=v.includes(3);let c,txt,act,dark=false;
 if(sum>=7){c="var(--s3)";txt="สูง (High) · Monitor ต่อเนื่อง";act="ตามแพทย์ทันที · พิจารณาย้าย ICU/HDU"}
 else if(sum>=5){c="var(--s2)";txt="ปานกลาง (Medium) · ประเมินซ้ำทุก 1 ชม.";act="รายงานแพทย์ทันที ตรวจภายใน 1 ชม. · เตรียมอุปกรณ์ช่วยชีวิต"}
