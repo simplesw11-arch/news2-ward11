@@ -63,11 +63,11 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 </style>
 </head>
 <body>
-<div class="head"><div class="in"><a class="home" href="./">← กลับหน้าหลัก</a><h1>ประเมินความสามารถในการทำกิจวัตรประจำวัน</h1><p>Barthel ADL Index · คะแนนเต็ม 20 คะแนน</p></div></div>
+<div class="head"><div class="in"><a class="home" href="./">← กลับหน้าหลัก</a><h1>ประเมินความสามารถในการทำกิจวัตรประจำวัน</h1><p>ดัชนีบาร์เธลเอดีแอล (Barthel ADL Index) · คะแนนเต็ม 20 คะแนน</p></div></div>
 <div class="wrap">
-<div class="src">ดัชนีบาร์เธลเอดีแอล (Barthel Activities of Daily Living) ฉบับภาษาไทย · โปรดเลือกคำตอบข้อละ 1 ตัวเลือก ตามสิ่งที่ผู้ป่วยทำได้จริงในปัจจุบัน</div>
+<div class="src">เป็นการวัดว่าผู้ป่วยทำอะไรได้บ้าง (ที่ทำอยู่ได้จริง) ไม่ใช่การทดสอบหรือถามว่าสามารถทำได้หรือไม่ · โดยทั่วไปสอบถามถึงกิจกรรมที่ปฏิบัติในระยะ 24–48 ชั่วโมง · หากต้องมีคนคอยอยู่ดูแลหรือเฝ้าระวังขณะปฏิบัติกิจกรรม ให้ถือว่าไม่ได้คะแนนเต็ม · ผู้ป่วยที่หมดสติให้ 0 คะแนนทุกข้อ</div>
 <div class="grid" id="g"></div>
-<div class="note">ใช้ประกอบการตัดสินใจทางคลินิก ไม่แทนดุลยพินิจของพยาบาล · การแบ่งกลุ่มตามเกณฑ์กรมอนามัย กระทรวงสาธารณสุข</div>
+<div class="note">อ้างอิง: สุทธิชัย จิตะพันธ์กุล และคณะ. (2544). หลักสำคัญของเวชศาสตร์ผู้สูงอายุ. พิมพ์ครั้งที่ 3. กรุงเทพฯ: จุฬาลงกรณ์มหาวิทยาลัย.<br>ใช้ประกอบการตัดสินใจทางคลินิก ไม่แทนดุลยพินิจของพยาบาล</div>
 </div>
 <div class="bar"><div class="in">
 <div class="total" id="t">–</div>
@@ -85,7 +85,7 @@ const I=[
 ["ทำได้เอง (รวมทั้งที่ทำได้เองถ้าเตรียมอุปกรณ์ไว้ให้)",1]]},
 {n:"3. การลุกนั่งจากที่นอน หรือจากเตียงไปยังเก้าอี้",u:"Transfer",o:[
 ["ไม่สามารถนั่งได้ (นั่งแล้วจะล้มเสมอ) หรือต้องใช้คน 2 คนช่วยกันยกขึ้น",0],
-["ต้องการความช่วยเหลืออย่างมากจึงจะนั่งได้ เช่น ต้องใช้คนที่แข็งแรงหรือมีทักษะ 1 คน หรือใช้คนทั่วไป 2 คนพยุงหรือดันขึ้นมา",1],
+["ต้องการความช่วยเหลืออย่างมากจึงจะนั่งได้ เช่น ต้องใช้คนที่แข็งแรงหรือมีทักษะ 1 คน หรือใช้คนทั่วไป 2 คนพยุงหรือดันขึ้นมาจึงจะนั่งอยู่ได้",1],
 ["ต้องการความช่วยเหลือบ้าง เช่น บอกให้ทำตาม หรือช่วยพยุงเล็กน้อย หรือต้องมีคนดูแลเพื่อความปลอดภัย",2],
 ["ทำได้เอง",3]]},
 {n:"4. การใช้ห้องน้ำ",u:"Toilet use",o:[
@@ -94,64 +94,43 @@ const I=[
 ["ช่วยตัวเองได้ดี (ขึ้นนั่งและลงจากโถส้วมเองได้ ทำความสะอาดได้เรียบร้อยหลังจากเสร็จธุระ ถอดใส่เสื้อผ้าได้เรียบร้อย)",2]]},
 {n:"5. การเคลื่อนที่ภายในห้องหรือบ้าน",u:"Mobility",o:[
 ["เคลื่อนที่ไปไหนไม่ได้",0],
-["ต้องใช้รถเข็นช่วยตัวเองให้เคลื่อนที่ได้เอง (ไม่ต้องมีคนเข็นให้) และเข้าออกมุมห้องหรือประตูได้",1],
+["ต้องใช้รถเข็นช่วยตัวเองให้เคลื่อนที่ได้เอง (ไม่ต้องมีคนเข็นให้) และจะต้องเข้าออกมุมห้องหรือประตูได้",1],
 ["เดินหรือเคลื่อนที่โดยมีคนช่วย เช่น พยุง หรือบอกให้ทำตาม หรือต้องให้ความสนใจดูแลเพื่อความปลอดภัย",2],
 ["เดินหรือเคลื่อนที่ได้เอง",3]]},
 {n:"6. การสวมใส่เสื้อผ้า",u:"Dressing",o:[
 ["ต้องมีคนสวมใส่ให้ ช่วยตัวเองแทบไม่ได้หรือได้น้อย",0],
 ["ช่วยตัวเองได้ประมาณร้อยละ 50 ที่เหลือต้องมีคนช่วย",1],
-["ช่วยตัวเองได้ดี (รวมทั้งการติดกระดุม รูดซิป หรือใช้เสื้อผ้าที่ดัดแปลงให้เหมาะสม)",2]]},
+["ช่วยตัวเองได้ดี (รวมทั้งการติดกระดุม รูดซิป หรือใช้เสื้อผ้าที่ดัดแปลงให้เหมาะสมก็ได้)",2]]},
 {n:"7. การขึ้นลงบันได 1 ชั้น",u:"Stairs",o:[
 ["ไม่สามารถทำได้",0],
 ["ต้องการคนช่วย",1],
-["ขึ้นลงได้เอง (ถ้าต้องใช้เครื่องช่วยเดิน เช่น walker จะต้องนำขึ้นลงได้ด้วย)",2]]},
+["ขึ้นลงได้เอง (ถ้าต้องใช้เครื่องช่วยเดิน เช่น walker จะต้องเอาขึ้นลงได้ด้วย)",2]]},
 {n:"8. การอาบน้ำ",u:"Bathing",o:[
 ["ต้องมีคนช่วยหรือทำให้",0],
 ["อาบน้ำเองได้",1]]},
 {n:"9. การกลั้นการถ่ายอุจจาระ",u:"Bowels · ในระยะ 1 สัปดาห์ที่ผ่านมา",o:[
 ["กลั้นไม่ได้ หรือต้องการการสวนอุจจาระอยู่เสมอ",0],
-["กลั้นไม่ได้บางครั้ง (น้อยกว่า 1 ครั้งต่อสัปดาห์)",1],
+["กลั้นไม่ได้บางครั้ง (เป็นน้อยกว่า 1 ครั้งต่อสัปดาห์)",1],
 ["กลั้นได้เป็นปกติ",2]]},
 {n:"10. การกลั้นปัสสาวะ",u:"Bladder · ในระยะ 1 สัปดาห์ที่ผ่านมา",o:[
 ["กลั้นไม่ได้ หรือใส่สายสวนปัสสาวะแต่ไม่สามารถดูแลเองได้",0],
-["กลั้นไม่ได้บางครั้ง (น้อยกว่าวันละ 1 ครั้ง)",1],
+["กลั้นไม่ได้บางครั้ง (เป็นน้อยกว่าวันละ 1 ครั้ง)",1],
 ["กลั้นได้เป็นปกติ",2]]}];
 const S={},g=document.getElementById("g");
 I.forEach((it,i)=>{const d=document.createElement("div");d.className="p";d.id="c"+i;
 d.innerHTML=`<div class="row"><div class="lab">${it.n}<small>${it.u}</small></div><div class="pt">–</div></div><div class="seg col">${it.o.map(o=>`<button data-v="${o[1]}"><span class="k">${o[0]}</span><span class="d">${o[1]}</span></button>`).join("")}</div>`;
 g.appendChild(d);
 d.querySelectorAll("button").forEach(b=>b.onclick=()=>{d.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
-const first=S[i]==null;S[i]=+b.dataset.v;d.classList.add("done");d.querySelector(".pt").textContent=S[i]+" คะแนน";calc();try{LOG.upd()}catch(e){}
+const first=S[i]==null;S[i]=+b.dataset.v;d.classList.add("done");d.querySelector(".pt").textContent=S[i]+" คะแนน";calc()
 const n=d.nextElementSibling;if(first&&n&&S[i+1]==null)setTimeout(()=>n.scrollIntoView({behavior:"smooth",block:"start"}),120)})});
-function grp(s){return s>=12?["var(--s0)","ติดสังคม <span style=white-space:nowrap>(12–20 คะแนน)</span>","ช่วยเหลือตนเองได้","social"]:s>=5?["var(--s1)","ติดบ้าน <span style=white-space:nowrap>(5–11 คะแนน)</span>","ช่วยเหลือตนเองได้บางส่วน","home",1]:["var(--s3)","ติดเตียง <span style=white-space:nowrap>(0–4 คะแนน)</span>","ช่วยเหลือตนเองไม่ได้","bed"]}
+function grp(s){const n=t=>`<span style=white-space:nowrap>(${t} คะแนน)</span>`;return s>=12?["var(--s0)","พึ่งพาน้อย "+n("≥12"),"Mild severe dependence"]:s>=9?["var(--s1)","พึ่งพาปานกลาง "+n("9–11"),"Moderately severe dependence",1]:s>=5?["var(--s2)","พึ่งพามาก "+n("5–8"),"Severe dependence"]:["var(--s3)","พึ่งพาโดยสมบูรณ์ "+n("0–4"),"Total dependence"]}
 function calc(){const t=document.getElementById("t"),r=document.getElementById("r");
 const got=Object.keys(S).length;
 if(got<I.length){t.textContent="–";t.style.background="";t.style.color="";r.innerHTML=`<b>เลือกแล้ว ${got}&nbsp;จาก&nbsp;${I.length}&nbsp;ข้อ</b><div>โปรดเลือกคำตอบให้ครบทุกข้อ</div>`;return}
-const sum=Object.values(S).reduce((a,b)=>a+b,0),[c,txt,sub,,dark]=grp(sum);
+const sum=Object.values(S).reduce((a,b)=>a+b,0),[c,txt,sub,dark]=grp(sum);
 t.textContent=sum;t.style.background=c;t.style.color=dark?"#3a2c00":"#fff";r.innerHTML=`<b>${txt}</b><div>${sub}</div>`}
-document.getElementById("clr").onclick=()=>{for(const k in S)delete S[k];document.querySelectorAll(".p").forEach(d=>{d.classList.remove("done");d.querySelector(".pt").textContent="–";d.querySelectorAll("button").forEach(b=>b.classList.remove("on"))});calc();try{LOG.reset()}catch(e){}window.scrollTo(0,0)};
+document.getElementById("clr").onclick=()=>{for(const k in S)delete S[k];document.querySelectorAll(".p").forEach(d=>{d.classList.remove("done");d.querySelector(".pt").textContent="–";d.querySelectorAll("button").forEach(b=>b.classList.remove("on"))});calc();window.scrollTo(0,0)};
 calc();
-/* เก็บสถิติการใช้งานแบบไม่ระบุตัวตน (Supabase) — เก็บเฉพาะคะแนน ไม่เก็บข้อมูลผู้ป่วย */
-const LOG=(()=>{
-const URL_="https://bouxgjkhlywhxmtuyvpp.supabase.co/rest/v1/adl_usage",
-KEY="sb_publishable_UCUPBieE6U2zWezBdNU40w_51N8Llqy",WAIT=3000;
-let t0=null,sent=false,tm=null;
-const dev=()=>{const u=navigator.userAgent||"",tp=navigator.maxTouchPoints||0;
-if(/iPad|Tablet/i.test(u)||(/Macintosh/.test(u)&&tp>1)||(/Android/i.test(u)&&!/Mobile/i.test(u)))return"tablet";
-if(/Mobi|iPhone|iPod|Android/i.test(u))return"mobile";return"desktop"};
-const K=["feeding","grooming","transfer","toilet","mobility","dressing","stairs","bathing","bowels","bladder"];
-const row=()=>{if(Object.keys(S).length<I.length)return null;const sum=Object.values(S).reduce((a,b)=>a+b,0);
-const r={assessed_at:new Date().toISOString()};K.forEach((k,i)=>r[k+"_score"]=S[i]);
-return Object.assign(r,{total_score:sum,adl_group:grp(sum)[3],
-duration_sec:t0?Math.max(0,Math.round((Date.now()-t0)/1000)):null,device_type:dev()})};
-const send=()=>{tm=null;if(sent)return;const r=row();if(!r)return;sent=true;
-try{fetch(URL_,{method:"POST",keepalive:true,headers:{"Content-Type":"application/json",apikey:KEY,
-Authorization:"Bearer "+KEY,Prefer:"return=minimal"},body:JSON.stringify(r)}).catch(()=>{})}catch(e){}};
-addEventListener("pagehide",()=>{if(tm){clearTimeout(tm);send()}});
-return{
-upd(){if(sent)return;const n=Object.keys(S).length;if(n&&!t0)t0=Date.now();
-clearTimeout(tm);tm=null;if(n===I.length)tm=setTimeout(send,WAIT)},
-reset(){clearTimeout(tm);tm=null;t0=null;sent=false}}})();
 </script>
 </body>
 </html>
