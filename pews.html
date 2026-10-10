@@ -49,7 +49,7 @@ button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .seg button .d{font-size:.82rem;color:var(--mute);line-height:1.35}
 .seg button.on{border-color:var(--teal);background:var(--tealSoft)}
 .seg button.on .k{color:var(--teal)}
-.inrow{display:flex;gap:8px}.inrow input{flex:1;min-width:0}.nx{font:inherit;font-weight:600;flex:none;padding:0 16px;border:none;border-radius:12px;background:var(--teal);color:#fff;cursor:pointer}.nx:active{opacity:.85}.p.hl{box-shadow:0 0 0 3px var(--teal),0 2px 10px rgba(22,50,79,.07);animation:pulse 1s ease 2}@keyframes pulse{50%{box-shadow:0 0 0 7px rgba(15,124,140,.25)}}@media (prefers-reduced-motion:reduce){.p.hl{animation:none}}.p{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 12px)}body.typing .bar{display:none}body.typing .wrap{padding-bottom:60vh}.tip{font-size:.92rem;color:var(--ink);background:#f4f8fb;border-left:4px solid var(--teal);border-radius:8px;padding:12px 14px;line-height:1.65}.tip b{display:block;font-family:Prompt,Sarabun,sans-serif;font-weight:600;color:var(--teal);margin-bottom:4px}
+.inrow{display:flex;gap:8px}.inrow input{flex:1;min-width:0}.nx{font:inherit;font-weight:600;flex:none;padding:0 16px;border:none;border-radius:12px;background:var(--teal);color:#fff;cursor:pointer}.nx:active{opacity:.85}.p.hl{box-shadow:0 0 0 3px var(--teal),0 2px 10px rgba(22,50,79,.07);animation:pulse 1s ease 2}@keyframes pulse{50%{box-shadow:0 0 0 7px rgba(15,124,140,.25)}}@media (prefers-reduced-motion:reduce){.p.hl{animation:none}}.p{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 12px)}body.typing .bar{display:none}body.typed .wrap{padding-bottom:60vh}.tip{font-size:.92rem;color:var(--ink);background:#f4f8fb;border-left:4px solid var(--teal);border-radius:8px;padding:12px 14px;line-height:1.65}.tip b{display:block;font-family:Prompt,Sarabun,sans-serif;font-weight:600;color:var(--teal);margin-bottom:4px}
 .bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));background:#fff;border-top-left-radius:22px;border-top-right-radius:22px;box-shadow:0 -6px 24px rgba(22,50,79,.12)}
 .bar .in{max-width:1100px;margin:0 auto;display:flex;gap:14px;align-items:center}
 .total{font-family:Prompt,Sarabun,sans-serif;font-size:2.3rem;font-weight:700;width:74px;height:74px;border-radius:20px;display:grid;place-items:center;background:var(--bg);color:var(--mute);flex:none}
@@ -156,15 +156,18 @@ t.textContent=sum;t.style.background=col;t.style.color=dark?"#3a2c00":"#fff";
 res.innerHTML=`<b>${txt}</b><div>${red?"มีหมวดที่ได้ 3 คะแนน":`พฤติกรรม ${b} · หัวใจ ${c} · หายใจ ${s}`}</div>`}
 const ageIn=()=>{const y=num($("ageY").value),m=num($("ageM").value);const a=y==null&&m==null?null:(y||0)+(m||0)/12;
 if(a==null||a<0){AGE=null;$("norm").textContent="";0}
-else if(a>=15){AGE=null;0;$("norm").innerHTML='ผู้ป่วยอายุ 15 ปีขึ้นไป โปรดใช้ <a href="news2.html?v=20261010r">แบบประเมิน NEWS2</a>'}
+else if(a>=15){AGE=null;0;$("norm").innerHTML='ผู้ป่วยอายุ 15 ปีขึ้นไป โปรดใช้ <a href="news2.html?v=20261010s">แบบประเมิน NEWS2</a>'}
 else{AGE=a;const h=norm(HRN,a),r=norm(RRN,a);$("norm").textContent=`ค่าปกติตามอายุ: ชีพจร ${h[1]}–${h[2]} ครั้ง/นาที · อัตราการหายใจ ${r[1]}–${r[2]} ครั้ง/นาที`}
 calc()};
 $("ageY").oninput=ageIn;$("ageM").oninput=ageIn;
 $("hr").oninput=calc;$("rr").oninput=calc;
+// ขณะพิมพ์: ซ่อนแถบผลด้านล่าง (แถบที่ติดขอบล่างทำให้จอกระโดดเมื่อแป้นพิมพ์เปิด/ปิด) และคงที่ว่างด้านล่างไว้ตลอด
+document.addEventListener("focusin",e=>{if(e.target.tagName==="INPUT")document.body.classList.add("typing","typed")});
+document.addEventListener("focusout",()=>setTimeout(()=>{if(!document.activeElement||document.activeElement.tagName!=="INPUT")document.body.classList.remove("typing")},50));
 // เลื่อนช่องอัตโนมัติ: ปี (0–1 ปี → ช่องเดือน, ≥2 ปี → ชีพจร) → เดือน → ชีพจร → อัตราการหายใจ → หมวดพฤติกรรม
 const focusIn=id=>{const i=$(id);i.focus({preventScroll:true});setTimeout(()=>i.scrollIntoView({behavior:"smooth",block:"nearest"}),60)};
 const hlTo=c=>{c.classList.remove("hl");void c.offsetWidth;c.classList.add("hl");setTimeout(()=>c.scrollIntoView({behavior:"smooth",block:"start"}),120)};
-const toBeh=()=>{document.activeElement&&document.activeElement.blur();const n=["beh","skin","o2","wob"].find(k=>S[k]==null);if(n)setTimeout(()=>hlTo($("c_"+n)),200)};
+const toBeh=()=>{document.activeElement&&document.activeElement.blur();const n=["beh","skin","o2","wob"].find(k=>S[k]==null);if(n)setTimeout(()=>hlTo($("c_"+n)),400)};
 const NEXT={ageY:()=>{const y=num($("ageY").value);if(y==null||y>=15)return;if(y<2){$("ageM").focus()}else focusIn("hr")},ageM:()=>{if(AGE!=null)focusIn("hr")},hr:()=>focusIn("rr"),rr:toBeh};
 // พิมพ์ครบแน่นอนแล้วเลื่อนทันที ถ้ายังอาจพิมพ์ต่อ (เช่น "1" อาจเป็น 1 หรือ 12) รอ 1.5 วินาที
 const DONE={ageY:v=>/^\d{2}$|^[02-9]$/.test(v),ageM:v=>/^\d{2}$|^[02-9]$/.test(v),hr:v=>/^[12]\d{2}$|^[3-9]\d$/.test(v),rr:v=>/^\d{2}$/.test(v)};
