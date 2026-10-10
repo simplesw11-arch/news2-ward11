@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<title>ADL ประเมินความสามารถในการทำกิจวัตรประจำวัน</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#eef4f8;--card:#ffffff;--ink:#16324f;--mute:#62758a;--line:#dbe6ee;--teal:#0f7c8c;--tealSoft:#e3f3f5;
+--s0:#2f9e6a;--s1:#f4c430;--s2:#f08a3c;--s3:#e0485a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Sarabun,"Noto Sans Thai",system-ui,sans-serif;font-size:17px}
+.head{background:linear-gradient(135deg,#0f7c8c,#1b5e8f);color:#fff;padding:18px 18px 46px}
+.head .in{max-width:1100px;margin:0 auto}
+.head h1{font-family:Prompt,Sarabun,sans-serif;font-size:1.5rem;margin:0}
+.head p{margin:4px 0 0;opacity:.85;font-size:.92rem}
+.wrap{max-width:1100px;margin:-32px auto 0;padding:0 14px 150px}
+.grid{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:700px){.grid{grid-template-columns:1fr 1fr}}
+@media (min-width:1050px){.grid{grid-template-columns:1fr 1fr 1fr}}
+.p{background:var(--card);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 2px 10px rgba(22,50,79,.07);border-top:5px solid var(--line)}
+.p.wide{grid-column:1/-1}
+.p[data-s="0"]{border-top-color:var(--s0)}.p[data-s="1"]{border-top-color:var(--s1)}
+.p[data-s="2"]{border-top-color:var(--s2)}.p[data-s="3"]{border-top-color:var(--s3)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.lab{font-family:Prompt,Sarabun,sans-serif;font-weight:600;font-size:1.05rem}
+.lab small{display:block;font-family:Sarabun,sans-serif;font-weight:400;color:var(--mute);font-size:.82rem}
+.pt{min-width:48px;text-align:center;font-weight:700;border-radius:999px;padding:4px 10px;background:var(--bg);color:var(--mute);font-size:.95rem}
+.p[data-s="0"] .pt{background:var(--s0);color:#fff}.p[data-s="1"] .pt{background:var(--s1);color:#3a2c00}
+.p[data-s="2"] .pt{background:var(--s2);color:#fff}.p[data-s="3"] .pt{background:var(--s3);color:#fff}
+input{width:100%;font:inherit;font-size:1.4rem;font-weight:600;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:#f8fbfd;color:var(--ink)}
+input::placeholder{font-weight:400;color:#a7b6c4;font-size:1rem}
+input:focus{outline:none;border-color:var(--teal);background:#fff}
+button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.seg{display:grid;gap:8px;grid-template-columns:1fr 1fr}
+.avpu .seg{grid-template-columns:1fr 1fr}
+@media (min-width:700px){.avpu .seg{grid-template-columns:repeat(4,1fr)}}
+.seg button{font:inherit;text-align:left;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:#f8fbfd;color:var(--ink);display:flex;flex-direction:column;gap:2px;cursor:pointer}
+.seg button .k{font-family:Prompt,Sarabun,sans-serif;font-weight:700;font-size:1.1rem}
+.seg button .d{font-size:.82rem;color:var(--mute);line-height:1.35}
+.seg button.on{border-color:var(--teal);background:var(--tealSoft)}
+.seg button.on .k{color:var(--teal)}
+.tip{font-size:.92rem;color:var(--ink);background:#f4f8fb;border-left:4px solid var(--teal);border-radius:8px;padding:12px 14px;line-height:1.65}.tip b{display:block;font-family:Prompt,Sarabun,sans-serif;font-weight:600;color:var(--teal);margin-bottom:4px}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));background:#fff;border-top-left-radius:22px;border-top-right-radius:22px;box-shadow:0 -6px 24px rgba(22,50,79,.12)}
+.bar .in{max-width:1100px;margin:0 auto;display:flex;gap:14px;align-items:center}
+.total{font-family:Prompt,Sarabun,sans-serif;font-size:2.3rem;font-weight:700;width:74px;height:74px;border-radius:20px;display:grid;place-items:center;background:var(--bg);color:var(--mute);flex:none}
+.res{flex:1;min-width:0}.res b{font-family:Prompt,Sarabun,sans-serif;font-weight:600;font-size:1.02rem;display:block}.res div{font-size:.88rem;color:var(--mute);margin-top:2px}
+.reset{font:inherit;font-weight:600;padding:10px 16px;border-radius:12px;border:none;background:var(--tealSoft);color:var(--teal);flex:none;cursor:pointer}
+.note{margin-top:16px;font-size:.82rem;color:var(--mute);line-height:1.55;text-align:center}
+.home{display:inline-block;color:#fff;text-decoration:none;font-size:.9rem;opacity:.9;margin-bottom:6px;padding:4px 0}</style>
+<style>
+.seg.col{grid-template-columns:1fr}
+.seg button{flex-direction:row;justify-content:space-between;align-items:center;gap:10px}
+.seg button .k{font-size:.98rem;font-weight:600;font-family:Sarabun,sans-serif}
+.seg button .d{flex:none;font-weight:700;color:var(--teal);font-size:.9rem}
+.p.done{border-top-color:var(--teal)}
+.p.done .pt{background:var(--teal);color:#fff}
+.src{font-size:.85rem;color:var(--mute);background:var(--card);border-radius:18px;padding:12px 14px;margin:0 0 12px;box-shadow:0 2px 10px rgba(22,50,79,.07);line-height:1.55}
+.pt{white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="head"><div class="in"><a class="home" href="./">← กลับหน้าหลัก</a><h1>ประเมินความสามารถในการทำกิจวัตรประจำวัน</h1><p>Barthel ADL Index · คะแนนเต็ม 20 คะแนน</p></div></div>
+<div class="wrap">
+<div class="src">ดัชนีบาร์เธลเอดีแอล (Barthel Activities of Daily Living) ฉบับภาษาไทย · โปรดเลือกคำตอบข้อละ 1 ตัวเลือก ตามสิ่งที่ผู้ป่วยทำได้จริงในปัจจุบัน</div>
+<div class="grid" id="g"></div>
+<div class="note">ใช้ประกอบการตัดสินใจทางคลินิก ไม่แทนดุลยพินิจของพยาบาล · การแบ่งกลุ่มตามเกณฑ์กรมอนามัย กระทรวงสาธารณสุข</div>
+</div>
+<div class="bar"><div class="in">
+<div class="total" id="t">–</div>
+<div class="res" id="r"></div>
+<button class="reset" id="clr">ล้างข้อมูล</button>
+</div></div>
+<script>
+const I=[
+{n:"1. การรับประทานอาหาร",u:"Feeding · เมื่อเตรียมสำรับไว้ให้เรียบร้อยต่อหน้า",o:[
+["ไม่สามารถตักอาหารเข้าปากได้ ต้องมีคนป้อนให้",0],
+["ตักอาหารเองได้ แต่ต้องมีคนช่วย เช่น ช่วยใช้ช้อนตักเตรียมไว้ให้ หรือตัดเป็นชิ้นเล็ก ๆ ไว้ล่วงหน้า",1],
+["ตักอาหารและช่วยตัวเองได้เป็นปกติ",2]]},
+{n:"2. การล้างหน้า หวีผม แปรงฟัน โกนหนวด",u:"Grooming · ในระยะเวลา 24–48 ชั่วโมงที่ผ่านมา",o:[
+["ต้องการความช่วยเหลือ",0],
+["ทำได้เอง (รวมทั้งที่ทำได้เองถ้าเตรียมอุปกรณ์ไว้ให้)",1]]},
+{n:"3. การลุกนั่งจากที่นอน หรือจากเตียงไปยังเก้าอี้",u:"Transfer",o:[
+["ไม่สามารถนั่งได้ (นั่งแล้วจะล้มเสมอ) หรือต้องใช้คน 2 คนช่วยกันยกขึ้น",0],
+["ต้องการความช่วยเหลืออย่างมากจึงจะนั่งได้ เช่น ต้องใช้คนที่แข็งแรงหรือมีทักษะ 1 คน หรือใช้คนทั่วไป 2 คนพยุงหรือดันขึ้นมา",1],
+["ต้องการความช่วยเหลือบ้าง เช่น บอกให้ทำตาม หรือช่วยพยุงเล็กน้อย หรือต้องมีคนดูแลเพื่อความปลอดภัย",2],
+["ทำได้เอง",3]]},
+{n:"4. การใช้ห้องน้ำ",u:"Toilet use",o:[
+["ช่วยตัวเองไม่ได้",0],
+["ทำเองได้บ้าง (อย่างน้อยทำความสะอาดตัวเองได้หลังจากเสร็จธุระ) แต่ต้องการความช่วยเหลือในบางสิ่ง",1],
+["ช่วยตัวเองได้ดี (ขึ้นนั่งและลงจากโถส้วมเองได้ ทำความสะอาดได้เรียบร้อยหลังจากเสร็จธุระ ถอดใส่เสื้อผ้าได้เรียบร้อย)",2]]},
+{n:"5. การเคลื่อนที่ภายในห้องหรือบ้าน",u:"Mobility",o:[
+["เคลื่อนที่ไปไหนไม่ได้",0],
+["ต้องใช้รถเข็นช่วยตัวเองให้เคลื่อนที่ได้เอง (ไม่ต้องมีคนเข็นให้) และเข้าออกมุมห้องหรือประตูได้",1],
+["เดินหรือเคลื่อนที่โดยมีคนช่วย เช่น พยุง หรือบอกให้ทำตาม หรือต้องให้ความสนใจดูแลเพื่อความปลอดภัย",2],
+["เดินหรือเคลื่อนที่ได้เอง",3]]},
+{n:"6. การสวมใส่เสื้อผ้า",u:"Dressing",o:[
+["ต้องมีคนสวมใส่ให้ ช่วยตัวเองแทบไม่ได้หรือได้น้อย",0],
+["ช่วยตัวเองได้ประมาณร้อยละ 50 ที่เหลือต้องมีคนช่วย",1],
+["ช่วยตัวเองได้ดี (รวมทั้งการติดกระดุม รูดซิป หรือใช้เสื้อผ้าที่ดัดแปลงให้เหมาะสม)",2]]},
+{n:"7. การขึ้นลงบันได 1 ชั้น",u:"Stairs",o:[
+["ไม่สามารถทำได้",0],
+["ต้องการคนช่วย",1],
+["ขึ้นลงได้เอง (ถ้าต้องใช้เครื่องช่วยเดิน เช่น walker จะต้องนำขึ้นลงได้ด้วย)",2]]},
+{n:"8. การอาบน้ำ",u:"Bathing",o:[
+["ต้องมีคนช่วยหรือทำให้",0],
+["อาบน้ำเองได้",1]]},
+{n:"9. การกลั้นการถ่ายอุจจาระ",u:"Bowels · ในระยะ 1 สัปดาห์ที่ผ่านมา",o:[
+["กลั้นไม่ได้ หรือต้องการการสวนอุจจาระอยู่เสมอ",0],
+["กลั้นไม่ได้บางครั้ง (น้อยกว่า 1 ครั้งต่อสัปดาห์)",1],
+["กลั้นได้เป็นปกติ",2]]},
+{n:"10. การกลั้นปัสสาวะ",u:"Bladder · ในระยะ 1 สัปดาห์ที่ผ่านมา",o:[
+["กลั้นไม่ได้ หรือใส่สายสวนปัสสาวะแต่ไม่สามารถดูแลเองได้",0],
+["กลั้นไม่ได้บางครั้ง (น้อยกว่าวันละ 1 ครั้ง)",1],
+["กลั้นได้เป็นปกติ",2]]}];
+const S={},g=document.getElementById("g");
+I.forEach((it,i)=>{const d=document.createElement("div");d.className="p";d.id="c"+i;
+d.innerHTML=`<div class="row"><div class="lab">${it.n}<small>${it.u}</small></div><div class="pt">–</div></div><div class="seg col">${it.o.map(o=>`<button data-v="${o[1]}"><span class="k">${o[0]}</span><span class="d">${o[1]}</span></button>`).join("")}</div>`;
+g.appendChild(d);
+d.querySelectorAll("button").forEach(b=>b.onclick=()=>{d.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+const first=S[i]==null;S[i]=+b.dataset.v;d.classList.add("done");d.querySelector(".pt").textContent=S[i]+" คะแนน";calc();try{LOG.upd()}catch(e){}
+const n=d.nextElementSibling;if(first&&n&&S[i+1]==null)setTimeout(()=>n.scrollIntoView({behavior:"smooth",block:"start"}),120)})});
+function grp(s){return s>=12?["var(--s0)","ติดสังคม <span style=white-space:nowrap>(12–20 คะแนน)</span>","ช่วยเหลือตนเองได้","social"]:s>=5?["var(--s1)","ติดบ้าน <span style=white-space:nowrap>(5–11 คะแนน)</span>","ช่วยเหลือตนเองได้บางส่วน","home",1]:["var(--s3)","ติดเตียง <span style=white-space:nowrap>(0–4 คะแนน)</span>","ช่วยเหลือตนเองไม่ได้","bed"]}
+function calc(){const t=document.getElementById("t"),r=document.getElementById("r");
+const got=Object.keys(S).length;
+if(got<I.length){t.textContent="–";t.style.background="";t.style.color="";r.innerHTML=`<b>เลือกแล้ว ${got}&nbsp;จาก&nbsp;${I.length}&nbsp;ข้อ</b><div>โปรดเลือกคำตอบให้ครบทุกข้อ</div>`;return}
+const sum=Object.values(S).reduce((a,b)=>a+b,0),[c,txt,sub,,dark]=grp(sum);
+t.textContent=sum;t.style.background=c;t.style.color=dark?"#3a2c00":"#fff";r.innerHTML=`<b>${txt}</b><div>${sub}</div>`}
+document.getElementById("clr").onclick=()=>{for(const k in S)delete S[k];document.querySelectorAll(".p").forEach(d=>{d.classList.remove("done");d.querySelector(".pt").textContent="–";d.querySelectorAll("button").forEach(b=>b.classList.remove("on"))});calc();try{LOG.reset()}catch(e){}window.scrollTo(0,0)};
+calc();
+/* เก็บสถิติการใช้งานแบบไม่ระบุตัวตน (Supabase) — เก็บเฉพาะคะแนน ไม่เก็บข้อมูลผู้ป่วย */
+const LOG=(()=>{
+const URL_="https://bouxgjkhlywhxmtuyvpp.supabase.co/rest/v1/adl_usage",
+KEY="sb_publishable_UCUPBieE6U2zWezBdNU40w_51N8Llqy",WAIT=3000;
+let t0=null,sent=false,tm=null;
+const dev=()=>{const u=navigator.userAgent||"",tp=navigator.maxTouchPoints||0;
+if(/iPad|Tablet/i.test(u)||(/Macintosh/.test(u)&&tp>1)||(/Android/i.test(u)&&!/Mobile/i.test(u)))return"tablet";
+if(/Mobi|iPhone|iPod|Android/i.test(u))return"mobile";return"desktop"};
+const K=["feeding","grooming","transfer","toilet","mobility","dressing","stairs","bathing","bowels","bladder"];
+const row=()=>{if(Object.keys(S).length<I.length)return null;const sum=Object.values(S).reduce((a,b)=>a+b,0);
+const r={assessed_at:new Date().toISOString()};K.forEach((k,i)=>r[k+"_score"]=S[i]);
+return Object.assign(r,{total_score:sum,adl_group:grp(sum)[3],
+duration_sec:t0?Math.max(0,Math.round((Date.now()-t0)/1000)):null,device_type:dev()})};
+const send=()=>{tm=null;if(sent)return;const r=row();if(!r)return;sent=true;
+try{fetch(URL_,{method:"POST",keepalive:true,headers:{"Content-Type":"application/json",apikey:KEY,
+Authorization:"Bearer "+KEY,Prefer:"return=minimal"},body:JSON.stringify(r)}).catch(()=>{})}catch(e){}};
+addEventListener("pagehide",()=>{if(tm){clearTimeout(tm);send()}});
+return{
+upd(){if(sent)return;const n=Object.keys(S).length;if(n&&!t0)t0=Date.now();
+clearTimeout(tm);tm=null;if(n===I.length)tm=setTimeout(send,WAIT)},
+reset(){clearTimeout(tm);tm=null;t0=null;sent=false}}})();
+</script>
+</body>
+</html>
