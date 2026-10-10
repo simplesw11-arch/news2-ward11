@@ -41,4 +41,5 @@
    - push `dev` → Actions ทดสอบ → ขึ้นเว็บทดลอง `/staging/` (แถบส้ม ไม่บันทึกข้อมูลจริง ใช้ข้อมูลจำลอง) → **รอผู้ใช้กด Approve** (environment `production`) → รวมเข้า `main` → ขึ้นเว็บจริง
    - ไฟล์: `.github/workflows/pipeline.yml`, `ci/build-site.sh`, `ci/staging-mode.js`
    - แจ้งผู้ใช้ทุกครั้งหลัง push ว่าให้ตรวจที่เว็บทดลองแล้วกด Approve ที่ GitHub → Actions
+   - **ส่งลิงก์ให้ผู้ใช้ทุกครั้ง** ที่พูดถึงไฟล์ หน้าเว็บ หรือที่ที่ต้องไปทำ: เว็บทดลอง https://simplesw11-arch.github.io/news2-ward11/staging/ · เว็บจริง https://simplesw11-arch.github.io/news2-ward11/ · Approve https://github.com/simplesw11-arch/news2-ward11/actions · SQL Editor https://supabase.com/dashboard/project/bouxgjkhlywhxmtuyvpp/sql/new · ไฟล์ https://github.com/simplesw11-arch/news2-ward11/blob/dev/<ชื่อไฟล์>
 7. **กันเบราว์เซอร์จำหน้าเก่า**: ลิงก์ระหว่างหน้าใช้ `ชื่อไฟล์.html?v=YYYYMMDDx` ทุกครั้งที่แก้หน้าใด ให้เปลี่ยนค่า `v` ในทุกไฟล์ (ค้นด้วย `?v=`)
