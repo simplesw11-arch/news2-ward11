@@ -115,6 +115,11 @@ await p.goto(ROOT+'index.html');await p.waitForTimeout(500);ok(await vis()==='ne
 hidden=['news2','fall','adl','report'];await p.reload();await p.waitForTimeout(500);ok(await p.isVisible('#empty'),'ตั้งค่า: ซ่อนทั้งหมดแล้วแสดงข้อความแจ้ง','');
 await ctx.close()}
 
+// ยังไม่ได้ติดตั้งฟังก์ชันในฐานข้อมูล (404): ต้องแจ้งว่ายังไม่เปิดใช้งาน ไม่ใช่ถามรหัสผ่าน
+{const ctx=await b.newContext({viewport:{width:390,height:800}});
+await ctx.route('**/rpc/**',r=>r.fulfill({status:404,contentType:'application/json',body:'{"code":"PGRST202"}'}));
+const p=await ctx.newPage();await p.goto(ROOT+'settings.html');await p.waitForTimeout(500);
+ok((await p.textContent('#login')).includes('ยังไม่ได้เปิดใช้งาน')&&!(await p.$('#pin')),'ตั้งค่า: ยังไม่ติดตั้งในฐานข้อมูล → แจ้ง ไม่ถามรหัสผ่าน',await p.textContent('#login'));await ctx.close()}
 // ยังไม่ได้ตั้งรหัสผ่าน: เข้าได้ทันทีโดยไม่ต้องใส่รหัส
 {const ctx=await b.newContext({viewport:{width:390,height:800}});
 await ctx.route('**/rpc/get_settings',r=>r.fulfill({status:200,contentType:'application/json',body:'{}'}));
