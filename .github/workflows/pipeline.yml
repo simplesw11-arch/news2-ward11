@@ -1,0 +1,93 @@
+# ทดสอบ → เว็บทดลอง (/staging/) → รออนุมัติ → เว็บจริง
+# - push ไป dev : ทดสอบ → ขึ้นเว็บทดลอง → รอผู้อนุมัติ (environment: production) → รวมเข้า main → ขึ้นเว็บจริง
+# - push ไป main: ทดสอบ → ขึ้นเว็บ (ใช้กรณีแก้ด่วน)
+name: ทดสอบและขึ้นเว็บ
+on:
+  push:
+    branches: [dev, main]
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: ทดสอบผู้ป่วยจำลองและทุกขนาดจอ
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --no-package-lock playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - name: ผู้ป่วยจำลอง (คะแนนและการแปลผล)
+        run: node tests/cases.js
+      - name: ทุกขนาดจอ (5 ขนาด × ทุกหน้า)
+        run: node tests/screens.js
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: tests/out/
+          retention-days: 7
+
+  deploy-staging:
+    name: ขึ้นเว็บทดลอง
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.d.outputs.page_url }}staging/
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main, path: main }
+      - uses: actions/checkout@v4
+        with: { ref: dev, path: dev }
+        continue-on-error: true
+      - run: '[ -d dev/.git ] || cp -r main dev'
+      - run: main/ci/build-site.sh main dev site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: site }
+      - id: d
+        uses: actions/deploy-pages@v4
+
+  promote:
+    name: รออนุมัติแล้วรวมเข้าเว็บจริง
+    if: github.ref == 'refs/heads/dev'
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main, fetch-depth: 0 }
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin dev
+          git merge --no-edit origin/dev
+          git push origin HEAD:main
+
+  deploy-production:
+    name: ขึ้นเว็บจริง
+    needs: promote
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.d.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main, path: main }
+      - uses: actions/checkout@v4
+        with: { ref: dev, path: dev }
+      - run: main/ci/build-site.sh main dev site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: site }
+      - id: d
+        uses: actions/deploy-pages@v4
