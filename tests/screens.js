@@ -4,7 +4,7 @@ const pw=require('playwright');
 // ENGINES=chromium,webkit (webkit = Safari บน iPhone/iPad; GitHub Actions รันทั้งสอง)
 const ENGINES=(process.env.ENGINES||'chromium').split(',');const path=require('path'),fs=require('fs');
 const ROOT='file://'+path.resolve(__dirname,'..')+'/',OUT=path.join(__dirname,'out');fs.mkdirSync(OUT,{recursive:true});
-const SCREENS=[['mobile',360,740,true],['mobile-land',740,360,true],['ipad',820,1180,true],['ipad-land',1180,820,true],['desktop',1280,800,false]];
+const SCREENS=[['mobile',360,740,true],['mobile-land',740,360,true],['ipad-mini',744,1133,true],['ipad-mini-land',1133,744,true],['ipad',820,1180,true],['ipad-land',1180,820,true],['desktop',1280,800,false]];
 const PAGES=['index','news2','pews','fall','adl','report'];
 const MOCK='[]';
 (async()=>{let fail=0;for(const eng of ENGINES){const b=await pw[eng].launch();

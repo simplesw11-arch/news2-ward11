@@ -50,6 +50,15 @@ for(const [nm,y,m,hr,rr,beh,skin,o2,wob,tot,red] of PEWS){await p.blurAll();awai
 await p.fill('#ageY',y);await p.fill('#ageM',m);await p.fill('#hr',hr);await p.fill('#rr',rr);
 for(const [k,v] of [['beh',beh],['skin',skin],['o2',o2],['wob',wob]])await p.click(`.seg[data-k=${k}] button[data-v="${v}"]`);
 const t=await T(p),r=await Rs(p);ok(t===String(tot)&&r.includes('มีหมวดที่ได้ 3')===red,`PEWS ${nm}: ${tot}${red?' มีหมวดได้ 3':''}`,`${t} / ${r}`)}
+// เลื่อนช่องอัตโนมัติ: พิมพ์ทีละตัวเหมือนผู้ใช้จริง
+const act=()=>p.evaluate(()=>document.activeElement&&document.activeElement.id||document.activeElement.tagName);
+for(const [nm,y,want] of [['0 ปี → ช่องเดือน','0','ageM'],['1 ปี (รอ 1.5 วิ) → ช่องเดือน','1','ageM'],['5 ปี → ข้ามไปชีพจร','5','hr'],['12 ปี → ข้ามไปชีพจร','12','hr']]){
+await p.blurAll();await p.click('#clr');await p.click('#ageY');await p.keyboard.type(y,{delay:60});await p.waitForTimeout(y==='1'?1900:500);ok(await act()===want,`PEWS เลื่อนช่อง: อายุ ${nm}`,await act())}
+await p.blurAll();await p.click('#clr');await p.click('#ageY');await p.keyboard.type('0',{delay:60});await p.waitForTimeout(400);await p.keyboard.type('6',{delay:60});await p.waitForTimeout(500);
+ok(await act()==='hr','PEWS เลื่อนช่อง: เดือน → ชีพจร',await act());
+await p.keyboard.type('120',{delay:60});await p.waitForTimeout(500);ok(await act()==='rr','PEWS เลื่อนช่อง: ชีพจร → อัตราการหายใจ',await act());
+await p.keyboard.type('40',{delay:60});await p.waitForTimeout(700);const hl=await p.evaluate(()=>document.getElementById('c_beh').classList.contains('hl'));
+ok(hl&&await act()==='BODY','PEWS เลื่อนช่อง: อัตราการหายใจ → หมวดพฤติกรรม',`${await act()} hl=${hl}`);
 await p.blurAll();await p.click('#clr');await p.fill('#ageY','15');ok((await p.textContent('#norm')).includes('NEWS2'),'PEWS อายุ 15 ปี → แนะนำ NEWS2','');
 if(p.errs.length)ok(false,'PEWS JavaScript error',p.errs.join(';'));await p.close()}
 
